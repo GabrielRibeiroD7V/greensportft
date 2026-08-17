@@ -60,7 +60,7 @@ function AdminDashboard() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-8 w-full max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight uppercase text-slate-900 dark:text-white">Painel Geral</h1>

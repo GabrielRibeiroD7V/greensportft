@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 export const pricingConfigSchema = z.object({
   global_margin_percentage: z.number().default(0),

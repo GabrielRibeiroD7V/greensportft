@@ -48,11 +48,12 @@ export const placeBet = createServerFn({ method: "POST" })
     for (const selection of data.selections) {
       const { data: fixture } = await supabase
         .from('fixtures')
-        .select('status, start_time')
+        .select('status, start_time, is_simulated')
         .eq('id', selection.fixtureId)
         .single();
         
-      if (!fixture || fixture.status !== 'NS') {
+      const status = fixture.status as string;
+      if (!fixture || (status !== 'NS' && status !== 'LIVE') || status === 'SUSPENDED') {
         throw new Error("FIXTURE_UNAVAILABLE");
       }
 

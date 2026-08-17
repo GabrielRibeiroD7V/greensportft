@@ -31,10 +31,10 @@ export async function syncCompetitions() {
       .from("competitions")
       .upsert({
         name: ext.name,
-        country: ext.country,
-        country_code: ext.countryCode,
-        logo_url: ext.logo,
-        type: ext.type,
+        country: ext.country || null,
+        country_code: ext.countryCode || null,
+        logo_url: ext.logo || null,
+        type: ext.type || null,
         provider_id: ext.id
       }, { onConflict: 'provider_id' })
       .select()
@@ -70,7 +70,7 @@ async function getOrSyncTeam(provider: FootballProvider, extId: string, name: st
     .from("teams")
     .upsert({
       name,
-      logo_url: logo,
+      logo_url: logo || null,
       provider_id: extId
     }, { onConflict: 'provider_id' })
     .select()
@@ -104,11 +104,11 @@ export async function syncFixtures(competitionId: string, season: number) {
   });
 
   // 1. Sync Season
-  const { data: seasonData } = await supabaseAdmin.from("seasons").upsert({
+  await supabaseAdmin.from("seasons").upsert({
     competition_id: internalComp.id,
     year: season,
     is_current: true
-  }, { onConflict: 'competition_id,year' }).select().single();
+  }, { onConflict: 'competition_id,year' });
 
   let created = 0;
   for (const ext of extFixtures) {
@@ -124,10 +124,10 @@ export async function syncFixtures(competitionId: string, season: number) {
           away_team_id: awayTeamId,
           start_time: ext.startTime,
           status: ext.status,
-          home_score: ext.homeScore,
-          away_score: ext.awayScore,
-          venue: ext.venue,
-          round: ext.round,
+          home_score: ext.homeScore ?? null,
+          away_score: ext.awayScore ?? null,
+          venue: ext.venue || null,
+          round: ext.round || null,
           provider_id: ext.id,
           last_sync: new Date().toISOString()
         }, { onConflict: 'provider_id' })

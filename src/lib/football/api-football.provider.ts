@@ -51,11 +51,11 @@ export class ApiFootballProvider implements FootballProvider {
 
   async getFixtures(params: { competitionId?: string; season?: number; from?: string; to?: string; live?: boolean }): Promise<ExternalFixture[]> {
     const query: Record<string, string> = {};
-    if (params.competitionId) query.league = params.competitionId;
-    if (params.season) query.season = params.season.toString();
-    if (params.from) query.from = params.from;
-    if (params.to) query.to = params.to;
-    if (params.live) query.live = "all";
+    if (params.competitionId) query['league'] = params.competitionId;
+    if (params.season) query['season'] = params.season.toString();
+    if (params.from) query['from'] = params.from;
+    if (params.to) query['to'] = params.to;
+    if (params.live) query['live'] = "all";
 
     const data = await this.fetch("/fixtures", query);
     return data.response.map((item: any) => ({

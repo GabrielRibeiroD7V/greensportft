@@ -17,9 +17,10 @@ export const runFullSync = createServerFn({ method: "POST" })
   });
 
 export const getInternalSyncLogs = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { data } = await context.supabase
       .from("sync_logs")
       .select("*")
       .order("started_at", { ascending: false })

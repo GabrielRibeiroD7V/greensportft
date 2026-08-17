@@ -90,7 +90,7 @@ function FootballPage() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] md:h-[calc(100vh-4rem)] bg-slate-50 dark:bg-[#0f172a] overflow-hidden">
       {/* Sidebar Desktop */}
-      <aside className="w-[240px] border-r border-slate-800 bg-slate-900 hidden md:flex flex-col shrink-0">
+      <aside className="w-[230px] border-r border-slate-800 bg-slate-950 hidden md:flex flex-col shrink-0">
         <ScrollArea className="flex-1">
           <div className="p-3 space-y-6">
             <section className="space-y-1">
@@ -113,22 +113,19 @@ function FootballPage() {
             </section>
 
             <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Minha Área</h3>
-              <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Minha Área</h3>
+              <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
                 <div className="flex items-center gap-3">
-                  <History className="h-4 w-4" /> Minhas Apostas
+                  <History className="h-3.5 w-3.5" /> Minhas Apostas
                 </div>
               </Link>
-              <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
+              <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
                 <div className="flex items-center gap-3">
-                  <Ticket className="h-4 w-4" /> Bilhetes em Aberto
+                  <Ticket className="h-3.5 w-3.5" /> Bilhetes em Aberto
                 </div>
               </Link>
-              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <Wallet className="h-4 w-4" /> Carteira
-              </Link>
-              <Link to="/account" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <Star className="h-4 w-4" /> Conta
+              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
+                <Wallet className="h-3.5 w-3.5" /> Carteira
               </Link>
             </section>
 
@@ -151,6 +148,18 @@ function FootballPage() {
                   </div>
                 </Link>
               ))}
+            </section>
+            <section className="space-y-1 pt-4 border-t border-slate-900">
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Conta</h3>
+              <Link to="/rules" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Regras
+              </Link>
+              <Link to="/support" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Suporte
+              </Link>
+              <Link to="/account" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Minha Conta
+              </Link>
             </section>
           </div>
         </ScrollArea>
@@ -204,10 +213,9 @@ function FootballPage() {
 
           {/* Lista Principal Grouped */}
           <section className="space-y-6">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                {competition || (tab === 'live' ? 'Partidas Ao Vivo' : 'Próximas Partidas')}
-              </h2>
+            <div className="flex flex-col gap-1 px-1">
+              <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Futebol</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{filteredFixtures.length} partidas disponíveis</p>
             </div>
             
             <div className="space-y-8">
@@ -247,7 +255,7 @@ function FootballPage() {
       <div className={`
         flex-none transition-all duration-300 overflow-hidden
         hidden lg:block
-        ${selections.length > 0 ? 'w-[360px] border-l border-slate-800' : 'w-0'}
+        w-[330px] border-l border-slate-800
       `}>
         <BetSlipSidebar />
       </div>

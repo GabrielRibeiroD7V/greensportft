@@ -8,6 +8,9 @@ export const pricingConfigSchema = z.object({
   max_payout: z.number().default(50000),
   max_ticket_selections: z.number().default(15),
   betting_enabled: z.boolean().default(true),
+  football_data_mode: z.enum(['SIMULATION', 'REAL']).default('SIMULATION'),
+  odds_data_mode: z.enum(['SIMULATION', 'REAL']).default('SIMULATION'),
+  odds_stale_after_seconds: z.number().default(60),
 });
 
 export type PricingConfig = z.infer<typeof pricingConfigSchema>;

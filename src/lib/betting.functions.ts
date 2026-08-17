@@ -14,6 +14,7 @@ const placeBetSchema = z.object({
   selections: z.array(betSelectionSchema).min(1),
   stake: z.number().min(1),
   idempotencyKey: z.string().uuid(),
+  oddSnapshot: z.any().optional(), // Snapshot of odds at time of bet
 });
 
 export const placeBet = createServerFn({ method: "POST" })
@@ -43,8 +44,6 @@ export const placeBet = createServerFn({ method: "POST" })
     }
 
     // Server-side validation of odds and market status
-    // In a real scenario, we would fetch fresh odds from the provider here.
-    // For Phase 4 simulation, we verify against the DB.
     for (const selection of data.selections) {
       const { data: fixture } = await supabase
         .from('fixtures')
@@ -52,8 +51,10 @@ export const placeBet = createServerFn({ method: "POST" })
         .eq('id', selection.fixtureId)
         .single();
         
-      const status = fixture?.status as string | undefined;
-      if (!fixture || !status || !['NS', 'LIVE'].includes(status)) {
+      if (!fixture) throw new Error("FIXTURE_NOT_FOUND");
+      
+      const status = fixture.status;
+      if (!['NS', 'LIVE'].includes(status)) {
         throw new Error("FIXTURE_UNAVAILABLE");
       }
 
@@ -61,14 +62,33 @@ export const placeBet = createServerFn({ method: "POST" })
         throw new Error("FIXTURE_STARTED");
       }
 
-      // Check for odd changes (simulation)
+      // Check for odds data mode alignment
+      if (config.odds_data_mode === 'REAL' && fixture.is_simulated) {
+        throw new Error("REAL_ODDS_REQUIRED_FOR_SIMULATED_FIXTURE_BLOCKED");
+      }
+
       const { data: option } = await supabase
         .from('market_options')
-        .select('odd')
-        .eq('id', selection.fixtureId) // This is simplified for simulation
+        .select('odd, status, last_provider_update, is_simulated')
+        .eq('id', selection.fixtureId) // Still matching current simulation logic for ID
         .single();
 
-      if (option && Math.abs(option.odd - selection.odd) > 0.001) {
+      if (!option) throw new Error("ODD_NOT_FOUND");
+
+      // Validate status
+      if (option.status === 'SUSPENDED') throw new Error("ODD_SUSPENDED");
+      if (option.status === 'CLOSED') throw new Error("ODD_CLOSED");
+      
+      // Check for STALE odds
+      if (option.last_provider_update) {
+        const lastUpdate = new Date(option.last_provider_update).getTime();
+        const now = new Date().getTime();
+        if ((now - lastUpdate) / 1000 > config.odds_stale_after_seconds) {
+           throw new Error("ODD_STALE");
+        }
+      }
+
+      if (Math.abs(option.odd - selection.odd) > 0.001) {
         throw new Error("ODDS_CHANGED");
       }
     }
@@ -77,7 +97,9 @@ export const placeBet = createServerFn({ method: "POST" })
       fixture_id: s.fixtureId,
       market_name: s.marketName,
       selection_name: s.selectionName,
-      odd: s.odd
+      odd: s.odd,
+      odd_snapshot: data.oddSnapshot?.[s.fixtureId] || null,
+      odd_status_at_bet: 'OPEN'
     }));
 
     const { data: ticketId, error: rpcError } = await supabase.rpc('place_bet', {

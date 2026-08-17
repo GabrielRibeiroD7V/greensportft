@@ -40,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/admin/integrations/")({
       queryFn: async () => {
         const { data } = await supabase
           .from("app_settings" as any)
-          .select("football_data_mode, id")
+          .select("football_data_mode, odds_data_mode, id")
           .single();
         return data;
       }
@@ -55,7 +55,7 @@ function AdminIntegrationsPage() {
   const [isTesting, setIsTesting] = useState(false);
   const testConnection = useServerFn(testFootballConnection);
 
-  const handleModeChange = async (mode: 'SIMULATION' | 'REAL') => {
+  const handleModeChange = async (type: 'football' | 'odds', mode: 'SIMULATION' | 'REAL') => {
     if (mode === 'REAL') {
         const result = await testConnection();
         if (!result.success) {
@@ -65,14 +65,18 @@ function AdminIntegrationsPage() {
     }
 
     try {
+      const updateData = type === 'football' 
+        ? { football_data_mode: mode } 
+        : { odds_data_mode: mode };
+
       const { error } = await supabase
         .from("app_settings" as any)
-        .update({ football_data_mode: mode })
+        .update(updateData)
         .eq('id', settings.id);
       
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["admin-integrations-settings"] });
-      toast.success(`Modo de dados alterado para ${mode}`);
+      toast.success(`Modo de ${type === 'football' ? 'futebol' : 'odds'} alterado para ${mode}`);
     } catch (e: any) {
       toast.error(e.message || "Erro ao alterar modo");
     }
@@ -109,11 +113,16 @@ function AdminIntegrationsPage() {
                 <CardTitle className="text-lg font-black uppercase flex items-center gap-2">
                   <Activity className="h-5 w-5 text-green-500" /> API-Football
                 </CardTitle>
-                <CardDescription className="text-slate-400">Provedor de Ligas, Partidas e Scores.</CardDescription>
+                <CardDescription className="text-slate-400">Provedor de Ligas, Partidas, Scores e Odds.</CardDescription>
               </div>
-              <Badge variant={settings?.football_data_mode === 'REAL' ? "default" : "secondary"} className="bg-green-600">
-                {settings?.football_data_mode}
-              </Badge>
+              <div className="flex flex-col items-end gap-1">
+                <Badge variant={settings?.football_data_mode === 'REAL' ? "default" : "secondary"} className="bg-green-600 text-[10px]">
+                  DATA: {settings?.football_data_mode}
+                </Badge>
+                <Badge variant={settings?.odds_data_mode === 'REAL' ? "default" : "secondary"} className="bg-blue-600 text-[10px]">
+                  ODDS: {settings?.odds_data_mode}
+                </Badge>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-6 space-y-6">
@@ -130,16 +139,31 @@ function AdminIntegrationsPage() {
                 )}
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
+               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
                 <div className="space-y-0.5">
-                  <Label className="text-sm font-black uppercase">Modo de Operação</Label>
-                  <p className="text-xs text-slate-500">REAL requer conexão validada.</p>
+                  <Label className="text-sm font-black uppercase text-green-700">Data Mode</Label>
+                  <p className="text-xs text-slate-500">Sync de ligas e partidas.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold text-slate-400">SIM</span>
                     <Switch 
                         checked={settings?.football_data_mode === 'REAL'}
-                        onCheckedChange={checked => handleModeChange(checked ? 'REAL' : 'SIMULATION')}
+                        onCheckedChange={checked => handleModeChange('football', checked ? 'REAL' : 'SIMULATION')}
+                    />
+                    <span className="text-[10px] font-bold text-slate-400">REAL</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-black uppercase text-blue-700">Odds Mode</Label>
+                  <p className="text-xs text-slate-500">Sync de cotações reais.</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-slate-400">SIM</span>
+                    <Switch 
+                        checked={settings?.odds_data_mode === 'REAL'}
+                        onCheckedChange={checked => handleModeChange('odds', checked ? 'REAL' : 'SIMULATION')}
                     />
                     <span className="text-[10px] font-bold text-slate-400">REAL</span>
                 </div>

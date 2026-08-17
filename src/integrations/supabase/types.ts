@@ -24,6 +24,8 @@ export type Database = {
           max_stake: number | null
           max_ticket_selections: number | null
           min_stake: number | null
+          odds_data_mode: string | null
+          odds_stale_after_seconds: number | null
           updated_at: string | null
         }
         Insert: {
@@ -35,6 +37,8 @@ export type Database = {
           max_stake?: number | null
           max_ticket_selections?: number | null
           min_stake?: number | null
+          odds_data_mode?: string | null
+          odds_stale_after_seconds?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -46,6 +50,8 @@ export type Database = {
           max_stake?: number | null
           max_ticket_selections?: number | null
           min_stake?: number | null
+          odds_data_mode?: string | null
+          odds_stale_after_seconds?: number | null
           updated_at?: string | null
         }
         Relationships: []
@@ -57,6 +63,8 @@ export type Database = {
           id: string
           market_name: string
           odd: number
+          odd_snapshot: Json | null
+          odd_status_at_bet: string | null
           selection_name: string
           status: Database["public"]["Enums"]["selection_status"] | null
           ticket_id: string
@@ -67,6 +75,8 @@ export type Database = {
           id?: string
           market_name: string
           odd: number
+          odd_snapshot?: Json | null
+          odd_status_at_bet?: string | null
           selection_name: string
           status?: Database["public"]["Enums"]["selection_status"] | null
           ticket_id: string
@@ -77,6 +87,8 @@ export type Database = {
           id?: string
           market_name?: string
           odd?: number
+          odd_snapshot?: Json | null
+          odd_status_at_bet?: string | null
           selection_name?: string
           status?: Database["public"]["Enums"]["selection_status"] | null
           ticket_id?: string
@@ -285,30 +297,78 @@ export type Database = {
           },
         ]
       }
+      market_mappings: {
+        Row: {
+          id: string
+          internal_market_name: string
+          provider: string
+          provider_market_id: string
+          provider_market_name: string | null
+        }
+        Insert: {
+          id?: string
+          internal_market_name: string
+          provider: string
+          provider_market_id: string
+          provider_market_name?: string | null
+        }
+        Update: {
+          id?: string
+          internal_market_name?: string
+          provider?: string
+          provider_market_id?: string
+          provider_market_name?: string | null
+        }
+        Relationships: []
+      }
       market_options: {
         Row: {
           created_at: string | null
           id: string
           is_active: boolean | null
+          is_live: boolean | null
+          is_simulated: boolean | null
+          last_provider_update: string | null
+          line: string | null
           market_id: string
           name: string
           odd: number
+          provider_odd: number | null
+          source: string | null
+          source_timestamp: string | null
+          status: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_live?: boolean | null
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
+          line?: string | null
           market_id: string
           name: string
           odd: number
+          provider_odd?: number | null
+          source?: string | null
+          source_timestamp?: string | null
+          status?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_live?: boolean | null
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
+          line?: string | null
           market_id?: string
           name?: string
           odd?: number
+          provider_odd?: number | null
+          source?: string | null
+          source_timestamp?: string | null
+          status?: string | null
         }
         Relationships: [
           {
@@ -422,6 +482,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      selection_mappings: {
+        Row: {
+          id: string
+          internal_selection_name: string
+          provider: string
+          provider_selection_id: string
+          provider_selection_name: string | null
+        }
+        Insert: {
+          id?: string
+          internal_selection_name: string
+          provider: string
+          provider_selection_id: string
+          provider_selection_name?: string | null
+        }
+        Update: {
+          id?: string
+          internal_selection_name?: string
+          provider?: string
+          provider_selection_id?: string
+          provider_selection_name?: string | null
+        }
+        Relationships: []
       }
       sync_logs: {
         Row: {

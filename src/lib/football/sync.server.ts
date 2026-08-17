@@ -227,10 +227,11 @@ export async function syncMockData() {
       fixturesSyncedCount++;
       // Add Markets for each fixture
       const { data: market } = await supabaseAdmin.from("markets").upsert({
-        fixture_id: fixture.id,
+        fixture_id: fixtureRecord.id,
         name: "Resultado Final",
         category: "Result"
-      }, { onConflict: 'fixture_id,name' }).select().single();
+      }, { onConflict: 'fixture_id,name' }).select();
+
       
       if (market) {
         const options = [

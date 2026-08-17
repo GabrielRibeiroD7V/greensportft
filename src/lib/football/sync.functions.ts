@@ -2,10 +2,14 @@ import { createServerFn } from "@tanstack/react-start";
 import { syncCompetitions, syncFixtures } from "./sync.server";
 // import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { syncMockData } from "./sync.server";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "../admin-guard.server";
 
 
 export const runFullSync = createServerFn({ method: "POST" })
-  .handler(async () => {
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
     try {
       // For Phase 2, we use mock data sync instead of real API
       return await syncMockData();
@@ -17,9 +21,10 @@ export const runFullSync = createServerFn({ method: "POST" })
   });
 
 export const getInternalSyncLogs = createServerFn({ method: "GET" })
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data } = await supabaseAdmin
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { data } = await context.supabase
       .from("sync_logs")
       .select("*")
       .order("started_at", { ascending: false })

@@ -17,6 +17,7 @@ export type Database = {
       app_settings: {
         Row: {
           betting_enabled: boolean | null
+          football_data_mode: string | null
           global_margin_percentage: number | null
           id: string
           max_payout: number | null
@@ -27,6 +28,7 @@ export type Database = {
         }
         Insert: {
           betting_enabled?: boolean | null
+          football_data_mode?: string | null
           global_margin_percentage?: number | null
           id?: string
           max_payout?: number | null
@@ -37,6 +39,7 @@ export type Database = {
         }
         Update: {
           betting_enabled?: boolean | null
+          football_data_mode?: string | null
           global_margin_percentage?: number | null
           id?: string
           max_payout?: number | null
@@ -138,6 +141,8 @@ export type Database = {
           created_at: string | null
           id: string
           is_active: boolean | null
+          is_simulated: boolean | null
+          last_provider_update: string | null
           logo_url: string | null
           name: string
           provider_id: string | null
@@ -150,6 +155,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
           logo_url?: string | null
           name: string
           provider_id?: string | null
@@ -162,6 +169,8 @@ export type Database = {
           created_at?: string | null
           id?: string
           is_active?: boolean | null
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
           logo_url?: string | null
           name?: string
           provider_id?: string | null
@@ -206,6 +215,8 @@ export type Database = {
           home_score: number | null
           home_team_id: string
           id: string
+          is_simulated: boolean | null
+          last_provider_update: string | null
           last_sync: string | null
           provider_id: string | null
           round: string | null
@@ -222,6 +233,8 @@ export type Database = {
           home_score?: number | null
           home_team_id: string
           id?: string
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
           last_sync?: string | null
           provider_id?: string | null
           round?: string | null
@@ -238,6 +251,8 @@ export type Database = {
           home_score?: number | null
           home_team_id?: string
           id?: string
+          is_simulated?: boolean | null
+          last_provider_update?: string | null
           last_sync?: string | null
           provider_id?: string | null
           round?: string | null
@@ -455,6 +470,7 @@ export type Database = {
           country: string | null
           created_at: string | null
           id: string
+          is_simulated: boolean | null
           logo_url: string | null
           name: string
           provider_id: string | null
@@ -464,6 +480,7 @@ export type Database = {
           country?: string | null
           created_at?: string | null
           id?: string
+          is_simulated?: boolean | null
           logo_url?: string | null
           name: string
           provider_id?: string | null
@@ -473,6 +490,7 @@ export type Database = {
           country?: string | null
           created_at?: string | null
           id?: string
+          is_simulated?: boolean | null
           logo_url?: string | null
           name?: string
           provider_id?: string | null

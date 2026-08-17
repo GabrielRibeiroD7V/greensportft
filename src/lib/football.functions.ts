@@ -57,7 +57,7 @@ export const getFixtures = createServerFn({ method: "GET" })
 
 export const getCompetitions = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("competitions")
       .select("*")
       .eq("is_active", true)

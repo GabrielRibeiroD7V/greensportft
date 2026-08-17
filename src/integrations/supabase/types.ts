@@ -16,7 +16,6 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
-          asaas_webhook_secret: string | null
           betting_enabled: boolean | null
           deposits_enabled: boolean | null
           football_data_mode: string | null
@@ -35,7 +34,6 @@ export type Database = {
           withdrawals_enabled: boolean | null
         }
         Insert: {
-          asaas_webhook_secret?: string | null
           betting_enabled?: boolean | null
           deposits_enabled?: boolean | null
           football_data_mode?: string | null
@@ -54,7 +52,6 @@ export type Database = {
           withdrawals_enabled?: boolean | null
         }
         Update: {
-          asaas_webhook_secret?: string | null
           betting_enabled?: boolean | null
           deposits_enabled?: boolean | null
           football_data_mode?: string | null

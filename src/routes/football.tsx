@@ -138,7 +138,7 @@ function FootballPage() {
                 <Link 
                   key={comp.id}
                   to="/football"
-                  search={{ tab: 'all', competition: comp.name, q: undefined }}
+                  search={{ competition: comp.name }}
                   className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${competition === comp.name ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
                 >
                   <div className="flex items-center gap-3 truncate">
@@ -164,7 +164,7 @@ function FootballPage() {
             <Link
               key={idx}
               to="/football"
-              search={{ tab: s.tab as any, competition: undefined, q: undefined }}
+              search={{ tab: s.tab as any }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${tab === s.tab && !competition ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               <s.icon className={`h-3.5 w-3.5 ${s.color || ''}`} />
@@ -175,7 +175,7 @@ function FootballPage() {
             <Link
               key={comp.id}
               to="/football"
-              search={{ tab: 'all', competition: comp.name, q: undefined }}
+              search={{ competition: comp.name }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${competition === comp.name ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               {comp.logo_url && <img src={comp.logo_url} className="h-3.5 w-3.5 object-contain" alt="" />}

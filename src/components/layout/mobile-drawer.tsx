@@ -56,7 +56,7 @@ export function MobileDrawer({ userRole }: { userRole?: string | undefined }) {
             <Link to="/football" search={{ tab: 'upcoming', competition: undefined, q: undefined }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">
               <Calendar className="h-4 w-4" /> Próximos
             </Link>
-            <Link to="/football" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">
+            <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">
               <Star className="h-4 w-4 text-amber-500" /> Favoritos
             </Link>
           </section>

@@ -165,7 +165,7 @@ function Header() {
         <div className="flex items-center gap-2 md:gap-8">
           <MobileDrawer userRole={user?.role} />
           
-          <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center">
+          <Link to="/football" search={{ tab: 'all' }} className="flex items-center">
             <img 
               src={logoAsset.url} 
               alt="GreenSport" 
@@ -174,8 +174,8 @@ function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
-            <Link to="/football" search={{ tab: 'live', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
+            <Link to="/football" search={{ tab: 'all' }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
+            <Link to="/football" search={{ tab: 'live' }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
           </nav>
         </div>
 

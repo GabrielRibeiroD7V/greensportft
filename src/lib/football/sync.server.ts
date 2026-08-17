@@ -219,7 +219,7 @@ export async function syncMockData() {
       status: f.status,
       home_score: f.homeScore ?? null,
       away_score: f.awayScore ?? null
-    }, { onConflict: 'competition_id,home_team_id,away_team_id,start_time' }).select().single();
+    }, { onConflict: 'competition_id,home_team_id,away_team_id,start_time' }).select();
     
     if (fixture) {
       fixturesSyncedCount++;

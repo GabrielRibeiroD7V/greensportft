@@ -1,53 +1,33 @@
----
-title: GreenSport Phase 1 Stabilization Plan
-description: Core transactional stabilization, administrative metrics, and security audit.
----
+# Phase 2A: Real Football Data Integration
 
-## Phase 1 Stabilization: Core Infrastructure
+This plan implements the infrastructure to ingest and synchronize real-world football data into GreenSport, replacing simulated data while maintaining architectural flexibility.
 
-### 1. Database & Transactional Integrity
-- **Transactional Bets**: Move `placeBet` logic to a PostgreSQL function (`place_bet`) to ensure atomicity across tickets, items, wallet debits, and ledger entries.
-- **Concurrency Control**: Use `SELECT FOR UPDATE` on the user's wallet row to prevent double-spending in race conditions.
-- **Financial Precision**: Audit schema to ensure `DECIMAL/NUMERIC` types are used (already present, will verify constraints). Add `CHECK (balance >= 0)` to `wallets` table.
-- **Idempotency**: Add an `idempotency_key` (UUID) to `betting_tickets` with a `UNIQUE` constraint to prevent duplicate submissions.
+## 1. Database Schema Evolution
+Add mapping and sync logging tables to handle external provider relationships.
+- Create `provider_mappings` table (Internal ID, Provider, External ID, Entity Type).
+- Create `sync_logs` table (Provider, Sync Type, Records Created/Updated, Errors).
+- Update existing tables (`competitions`, `teams`, `fixtures`) with `provider_id` and `last_updated` fields.
+- Add unique constraints for idempotency: `(provider, provider_entity_id, entity_type)`.
 
-### 2. Backend Business Logic
-- **Full Validation**: Recalculate all odds and potential returns on the server based on current database state.
-- **Odd Snapshots**: Ensure the `betting_ticket_items` table stores the exact odd at the time of placement, independent of future market shifts.
-- **Authentication**: Use `requireSupabaseAuth` middleware for all betting and administrative server functions.
+## 2. Football Provider Abstraction
+Implement a provider-agnostic layer.
+- `src/lib/football/provider.interface.ts`: Define `FootballProvider` interface.
+- `src/lib/football/api-football.provider.ts`: Concrete implementation for API-Football.
+- Use `process.env['API_FOOTBALL_KEY']` exclusively on the server.
 
-### 3. Administrative Dashboard
-- **Real-time Metrics**: Replace all mock values in `src/lib/admin.functions.ts` with real Supabase aggregations.
-  - `totalApostadoHoje`: SUM of stakes for today's tickets.
-  - `bilhetes`: Counts per status (PENDING, WON, LOST, etc.).
-  - `exposicaoBruta`: SUM of potential payouts for PENDING tickets.
-  - `usuarios`: Total profile count.
-- **Ticket Audit**: Verify `/admin/tickets` displays real-time data from the `betting_tickets` table.
+## 3. Synchronization Services
+Robust backend services for data ingestion.
+- `src/lib/football/sync.server.ts`: Logic for `syncCompetitions`, `syncTeams`, `syncFixtures`.
+- Implement `UPSERT` logic to prevent duplicates.
+- Handle rate limits and partial failures with logging.
 
-### 4. Security & RLS
-- **Revalidate RLS**: Ensure users can only read their own tickets/wallets and cannot perform manual inserts/updates to financial or outcome-related tables.
-- **Server-Side Protection**: Ensure sensitive operations (like marking a bet as WON) are exclusively handled by server functions or database triggers.
+## 4. Frontend & Admin Integration
+- Update `/football` to use synchronized data (handling "Live", "Today", "Next Games" logic).
+- Connect Admin `/admin/matches` and create `/admin/competitions` to manage real data.
+- Add a "Sync Now" button in the Admin dashboard for authorized users.
 
-## Technical Details
-
-### Proposed SQL Changes
-```sql
--- Idempotency and Financial Constraints
-ALTER TABLE public.betting_tickets ADD COLUMN idempotency_key UUID UNIQUE;
-ALTER TABLE public.wallets ADD CONSTRAINT balance_non_negative CHECK (balance >= 0);
-
--- Transactional Function
-CREATE OR REPLACE FUNCTION public.place_bet(
-    p_user_id UUID,
-    p_stake DECIMAL,
-    p_selections JSONB, -- Array of {fixture_id, market_name, selection_name, odd}
-    p_idempotency_key UUID
-) RETURNS UUID AS $$ ... $$ LANGUAGE plpgsql;
-```
-
-### Server Function Updates
-- Update `placeBet` in `src/lib/betting.functions.ts` to call the new RPC.
-- Implement Zod validation for input data.
-
-### Admin Logic Updates
-- Refactor `getAdminStats` to use `.select('*', { count: 'exact' })` and `.sum()` aggregations.
+## 5. Technical Details
+- **Timezone**: All dates stored as UTC; `date-fns-tz` for display.
+- **Rate Limiting**: Implementation will batch requests where possible.
+- **Fallbacks**: UI will use stale Supabase data if provider is unreachable.
+- **Integrity**: `place_bet` RPC remains untouched to ensure transactional safety.

@@ -38,9 +38,21 @@ function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        navigate({ to: '/admin' })
+        
+        // Check role to decide where to go
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .single();
+          
+        if (roleData?.role === 'admin') {
+          navigate({ to: '/admin' })
+        } else {
+          navigate({ to: '/football' })
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email,

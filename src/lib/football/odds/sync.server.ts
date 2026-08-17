@@ -1,6 +1,6 @@
 import { OddsProvider } from "./provider.interface";
 import { ApiFootballOddsProvider } from "./api-football.provider";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export async function getOddsProvider(): Promise<OddsProvider> {
   const apiKey = process.env['API_FOOTBALL_KEY'];
@@ -11,6 +11,7 @@ export async function getOddsProvider(): Promise<OddsProvider> {
 }
 
 export async function syncFixtureOdds(fixtureId: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: fixture } = await supabaseAdmin
     .from("fixtures")
     .select("provider_id, id")

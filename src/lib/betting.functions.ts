@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { getPricingConfig } from "./pricing.server";
 
@@ -39,7 +39,8 @@ export const placeBet = createServerFn({ method: "POST" })
       throw new Error("TOO_MANY_SELECTIONS");
     }
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser();
     if (userError || !user) {
       throw new Error("UNAUTHORIZED");
     }
@@ -48,7 +49,7 @@ export const placeBet = createServerFn({ method: "POST" })
     for (const selection of data.selections) {
       // 1. Check for fixture isolation (Requirement #3)
       // Real fixtures MUST NOT use simulated odds
-      const { data: fixture } = await supabase
+      const { data: fixture } = await supabaseAdmin
         .from('fixtures')
         .select('status, start_time, is_simulated')
         .eq('id', selection.fixtureId)
@@ -70,7 +71,7 @@ export const placeBet = createServerFn({ method: "POST" })
         throw new Error("REAL_ODDS_REQUIRED_FOR_SIMULATED_FIXTURE_BLOCKED");
       }
 
-      const { data: option } = await supabase
+      const { data: option } = await supabaseAdmin
         .from('market_options')
         .select(`
           odd, 
@@ -129,7 +130,7 @@ export const placeBet = createServerFn({ method: "POST" })
       odd_status_at_bet: 'OPEN'
     }));
 
-    const { data: ticketId, error: rpcError } = await supabase.rpc('place_bet', {
+    const { data: ticketId, error: rpcError } = await supabaseAdmin.rpc('place_bet', {
       p_user_id: user.id,
       p_stake: data.stake,
       p_selections: selections,
@@ -143,7 +144,7 @@ export const placeBet = createServerFn({ method: "POST" })
     }
 
     // 3. Fetch ticket code for response
-    const { data: ticket } = await supabase
+    const { data: ticket } = await supabaseAdmin
       .from("betting_tickets")
       .select("ticket_code")
       .eq("id", ticketId)

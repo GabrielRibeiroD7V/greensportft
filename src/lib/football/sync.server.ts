@@ -221,7 +221,9 @@ export async function syncMockData() {
       away_score: f.awayScore ?? null
     }, { onConflict: 'competition_id,home_team_id,away_team_id,start_time' }).select();
     
-    if (fixture) {
+    if (fixture && fixture[0]) {
+      const fixtureRecord = fixture[0];
+
       fixturesSyncedCount++;
       // Add Markets for each fixture
       const { data: market } = await supabaseAdmin.from("markets").upsert({

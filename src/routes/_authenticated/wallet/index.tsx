@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
     return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["wallet-history", user?.id],
+      queryKey: ["wallet-history", user?.id || 'anon'],
       queryFn: async () => {
         const { data: wallet } = await supabase
           .from("wallets")

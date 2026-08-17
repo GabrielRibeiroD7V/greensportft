@@ -88,7 +88,7 @@ export function BetSlipContent({ isDrawer = false }: { isDrawer?: boolean }) {
           <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center p-8 opacity-40">
             <Ticket className="h-10 w-10 mb-3 text-slate-500" />
             <h3 className="text-xs font-black uppercase tracking-widest mb-1">Bilhete de Aposta</h3>
-            <p className="text-[10px] font-bold">Selecione uma cotação</p>
+            <p className="text-[9px] font-black uppercase tracking-widest">Selecione uma cotação</p>
           </div>
         ) : (
           <div className="space-y-3">

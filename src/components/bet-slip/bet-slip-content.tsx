@@ -27,6 +27,7 @@ export function BetSlipContent({ isDrawer = false }: { isDrawer?: boolean }) {
         data: {
           selections: selections.map(s => ({
             fixtureId: s.fixtureId,
+            selectionId: s.optionId,
             marketName: s.marketName,
             selectionName: s.selectionName,
             odd: s.odd,

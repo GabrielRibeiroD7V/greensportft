@@ -132,13 +132,13 @@ function AccountPage() {
                 </Button>
               </div>
 
-              {walletData.activeDeposits?.length > 0 && (
+              {walletData?.activeDeposits?.length > 0 && (
                 <div className="mt-4 p-4 bg-yellow-50 border border-yellow-100 rounded-xl space-y-4">
                   <div className="flex items-center gap-2 text-yellow-800 font-black text-[10px] uppercase">
                     <QrCode className="h-4 w-4" /> Depósito Pendente
                   </div>
                   
-                  {walletData.activeDeposits[0].pix_qr_code ? (
+                  {walletData?.activeDeposits[0].pix_qr_code ? (
                     <div className="flex flex-col items-center gap-4">
                       <div className="bg-white p-2 rounded-lg border">
                         <img 
@@ -151,7 +151,7 @@ function AccountPage() {
                         variant="secondary" 
                         size="sm"
                         className="w-full font-bold text-xs gap-2"
-                        onClick={() => copyToClipboard(walletData.activeDeposits[0].pix_copy_paste)}
+                        onClick={() => copyToClipboard(walletData?.activeDeposits[0].pix_copy_paste)}
                       >
                         <Copy className="h-3 w-3" /> Copiar Código Pix
                       </Button>
@@ -172,7 +172,7 @@ function AccountPage() {
             <CardContent className="p-8 space-y-6">
               <div className="text-center">
                 <span className="text-[10px] font-black uppercase opacity-80 block mb-1">Saldo Disponível</span>
-                <div className="text-4xl font-black">R$ {Number(walletData.wallet?.balance || 0).toFixed(2)}</div>
+                <div className="text-4xl font-black">R$ {Number(walletData?.wallet?.balance || 0).toFixed(2)}</div>
               </div>
 
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
@@ -194,8 +194,8 @@ function AccountPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {walletData.recentTransactions?.length > 0 ? (
-                  walletData.recentTransactions.map((tx: any) => (
+                {walletData?.recentTransactions?.length > 0 ? (
+                  walletData?.recentTransactions.map((tx: any) => (
                     <div key={tx.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-lg border border-slate-100">
                       <div>
                         <div className="text-[10px] font-black uppercase text-slate-400">

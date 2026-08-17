@@ -82,7 +82,7 @@ function WalletPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((tx: any) => (
+              {history?.map((tx: any) => (
                 <TableRow key={tx.id}>
                   <TableCell className="text-xs text-slate-500 pl-6">{format(new Date(tx.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
                   <TableCell>

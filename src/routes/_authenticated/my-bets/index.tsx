@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
         let query = supabase
           .from("betting_tickets")
           .select("*, betting_ticket_items(*)")
-          .eq("user_id", user?.id as string)
+          .eq("user_id", user?.id || '00000000-0000-0000-0000-000000000000')
           .order("created_at", { ascending: false });
 
         if (search.status && search.status !== 'all') {

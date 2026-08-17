@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Ticket, History, Filter } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/my-bets/")({
   pendingComponent: MyBetsSkeleton,
@@ -75,6 +76,11 @@ function MyBetsSkeleton() {
 
 function MyBetsPage() {
   const { status } = Route.useSearch();
+  
+  useEffect(() => {
+    console.log("MyBetsPage mounted, status:", status);
+  }, [status]);
+
   const { data: tickets = [] } = useSuspenseQuery(Route.options.loader as any) as { data: any[] };
 
   const filters = [

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Ticket, Trophy, Timer, Trash2, SoccerBall } from "lucide-react";
+import { Ticket, Trophy, Timer, Trash2, Dribbble as SoccerBall } from "lucide-react";
 import { format } from "date-fns";
 
 const fixturesQueryOptions = queryOptions({

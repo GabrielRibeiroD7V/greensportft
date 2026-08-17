@@ -83,3 +83,65 @@ export const getTickets = createServerFn({ method: "GET" }).handler(async () => 
   if (error) throw error;
   return data;
 });
+
+export const getAdminMatches = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabase
+    .from("fixtures")
+    .select(`
+      *,
+      competitions (name),
+      home:teams!home_team_id (name, logo_url),
+      away:teams!away_team_id (name, logo_url)
+    `)
+    .order("start_time", { ascending: false });
+
+  if (error) throw error;
+  return data;
+});
+
+export const settleMatch = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({
+    fixtureId: z.string().uuid(),
+    homeScore: z.number().min(0),
+    awayScore: z.number().min(0),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase.rpc('settle_fixture', {
+      p_fixture_id: data.fixtureId,
+      p_home_score: data.homeScore,
+      p_away_score: data.awayScore
+    });
+
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const getAdminUsers = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabase
+    .from("user_roles")
+    .select(`
+      *,
+      wallets:user_id (balance)
+    `);
+
+  if (error) throw error;
+  return data;
+});
+
+export const getRiskExposure = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabase
+    .from("betting_tickets")
+    .select("potential_return, stake, status")
+    .eq("status", "PENDING");
+
+  if (error) throw error;
+
+  const totalPotentialPayout = data.reduce((acc, t) => acc + Number(t.potential_return), 0);
+  const totalStakes = data.reduce((acc, t) => acc + Number(t.stake), 0);
+
+  return {
+    totalPotentialPayout,
+    totalStakes,
+    pendingTicketsCount: data.length
+  };
+});

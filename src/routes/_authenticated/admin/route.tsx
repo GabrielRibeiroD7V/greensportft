@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { 
   LayoutDashboard, 
   Ticket, 
@@ -10,8 +10,24 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async () => {
+    // 1. Get user role from DB
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw redirect({ to: '/auth' });
+
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+
+    if (roleData?.role !== 'admin') {
+      throw redirect({ to: '/football' });
+    }
+  },
   component: AdminLayout,
 });
 
@@ -19,7 +35,7 @@ function AdminLayout() {
   return (
     <div className="flex h-screen bg-slate-100 dark:bg-slate-950">
       {/* Sidebar Admin */}
-      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col">
+      <aside className="w-60 bg-slate-900 text-slate-300 flex flex-col shrink-0">
         <div className="p-6 flex items-center gap-3 border-b border-slate-800">
           <div className="w-8 h-8 bg-green-500 rounded flex items-center justify-center text-white">
             <ShieldCheck className="h-5 w-5" />

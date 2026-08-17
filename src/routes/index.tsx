@@ -1,18 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "GreenSport - Apostas Esportivas de Futebol" },
-      { name: "description", content: "A plataforma de apostas exclusiva para futebol com a melhor tecnologia e segurança." },
-      { property: "og:title", content: "GreenSport" },
-      { property: "og:description", content: "Apostas esportivas exclusivas para futebol." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: Index,
+  beforeLoad: () => {
+    throw redirect({ to: '/football' });
+  },
 });
 
 

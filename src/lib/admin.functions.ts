@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { assertAdmin } from "./admin-guard.server";
 import { z } from "zod";
 
 export const getAdminStats = createServerFn({ method: "GET" }).handler(async () => {
@@ -100,13 +102,16 @@ export const getAdminMatches = createServerFn({ method: "GET" }).handler(async (
 });
 
 export const settleMatch = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({
     fixtureId: z.string().uuid(),
     homeScore: z.number().min(0),
     awayScore: z.number().min(0),
   }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase.rpc('settle_fixture', {
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc('settle_fixture', {
       p_fixture_id: data.fixtureId,
       p_home_score: data.homeScore,
       p_away_score: data.awayScore
@@ -129,17 +134,34 @@ export const getAdminUsers = createServerFn({ method: "GET" }).handler(async () 
 });
 
 export const approveWithdrawalFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ withdrawalId: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase.rpc('approve_withdrawal', { p_withdrawal_id: data.withdrawalId });
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc('approve_withdrawal', { p_withdrawal_id: data.withdrawalId });
     if (error) throw error;
     return { success: true };
   });
 
 export const rejectWithdrawalFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({ withdrawalId: z.string().uuid() }).parse(data))
-  .handler(async ({ data }) => {
-    const { error } = await supabase.rpc('reject_withdrawal', { p_withdrawal_id: data.withdrawalId });
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc('reject_withdrawal', { p_withdrawal_id: data.withdrawalId });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const approveDepositFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((data: unknown) => z.object({ depositId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase as any, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc('approve_deposit', { p_deposit_id: data.depositId });
     if (error) throw error;
     return { success: true };
   });

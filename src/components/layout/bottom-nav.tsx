@@ -9,7 +9,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-slate-900 border-t border-slate-800 flex items-center justify-around md:hidden z-50 px-2">
       <Link 
         to="/football" 
-        search={{ tab: 'all', competition: undefined, q: undefined }}
+        search={{ tab: 'all' }}
         className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
       >
         <SoccerBall className="h-5 w-5" />
@@ -18,7 +18,7 @@ export function BottomNav() {
       
       <Link 
         to="/football" 
-        search={{ tab: 'live', competition: undefined, q: undefined }}
+        search={{ tab: 'live' }}
         className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
       >
         <Radio className="h-5 w-5" />
@@ -39,6 +39,7 @@ export function BottomNav() {
       
       <Link 
         to="/my-bets" 
+        search={{ status: 'all' }}
         className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
       >
         <History className="h-5 w-5" />

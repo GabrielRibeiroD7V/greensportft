@@ -12,7 +12,7 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/account/")({
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: '/auth' });
+    if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
     
     return context.queryClient.ensureQueryData(queryOptions({
       queryKey: ["user-account-data", user.id],

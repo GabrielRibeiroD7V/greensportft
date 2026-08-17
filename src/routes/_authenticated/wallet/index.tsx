@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/wallet/")({
+  pendingComponent: WalletPageSkeleton,
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
     return context.queryClient.ensureQueryData(queryOptions({
@@ -56,11 +57,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<WalletPageSkeleton />}>
-      <WalletPage />
-    </Suspense>
-  ),
+  component: () => <WalletPage />,
 });
 
 function WalletPageSkeleton() {
@@ -80,7 +77,7 @@ function WalletPageSkeleton() {
 }
 
 function WalletPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
   const { wallet, history, totals } = data as any;
 
   return (

@@ -13,39 +13,50 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Ticket, Search, Filter, History } from "lucide-react";
+import { Ticket, History, Filter } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Suspense } from "react";
+import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/my-bets/")({
+  pendingComponent: MyBetsSkeleton,
   validateSearch: (search: Record<string, unknown>) => ({
     status: (search['status'] as string) || 'all',
   }),
   loader: async ({ context, search }: any) => {
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      // Though _authenticated layout handles this, we be extra safe for loader race
+      return { tickets: [], status: search.status };
+    }
+
     return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["my-bets", user?.id || 'anon', search.status],
+      queryKey: ["my-bets", user.id, search.status],
       queryFn: async () => {
         let query = supabase
           .from("betting_tickets")
-          .select("*, betting_ticket_items(*)")
-          .eq("user_id", user?.id || '00000000-0000-0000-0000-000000000000')
+          .select(`
+            *,
+            betting_ticket_items (
+              *
+            )
+          `)
+          .eq("user_id", user.id)
           .order("created_at", { ascending: false });
 
         if (search.status && search.status !== 'all') {
           query = query.eq('status', search.status.toUpperCase() as any);
         }
 
-        const { data } = await query;
+        const { data, error } = await query;
+        if (error) {
+          console.error("Error fetching tickets:", error);
+          throw error;
+        }
         return data || [];
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<MyBetsSkeleton />}>
-      <MyBetsPage />
-    </Suspense>
-  ),
+  component: () => <MyBetsPage />,
 });
 
 function MyBetsSkeleton() {
@@ -65,6 +76,11 @@ function MyBetsSkeleton() {
 
 function MyBetsPage() {
   const { status } = Route.useSearch();
+  
+  useEffect(() => {
+    console.log("MyBetsPage mounted, status:", status);
+  }, [status]);
+
   const { data: tickets = [] } = useSuspenseQuery(Route.options.loader as any) as { data: any[] };
 
   const filters = [
@@ -74,6 +90,27 @@ function MyBetsPage() {
     { label: 'Perdidos', value: 'lost' },
     { label: 'Anulados', value: 'void' },
   ];
+
+  // Helper for currency formatting
+  const formatCurrency = (val: any) => {
+    const num = Number(val || 0);
+    return num.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
+  // Helper for odd formatting
+  const formatOdd = (val: any) => {
+    return Number(val || 1).toFixed(2);
+  };
+
+  // Helper for safe dates
+  const formatDate = (dateStr: any) => {
+    if (!dateStr) return '--/--/----';
+    try {
+      return format(new Date(dateStr), "dd/MM/yyyy HH:mm");
+    } catch (e) {
+      return '--/--/----';
+    }
+  };
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
@@ -128,19 +165,19 @@ function MyBetsPage() {
                 {tickets.map((ticket: any) => (
                   <TableRow key={ticket.id} className="hover:bg-slate-50/50 border-slate-50">
                     <TableCell className="font-bold text-[11px] text-blue-600 pl-6 uppercase font-mono">
-                      {ticket.ticket_code}
+                      {ticket.ticket_code || '---'}
                     </TableCell>
                     <TableCell className="text-[11px] font-medium text-slate-500">
-                      {format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}
+                      {formatDate(ticket.created_at)}
                     </TableCell>
                     <TableCell className="text-[11px] font-black text-right text-slate-900">
-                      R$ {Number(ticket.stake).toFixed(2)}
+                      {formatCurrency(ticket.stake)}
                     </TableCell>
                     <TableCell className="text-[11px] font-bold text-center text-slate-400">
-                      {Number(ticket.total_odd).toFixed(2)}
+                      {formatOdd(ticket.total_odd)}
                     </TableCell>
                     <TableCell className="text-[11px] font-black text-right text-green-600">
-                      R$ {Number(ticket.potential_return).toFixed(2)}
+                      {formatCurrency(ticket.potential_return)}
                     </TableCell>
                     <TableCell className="text-center pr-6">
                       <Badge 
@@ -153,7 +190,7 @@ function MyBetsPage() {
                             : 'bg-slate-100 text-slate-700'
                         }`}
                       >
-                        {ticket.status}
+                        {ticket.status || 'PENDING'}
                       </Badge>
                     </TableCell>
                   </TableRow>

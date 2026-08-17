@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/account/")({
+  pendingComponent: AccountPageSkeleton,
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
@@ -33,8 +34,13 @@ export const Route = createFileRoute("/_authenticated/account/")({
         
         const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
         const totalTickets = stats?.length || 0;
-        const lastActivity = stats && stats.length > 0 
-          ? new Date(stats.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0].created_at || 0)
+        const sortedStats = [...(stats || [])].sort((a: any, b: any) => {
+          const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return timeB - timeA;
+        });
+        const lastActivity = sortedStats.length > 0 && sortedStats[0]?.created_at
+          ? new Date(sortedStats[0].created_at)
           : null;
 
         return { 
@@ -46,11 +52,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<AccountPageSkeleton />}>
-      <AccountPage />
-    </Suspense>
-  ),
+  component: () => <AccountPage />,
 });
 
 function AccountPageSkeleton() {
@@ -78,7 +80,7 @@ function AccountPageSkeleton() {
 }
 
 function AccountPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
   const { user, profile, walletData, stats } = data as any;
   const [depositAmount, setDepositAmount] = useState("50");
   const queryClient = useQueryClient();

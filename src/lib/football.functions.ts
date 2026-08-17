@@ -8,7 +8,7 @@ export const getFixtures = createServerFn({ method: "GET" })
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("football_data_mode")
-      .single();
+      .maybeSingle();
 
     const mode = settings?.football_data_mode || 'SIMULATION';
     const isSimulated = mode === 'SIMULATION';
@@ -70,7 +70,7 @@ export const getCompetitions = createServerFn({ method: "GET" })
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("football_data_mode")
-      .single();
+      .maybeSingle();
 
     const mode = settings?.football_data_mode || 'SIMULATION';
     const isSimulated = mode === 'SIMULATION';

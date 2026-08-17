@@ -151,15 +151,17 @@ function Header() {
         let balance = 0;
 
         try {
-          const { data: roleData } = await supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle();
+          const { data: roleData, error: roleError } = await supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle();
           if (roleData) role = roleData.role;
+          if (roleError) console.warn("Supabase user_roles fetch warning:", roleError.message);
         } catch (e) {
           console.error("Error fetching user role:", e);
         }
 
         try {
-          const { data: walletData } = await supabase.from('wallets').select('balance').eq('user_id', userId).maybeSingle();
+          const { data: walletData, error: walletError } = await supabase.from('wallets').select('balance').eq('user_id', userId).maybeSingle();
           if (walletData) balance = Number(walletData.balance || 0);
+          if (walletError) console.warn("Supabase wallets fetch warning:", walletError.message);
         } catch (e) {
           console.error("Error fetching user wallet:", e);
         }
@@ -170,7 +172,7 @@ function Header() {
           balance
         };
       } catch (err) {
-        console.error("Header auth query error:", err);
+        console.error("Header auth query critical error:", err);
         return null;
       }
     }

@@ -7,5 +7,4 @@ export const Route = createFileRoute("/")({
       search: { tab: "all", competition: undefined, q: undefined },
     });
   },
-  component: () => null,
 });

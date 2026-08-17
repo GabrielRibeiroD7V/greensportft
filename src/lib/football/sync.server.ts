@@ -187,8 +187,9 @@ export async function syncMockData() {
     const { data } = await supabaseAdmin.from("teams").upsert({
       name: t.name,
       country: t.country
-    }, { onConflict: 'name' }).select().single();
-    if (data) teamIds[t.name] = data.id;
+    }, { onConflict: 'name' }).select();
+    if (data && data[0]) teamIds[t.name] = data[0].id;
+
   }
 
   // 3. Create Fixtures (Live, Today, Tomorrow)

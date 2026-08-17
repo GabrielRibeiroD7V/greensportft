@@ -31,7 +31,6 @@ import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as FootballMatchFixtureIdRouteImport } from './routes/football/match.$fixtureId'
 import { Route as AuthenticatedAdminFinanceIndexRouteImport } from './routes/_authenticated/admin/finance/index'
 import { Route as AuthenticatedAdminIntegrationsIndexRouteImport } from './routes/_authenticated/admin/integrations/index'
-import { Route as AuthenticatedAdminLogsIndexRouteImport } from './routes/_authenticated/admin/logs/index'
 import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
 import { Route as ApiPublicWebhooksAsaasRouteImport } from './routes/api/public/webhooks/asaas'
 
@@ -154,12 +153,6 @@ const AuthenticatedAdminIntegrationsIndexRoute =
     path: '/integrations/',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
-const AuthenticatedAdminLogsIndexRoute =
-  AuthenticatedAdminLogsIndexRouteImport.update({
-    id: '/logs/',
-    path: '/logs/',
-    getParentRoute: () => AuthenticatedAdminRouteRoute,
-  } as any)
 const AuthenticatedAdminSettingsIndexRoute =
   AuthenticatedAdminSettingsIndexRouteImport.update({
     id: '/settings/',
@@ -195,7 +188,6 @@ export interface FileRoutesByFullPath {
   '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
   '/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
-  '/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
   '/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -220,7 +212,6 @@ export interface FileRoutesByTo {
   '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceIndexRoute
   '/admin/integrations': typeof AuthenticatedAdminIntegrationsIndexRoute
-  '/admin/logs': typeof AuthenticatedAdminLogsIndexRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -248,7 +239,6 @@ export interface FileRoutesById {
   '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/_authenticated/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
   '/_authenticated/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
-  '/_authenticated/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
   '/_authenticated/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -276,7 +266,6 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/asaas'
     | '/admin/finance/'
     | '/admin/integrations/'
-    | '/admin/logs/'
     | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -301,7 +290,6 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/asaas'
     | '/admin/finance'
     | '/admin/integrations'
-    | '/admin/logs'
     | '/admin/settings'
   id:
     | '__root__'
@@ -328,7 +316,6 @@ export interface FileRouteTypes {
     | '/api/public/webhooks/asaas'
     | '/_authenticated/admin/finance/'
     | '/_authenticated/admin/integrations/'
-    | '/_authenticated/admin/logs/'
     | '/_authenticated/admin/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -499,13 +486,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIntegrationsIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
-    '/_authenticated/admin/logs/': {
-      id: '/_authenticated/admin/logs/'
-      path: '/logs'
-      fullPath: '/admin/logs/'
-      preLoaderRoute: typeof AuthenticatedAdminLogsIndexRouteImport
-      parentRoute: typeof AuthenticatedAdminRouteRoute
-    }
     '/_authenticated/admin/settings/': {
       id: '/_authenticated/admin/settings/'
       path: '/settings'
@@ -534,7 +514,6 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFinanceIndexRoute: typeof AuthenticatedAdminFinanceIndexRoute
   AuthenticatedAdminIntegrationsIndexRoute: typeof AuthenticatedAdminIntegrationsIndexRoute
-  AuthenticatedAdminLogsIndexRoute: typeof AuthenticatedAdminLogsIndexRoute
   AuthenticatedAdminSettingsIndexRoute: typeof AuthenticatedAdminSettingsIndexRoute
 }
 
@@ -551,7 +530,6 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminFinanceIndexRoute: AuthenticatedAdminFinanceIndexRoute,
     AuthenticatedAdminIntegrationsIndexRoute:
       AuthenticatedAdminIntegrationsIndexRoute,
-    AuthenticatedAdminLogsIndexRoute: AuthenticatedAdminLogsIndexRoute,
     AuthenticatedAdminSettingsIndexRoute: AuthenticatedAdminSettingsIndexRoute,
   }
 

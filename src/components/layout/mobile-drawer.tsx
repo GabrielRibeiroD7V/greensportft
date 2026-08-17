@@ -8,7 +8,7 @@ import {
 import { Link } from "@tanstack/react-router";
 import { 
   Menu, 
-  SoccerBall, 
+  Dribbble as SoccerBall, 
   Radio, 
   Calendar, 
   Star, 
@@ -21,7 +21,7 @@ import {
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { getCompetitions } from "@/lib/football.functions";
 
-export function MobileDrawer({ userRole }: { userRole?: string }) {
+export function MobileDrawer({ userRole }: { userRole?: string | undefined }) {
   const { data: competitions } = useSuspenseQuery(queryOptions({
     queryKey: ["competitions"],
     queryFn: () => getCompetitions(),

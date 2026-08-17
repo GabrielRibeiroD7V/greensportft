@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { SoccerBall, Radio, Ticket, History, Wallet } from "lucide-react";
+import { Dribbble as SoccerBall, Radio, Ticket, History, Wallet } from "lucide-react";
 import { useBetSlip } from "@/hooks/use-bet-slip";
 
 export function BottomNav() {

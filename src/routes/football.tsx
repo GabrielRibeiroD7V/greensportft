@@ -64,7 +64,7 @@ function FootballPage() {
     return true;
   });
 
-  const categories = [
+  const categories: { label: string; value: FootballSearch['tab'] }[] = [
     { label: "Tudo", value: "all" },
     { label: "Ao Vivo", value: "live" },
     { label: "Hoje", value: "today" },

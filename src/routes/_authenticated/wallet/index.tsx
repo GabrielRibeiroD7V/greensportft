@@ -56,11 +56,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<WalletPageSkeleton />}>
-      <WalletPage />
-    </Suspense>
-  ),
+  component: WalletPage,
 });
 
 function WalletPageSkeleton() {

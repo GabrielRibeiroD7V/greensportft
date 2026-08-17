@@ -51,11 +51,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<AccountPageSkeleton />}>
-      <AccountPage />
-    </Suspense>
-  ),
+  component: AccountPage,
 });
 
 function AccountPageSkeleton() {

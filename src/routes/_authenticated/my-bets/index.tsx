@@ -55,11 +55,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
       }
     }));
   },
-  component: () => (
-    <Suspense fallback={<MyBetsSkeleton />}>
-      <MyBetsPage />
-    </Suspense>
-  ),
+  component: MyBetsPage,
 });
 
 function MyBetsSkeleton() {

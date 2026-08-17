@@ -21,10 +21,18 @@ export class ApiFootballProvider implements FootballProvider {
     });
 
     if (!response.ok) {
+      if (response.status === 429) throw new Error("RATE_LIMITED");
+      if (response.status === 401 || response.status === 403) throw new Error("INVALID_CREDENTIALS");
       throw new Error(`API-Football error: ${response.statusText}`);
     }
 
-    return response.json();
+    const data = await response.json();
+    if (data.errors && Object.keys(data.errors).length > 0) {
+      const errorStr = JSON.stringify(data.errors);
+      if (errorStr.includes("token") || errorStr.includes("key")) throw new Error("INVALID_CREDENTIALS");
+      throw new Error(`API-Football provider error: ${errorStr}`);
+    }
+    return data;
   }
 
   async getCompetitions(): Promise<ExternalCompetition[]> {

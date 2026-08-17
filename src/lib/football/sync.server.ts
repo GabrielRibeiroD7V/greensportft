@@ -4,8 +4,8 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export async function getProvider(): Promise<FootballProvider> {
   const apiKey = process.env['API_FOOTBALL_KEY'];
-  if (!apiKey) {
-    throw new Error("API_FOOTBALL_KEY not configured in environment");
+  if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
+    throw new Error("PROVIDER_NOT_CONFIGURED");
   }
   return new ApiFootballProvider(apiKey);
 }
@@ -35,7 +35,8 @@ export async function syncCompetitions() {
         country_code: ext.countryCode || null,
         logo_url: ext.logo || null,
         type: ext.type || null,
-        provider_id: ext.id
+        provider_id: ext.id,
+        is_simulated: false
       }, { onConflict: 'provider_id' })
       .select()
       .single();
@@ -71,7 +72,8 @@ async function getOrSyncTeam(provider: FootballProvider, extId: string, name: st
     .upsert({
       name,
       logo_url: logo || null,
-      provider_id: extId
+      provider_id: extId,
+      is_simulated: false
     }, { onConflict: 'provider_id' })
     .select()
     .single();
@@ -129,7 +131,8 @@ export async function syncFixtures(competitionId: string, season: number) {
           venue: ext.venue || null,
           round: ext.round || null,
           provider_id: ext.id,
-          last_sync: new Date().toISOString()
+          last_sync: new Date().toISOString(),
+          is_simulated: false
         }, { onConflict: 'provider_id' })
         .select()
         .single();

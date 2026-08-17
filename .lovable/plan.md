@@ -1,34 +1,45 @@
----
-title: GreenSport Phase 4 - Operational Completeness & Stabilization
-path: .lovable/plan.md
----
+# Plano de Desenvolvimento - GreenSport Fase 5A: Preparação da Integração Real
 
-# Plan: GreenSport Phase 4 - Final Operational Infrastructure
+## Objetivos
+Implementar a arquitetura completa para integração com a API-Football v3, permitindo a transição segura entre dados simulados e reais, garantindo que o sistema opere corretamente mesmo sem a chave de API configurada.
 
-Audit, refine, and stabilize the football betting platform for operational completeness in a simulated environment.
+## Ações Técnicas
 
-## 1. Core Betting & UX Audit
-- **Header:** Create a unified `src/components/layout/main-header.tsx` for public and authenticated states (Logo, Football, My Bets, Wallet, Account, Balance/Login).
-- **Bet Slip:** Refine `src/components/bet-slip/bet-slip-content.tsx` to handle odd changes and suspended markets.
-- **Validation:** Enhance `placeBet` in `src/lib/betting.functions.ts` to include strict checks for fixture availability, market status, and payout limits.
+### 1. Banco de Dados e Mappings
+- **Migration SQL**:
+  - Adicionar `football_data_mode` (enum SIMULATION/REAL) à tabela `app_settings`.
+  - Garantir que a tabela `provider_mappings` suporte a relação entre `internal_id` e `provider_entity_id` para competições, times e fixtures.
+  - Adicionar coluna `is_simulated` (boolean) às tabelas `competitions`, `teams` e `fixtures` se ainda não existirem.
+  - Criar índices para performance em buscas por `provider_id` e mappings.
 
-## 2. Dynamic Odds & Markets
-- **Pricing:** Centralize display odd calculations to handle overrides (Global/Competition/Market) in `src/lib/pricing.server.ts`.
-- **States:** Implement `ODDS_CHANGED` and `SUSPENDED` feedback loops between backend and frontend.
-- **Snapshots:** Ensure `place_bet` RPC stores the exact odd and margin used at the moment of placement.
+### 2. Football Provider Engine
+- **FootballProvider Interface**: Consolidar a abstração para `getCompetitions`, `getTeams`, `getFixtures`, `getLiveFixtures`.
+- **ApiFootballProvider**: 
+  - Refatorar para lidar com a ausência de `API_FOOTBALL_KEY`.
+  - Implementar normalização de erros: `PROVIDER_NOT_CONFIGURED`, `RATE_LIMITED`, `INVALID_CREDENTIALS`.
+  - Garantir que a chave seja lida apenas no servidor (`process.env`).
 
-## 3. Financial & Admin Stabilization
-- **Withdrawals:** Fully implement the PENDING -> APPROVED/REJECTED -> PAID lifecycle with ledger entries.
-- **Admin Dashboard:** Replace remaining static placeholders with live aggregates from `betting_tickets` and `wallets`.
-- **Risk Analysis:** Transition Risk Dashboard to fixture-level exposure tracking (Total liability per match outcome).
-- **Audit Logs:** Implement a dedicated `audit_logs` table (migration) to track administrative actions (settings changes, manual settlements, finance approvals).
+### 3. Serviços de Sincronização e Idempotência
+- **sync.server.ts**:
+  - Implementar `syncCompetitions`, `syncTeams`, `syncFixtures` com lógica de `UPSERT` e mapeamento.
+  - Garantir que rodar a sincronização repetidamente não crie duplicatas.
+  - Adicionar suporte a `football_data_mode` nos serviços internos.
 
-## 4. Operational Readiness (Simulated)
-- **Providers:** Define `src/lib/football/provider.interface.ts` as a robust abstraction layer for future real-world integrations.
-- **Webhooks:** Scaffold `src/routes/api/public/webhooks.ts` with signature verification logic (prepared for Asaas/Pix).
-- **Testing:** Execute E2E scenarios A-O to verify idempotency, settlement precision, and role-based security.
+### 4. Admin Panel - Integrações
+- **Nova Rota `/admin/integrations`**:
+  - Card de status da API-Football (Configurado/Não configurado).
+  - Ação "Testar Conexão": Somente ADMIN, valida a presença da chave e faz um ping de saúde na API.
+  - Ação "Sincronizar Futebol": Gatilho manual para atualização de dados reais.
+  - Logs de integração: Exibir as últimas tentativas e erros.
 
-## 5. Security & Build
-- **RLS/RBAC:** Final audit of `SECURITY DEFINER` functions and table permissions.
-- **Performance:** Add missing indices on `betting_tickets(created_at)`, `wallet_transactions(wallet_id)`, and `fixtures(start_time)`.
-- **Build:** Verify TypeScript compliance and SSR stability.
+### 5. Frontend e Consumo de Dados
+- **football.functions.ts**: Atualizar para respeitar o `football_data_mode`.
+- **UI /football**: Garantir que mostre dados simulados quando em modo `SIMULATION` e oculte/prepare para dados reais.
+
+## Verificação e Testes
+- **Build & SSR**: Garantir que o build passe sem a chave de API.
+- **Segurança**: Confirmar que usuários comuns não acessam funções de sync ou chaves.
+- **Regressão**: Validar que o `place_bet` e `wallet` continuam funcionando com dados simulados.
+
+## Conclusão da Fase 5A
+O sistema estará pronto para receber a `API_FOOTBALL_KEY` e ativar a sincronização real com um único clique no painel administrativo, mantendo a estabilidade do ambiente de simulação.

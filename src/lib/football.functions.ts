@@ -5,18 +5,22 @@ import { createServerFn } from "@tanstack/react-start";
 
 export const getFixtures = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: settings } = await supabaseAdmin
-      .from("app_settings")
-      .select("football_data_mode")
-      .maybeSingle();
+    try {
+      const { getPublicSupabaseServerClient } = await import(
+        "@/integrations/supabase/public.server"
+      );
+      const supabase = getPublicSupabaseServerClient();
+      const { data: settings } = await supabase
+        .from("app_settings")
+        .select("football_data_mode")
+        .maybeSingle();
 
     const mode = settings?.football_data_mode || 'SIMULATION';
     const isSimulated = mode === 'SIMULATION';
 
-    const { data, error } = await supabaseAdmin
-      .from("fixtures")
-      .select(`
+      const { data, error } = await supabase
+        .from("fixtures")
+        .select(`
         id,
         start_time,
         status,
@@ -36,13 +40,16 @@ export const getFixtures = createServerFn({ method: "GET" })
             odd
           )
         )
-      `)
-      .eq("is_simulated", isSimulated)
-      .order("start_time", { ascending: true });
+        `)
+        .eq("is_simulated", isSimulated)
+        .order("start_time", { ascending: true });
 
-    if (error) throw error;
+      if (error) {
+        console.warn("[Football] Unable to load public fixtures:", error.message);
+        return [];
+      }
 
-    return (data as any[]).map((f) => ({
+      return (data as any[]).map((f) => ({
       id: f.id,
       competition_name: f.competitions?.name,
       home_team_name: f.home?.name,
@@ -63,27 +70,48 @@ export const getFixtures = createServerFn({ method: "GET" })
           odd: Number(o.odd),
         })),
       })),
-    }));
+      }));
+    } catch (error) {
+      console.warn(
+        "[Football] Public fixtures are temporarily unavailable:",
+        error instanceof Error ? error.message : "unknown error",
+      );
+      return [];
+    }
   });
 
 export const getCompetitions = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: settings } = await supabaseAdmin
-      .from("app_settings")
-      .select("football_data_mode")
-      .maybeSingle();
+    try {
+      const { getPublicSupabaseServerClient } = await import(
+        "@/integrations/supabase/public.server"
+      );
+      const supabase = getPublicSupabaseServerClient();
+      const { data: settings } = await supabase
+        .from("app_settings")
+        .select("football_data_mode")
+        .maybeSingle();
 
     const mode = settings?.football_data_mode || 'SIMULATION';
     const isSimulated = mode === 'SIMULATION';
 
-    const { data, error } = await supabaseAdmin
-      .from("competitions")
-      .select("*")
-      .eq("is_active", true)
-      .eq("is_simulated", isSimulated)
-      .order("name", { ascending: true });
+      const { data, error } = await supabase
+        .from("competitions")
+        .select("*")
+        .eq("is_active", true)
+        .eq("is_simulated", isSimulated)
+        .order("name", { ascending: true });
 
-    if (error) throw error;
-    return data || [];
+      if (error) {
+        console.warn("[Football] Unable to load public competitions:", error.message);
+        return [];
+      }
+      return data || [];
+    } catch (error) {
+      console.warn(
+        "[Football] Public competitions are temporarily unavailable:",
+        error instanceof Error ? error.message : "unknown error",
+      );
+      return [];
+    }
   });

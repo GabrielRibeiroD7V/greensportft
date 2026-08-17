@@ -56,6 +56,14 @@ function AdminLayout() {
             <Trophy className="h-5 w-5" />
             <span className="font-medium">Partidas</span>
           </Link>
+          <Link 
+            to="/football" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white"
+          >
+            <ShieldCheck className="h-5 w-5 text-green-500" />
+            <span className="font-medium text-green-500">Ver Site</span>
+          </Link>
+
           
           <div className="pt-4 pb-2 px-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Relatórios</div>
           <Link 

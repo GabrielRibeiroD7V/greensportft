@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { getFixtures, getCompetitions } from "@/lib/football.functions";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/football")({
       tab: (search['tab'] as string) || 'all',
       competition: (search['competition'] as string) || undefined,
       q: (search['q'] as string) || undefined,
-    } as const;
+    };
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(fixturesQueryOptions),
   component: FootballPage,

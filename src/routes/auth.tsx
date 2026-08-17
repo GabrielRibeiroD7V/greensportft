@@ -51,7 +51,7 @@ function AuthPage() {
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' });
         } else {
-          navigate({ to: '/football' });
+          navigate({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });
         }
       }
     });
@@ -77,7 +77,7 @@ function AuthPage() {
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' })
         } else {
-          navigate({ to: '/football' })
+          navigate({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } })
         }
       } else {
         const { error } = await supabase.auth.signUp({

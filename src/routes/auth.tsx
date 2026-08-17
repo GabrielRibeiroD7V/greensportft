@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, redirect } from '@tanstack/react-router'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +7,12 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      throw redirect({ to: '/football' });
+    }
+  },
   head: () => ({
     meta: [
       { title: 'Entrar | GreenSport' },

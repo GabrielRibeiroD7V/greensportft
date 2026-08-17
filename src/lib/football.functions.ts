@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 
 
 export const getFixtures = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("football_data_mode")
@@ -67,6 +68,7 @@ export const getFixtures = createServerFn({ method: "GET" })
 
 export const getCompetitions = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: settings } = await supabaseAdmin
       .from("app_settings")
       .select("football_data_mode")

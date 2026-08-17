@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { syncCompetitions, syncFixtures } from "./sync.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { syncMockData } from "./sync.server";
 
 
@@ -18,6 +18,7 @@ export const runFullSync = createServerFn({ method: "POST" })
 
 export const getInternalSyncLogs = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data } = await supabaseAdmin
       .from("sync_logs")
       .select("*")

@@ -69,8 +69,8 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
                   className={`
                     flex flex-col items-center justify-center w-10 h-10 rounded-sm border transition-all
                     ${isSelected 
-                      ? "bg-green-600 border-green-600 text-white" 
-                      : "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 hover:border-green-500 text-slate-700 dark:text-slate-300"}
+                      ? "bg-green-600 border-green-600 text-white shadow-sm scale-[0.98]" 
+                      : "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 hover:border-green-500/50 text-slate-700 dark:text-slate-300"}
                   `}
                 >
                   <span className="text-[7px] font-black opacity-50">{label}</span>

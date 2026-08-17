@@ -195,13 +195,19 @@ function FootballPage() {
 
         <div className="p-4 md:p-6 space-y-8 max-w-[1200px] mx-auto">
           {/* Carrossel de Banners Oficiais */}
-          <HomeBannerCarousel />
+          <div className="rounded-xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-800">
+            <HomeBannerCarousel />
+          </div>
 
           {/* Seção Destaques */}
           {highlights.length > 0 && (
             <section className="space-y-4">
               <div className="flex items-center justify-between px-1">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Destaques</h2>
+                <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Destaques</h2>
+                <div className="flex gap-1">
+                   <div className="w-2 h-0.5 bg-green-500 rounded-full" />
+                   <div className="w-1 h-0.5 bg-slate-300 rounded-full" />
+                </div>
               </div>
               <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
                 {highlights.map(f => (
@@ -229,9 +235,9 @@ function FootballPage() {
                   }, {} as Record<string, typeof filteredFixtures>)
                 ).map(([compName, compFixtures]) => (
                   <div key={compName} className="space-y-3">
-                    <div className="flex items-center gap-2 px-1">
+                    <div className="flex items-center gap-2 px-1 border-b border-slate-100 dark:border-slate-800 pb-2 mb-2">
                       <div className="w-1 h-3 bg-green-500 rounded-full" />
-                      <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">{compName}</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">{compName}</h3>
                     </div>
                     <div className="grid gap-2">
                       {compFixtures.map(f => (

@@ -16,43 +16,61 @@ export type Database = {
     Tables: {
       app_settings: {
         Row: {
+          asaas_webhook_secret: string | null
           betting_enabled: boolean | null
+          deposits_enabled: boolean | null
           football_data_mode: string | null
           global_margin_percentage: number | null
           id: string
+          max_deposit: number | null
           max_payout: number | null
           max_stake: number | null
           max_ticket_selections: number | null
+          min_deposit: number | null
           min_stake: number | null
           odds_data_mode: string | null
           odds_stale_after_seconds: number | null
+          payment_mode: string | null
           updated_at: string | null
+          withdrawals_enabled: boolean | null
         }
         Insert: {
+          asaas_webhook_secret?: string | null
           betting_enabled?: boolean | null
+          deposits_enabled?: boolean | null
           football_data_mode?: string | null
           global_margin_percentage?: number | null
           id?: string
+          max_deposit?: number | null
           max_payout?: number | null
           max_stake?: number | null
           max_ticket_selections?: number | null
+          min_deposit?: number | null
           min_stake?: number | null
           odds_data_mode?: string | null
           odds_stale_after_seconds?: number | null
+          payment_mode?: string | null
           updated_at?: string | null
+          withdrawals_enabled?: boolean | null
         }
         Update: {
+          asaas_webhook_secret?: string | null
           betting_enabled?: boolean | null
+          deposits_enabled?: boolean | null
           football_data_mode?: string | null
           global_margin_percentage?: number | null
           id?: string
+          max_deposit?: number | null
           max_payout?: number | null
           max_stake?: number | null
           max_ticket_selections?: number | null
+          min_deposit?: number | null
           min_stake?: number | null
           odds_data_mode?: string | null
           odds_stale_after_seconds?: number | null
+          payment_mode?: string | null
           updated_at?: string | null
+          withdrawals_enabled?: boolean | null
         }
         Relationships: []
       }
@@ -195,7 +213,18 @@ export type Database = {
         Row: {
           amount: number
           created_at: string | null
+          error_log: string | null
+          expires_at: string | null
+          external_reference: string | null
           id: string
+          idempotency_key: string | null
+          is_simulated: boolean | null
+          paid_at: string | null
+          pix_copy_paste: string | null
+          pix_qr_code: string | null
+          provider: string | null
+          provider_payment_id: string | null
+          provider_status: string | null
           status: string
           updated_at: string | null
           user_id: string
@@ -203,7 +232,18 @@ export type Database = {
         Insert: {
           amount: number
           created_at?: string | null
+          error_log?: string | null
+          expires_at?: string | null
+          external_reference?: string | null
           id?: string
+          idempotency_key?: string | null
+          is_simulated?: boolean | null
+          paid_at?: string | null
+          pix_copy_paste?: string | null
+          pix_qr_code?: string | null
+          provider?: string | null
+          provider_payment_id?: string | null
+          provider_status?: string | null
           status?: string
           updated_at?: string | null
           user_id: string
@@ -211,7 +251,18 @@ export type Database = {
         Update: {
           amount?: number
           created_at?: string | null
+          error_log?: string | null
+          expires_at?: string | null
+          external_reference?: string | null
           id?: string
+          idempotency_key?: string | null
+          is_simulated?: boolean | null
+          paid_at?: string | null
+          pix_copy_paste?: string | null
+          pix_qr_code?: string | null
+          provider?: string | null
+          provider_payment_id?: string | null
+          provider_status?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string
@@ -439,6 +490,42 @@ export type Database = {
           internal_id?: string
           provider?: string
           provider_entity_id?: string
+        }
+        Relationships: []
+      }
+      provider_webhook_events: {
+        Row: {
+          created_at: string | null
+          error: string | null
+          event_type: string
+          external_event_id: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          provider: string
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error?: string | null
+          event_type: string
+          external_event_id: string
+          id?: string
+          payload: Json
+          processed_at?: string | null
+          provider: string
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error?: string | null
+          event_type?: string
+          external_event_id?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          provider?: string
+          status?: string | null
         }
         Relationships: []
       }
@@ -673,6 +760,12 @@ export type Database = {
           amount: number
           created_at: string | null
           id: string
+          is_simulated: boolean | null
+          pix_key: string | null
+          pix_key_type: string | null
+          provider: string | null
+          provider_status: string | null
+          provider_withdrawal_id: string | null
           status: string
           updated_at: string | null
           user_id: string
@@ -681,6 +774,12 @@ export type Database = {
           amount: number
           created_at?: string | null
           id?: string
+          is_simulated?: boolean | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          provider?: string | null
+          provider_status?: string | null
+          provider_withdrawal_id?: string | null
           status?: string
           updated_at?: string | null
           user_id: string
@@ -689,6 +788,12 @@ export type Database = {
           amount?: number
           created_at?: string | null
           id?: string
+          is_simulated?: boolean | null
+          pix_key?: string | null
+          pix_key_type?: string | null
+          provider?: string | null
+          provider_status?: string | null
+          provider_withdrawal_id?: string | null
           status?: string
           updated_at?: string | null
           user_id?: string
@@ -720,6 +825,15 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      process_confirmed_deposit: {
+        Args: {
+          p_amount: number
+          p_external_reference: string
+          p_paid_at: string
+          p_provider_payment_id: string
+        }
+        Returns: undefined
       }
       reject_withdrawal: { Args: { p_withdrawal_id: string }; Returns: boolean }
       request_withdrawal: {

@@ -37,10 +37,19 @@ interface Selection {
 
 function FootballPage() {
   const { data: fixtures } = useSuspenseQuery(fixturesQueryOptions);
+  const { data: allCompetitions } = useSuspenseQuery(queryOptions({
+    queryKey: ["competitions"],
+    queryFn: () => getCompetitions(),
+  }));
+  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
   const [selections, setSelections] = useState<Selection[]>([]);
   const [stake, setStake] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const placeBetFn = useServerFn(placeBet);
+
+  const filteredFixtures = selectedCompetition 
+    ? fixtures.filter(f => f.competition_name === selectedCompetition)
+    : fixtures;
 
   const handlePlaceBet = async () => {
     if (selections.length === 0) return;
@@ -104,11 +113,29 @@ function FootballPage() {
         <ScrollArea className="flex-1 p-2">
           <div className="mb-4">
             <h3 className="hidden md:block px-3 text-[10px] font-black uppercase text-slate-400 mb-2">Principais Ligas</h3>
-            <Button variant="ghost" className="w-full justify-start gap-3 mb-1">
+            <Button 
+              variant={selectedCompetition === null ? "secondary" : "ghost"} 
+              className="w-full justify-start gap-3 mb-1"
+              onClick={() => setSelectedCompetition(null)}
+            >
               <Trophy className="h-5 w-5 text-green-600" />
               <span className="hidden md:block">Todas</span>
             </Button>
-            {/* Ligas serão renderizadas aqui em um follow-up */}
+            {allCompetitions.map((comp: any) => (
+              <Button 
+                key={comp.id}
+                variant={selectedCompetition === comp.name ? "secondary" : "ghost"} 
+                className="w-full justify-start gap-3 mb-1"
+                onClick={() => setSelectedCompetition(comp.name)}
+              >
+                {comp.logo_url ? (
+                  <img src={comp.logo_url} alt={comp.name} className="h-5 w-5 object-contain" />
+                ) : (
+                  <Trophy className="h-5 w-5 text-slate-400" />
+                )}
+                <span className="hidden md:block truncate">{comp.name}</span>
+              </Button>
+            ))}
           </div>
         </ScrollArea>
       </div>
@@ -122,7 +149,7 @@ function FootballPage() {
         </header>
 
         <div className="grid gap-4">
-          {fixtures.map((fixture) => (
+          {filteredFixtures.map((fixture) => (
             <Card key={fixture.id} className="overflow-hidden border-slate-200">
               <CardHeader className="bg-slate-50/50 p-3 flex flex-row items-center justify-between space-y-0">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -182,6 +209,12 @@ function FootballPage() {
               </CardContent>
             </Card>
           ))}
+          {filteredFixtures.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-slate-200">
+              <SoccerBall className="h-12 w-12 text-slate-200 mx-auto mb-4" />
+              <p className="text-slate-500 font-bold uppercase tracking-widest">Nenhuma partida encontrada</p>
+            </div>
+          )}
         </div>
       </main>
 

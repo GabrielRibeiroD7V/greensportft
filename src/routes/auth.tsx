@@ -51,7 +51,7 @@ function AuthPage() {
           .from('user_roles')
           .select('role')
           .eq('user_id', session.user.id)
-          .single();
+          .maybeSingle();
           
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' });
@@ -77,7 +77,7 @@ function AuthPage() {
           .from('user_roles')
           .select('role')
           .eq('user_id', data.user.id)
-          .single();
+          .maybeSingle();
           
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' })

@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/admin/settings/")({
         const { data } = await supabase
           .from("app_settings" as any)
           .select("*")
-          .single();
+          .maybeSingle();
         return data || {
           global_margin_percentage: 0,
           min_stake: 10,

@@ -21,16 +21,21 @@ export const pricingConfigSchema = z.object({
 export type PricingConfig = z.infer<typeof pricingConfigSchema>;
 
 export async function getPricingConfig(): Promise<PricingConfig> {
-  const { data, error } = await supabase
-    .from("app_settings")
-    .select("*")
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("*")
+      .maybeSingle();
 
-  if (error || !data) {
+    if (error || !data) {
+      return pricingConfigSchema.parse({});
+    }
+
+    return pricingConfigSchema.parse(data);
+  } catch (e) {
+    console.error("Critical error fetching pricing config:", e);
     return pricingConfigSchema.parse({});
   }
-
-  return pricingConfigSchema.parse(data);
 }
 
 export function calculateDisplayOdd(providerOdd: number, marginPercentage: number): number {

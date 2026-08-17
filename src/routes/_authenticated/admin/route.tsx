@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       .from('user_roles')
       .select('role')
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle();
 
     if (roleData?.role !== 'admin') {
       throw redirect({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });

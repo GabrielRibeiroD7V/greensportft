@@ -26,7 +26,7 @@ const matchDetailQueryOptions = (fixtureId: string) => queryOptions({
         )
       `)
       .eq("id", fixtureId)
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return data;

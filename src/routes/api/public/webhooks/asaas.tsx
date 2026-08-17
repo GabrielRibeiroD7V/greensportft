@@ -28,7 +28,7 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
           .select('id')
           .eq('provider', 'asaas')
           .eq('external_event_id', eventId)
-          .single();
+          .maybeSingle();
 
         if (existing) {
           return new Response('Already processed', { status: 200 });
@@ -41,7 +41,7 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
           event_type: payload.event,
           payload: payload,
           status: 'PROCESSING'
-        }).select().single();
+        }).select().maybeSingle();
 
         if (insertError || !eventRecord) {
           return new Response('Database error', { status: 500 });

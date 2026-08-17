@@ -101,27 +101,39 @@ export type Database = {
       competitions: {
         Row: {
           country: string | null
+          country_code: string | null
           created_at: string | null
           id: string
           is_active: boolean | null
           logo_url: string | null
           name: string
+          provider_id: string | null
+          type: string | null
+          updated_at: string | null
         }
         Insert: {
           country?: string | null
+          country_code?: string | null
           created_at?: string | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name: string
+          provider_id?: string | null
+          type?: string | null
+          updated_at?: string | null
         }
         Update: {
           country?: string | null
+          country_code?: string | null
           created_at?: string | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name?: string
+          provider_id?: string | null
+          type?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -134,8 +146,13 @@ export type Database = {
           home_score: number | null
           home_team_id: string
           id: string
+          last_sync: string | null
+          provider_id: string | null
+          round: string | null
           start_time: string
           status: string
+          updated_at: string | null
+          venue: string | null
         }
         Insert: {
           away_score?: number | null
@@ -145,8 +162,13 @@ export type Database = {
           home_score?: number | null
           home_team_id: string
           id?: string
+          last_sync?: string | null
+          provider_id?: string | null
+          round?: string | null
           start_time: string
           status?: string
+          updated_at?: string | null
+          venue?: string | null
         }
         Update: {
           away_score?: number | null
@@ -156,8 +178,13 @@ export type Database = {
           home_score?: number | null
           home_team_id?: string
           id?: string
+          last_sync?: string | null
+          provider_id?: string | null
+          round?: string | null
           start_time?: string
           status?: string
+          updated_at?: string | null
+          venue?: string | null
         }
         Relationships: [
           {
@@ -253,24 +280,143 @@ export type Database = {
           },
         ]
       }
+      provider_mappings: {
+        Row: {
+          created_at: string | null
+          entity_type: string
+          id: string
+          internal_id: string
+          provider: string
+          provider_entity_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_type: string
+          id?: string
+          internal_id: string
+          provider: string
+          provider_entity_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_type?: string
+          id?: string
+          internal_id?: string
+          provider?: string
+          provider_entity_id?: string
+        }
+        Relationships: []
+      }
+      seasons: {
+        Row: {
+          competition_id: string
+          created_at: string | null
+          end_date: string | null
+          id: string
+          is_current: boolean | null
+          start_date: string | null
+          updated_at: string | null
+          year: number
+        }
+        Insert: {
+          competition_id: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          start_date?: string | null
+          updated_at?: string | null
+          year: number
+        }
+        Update: {
+          competition_id?: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_current?: boolean | null
+          start_date?: string | null
+          updated_at?: string | null
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seasons_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sync_logs: {
+        Row: {
+          error_message: string | null
+          errors_count: number | null
+          finished_at: string | null
+          id: string
+          provider: string
+          records_created: number | null
+          records_received: number | null
+          records_updated: number | null
+          started_at: string | null
+          status: string
+          sync_type: string
+        }
+        Insert: {
+          error_message?: string | null
+          errors_count?: number | null
+          finished_at?: string | null
+          id?: string
+          provider: string
+          records_created?: number | null
+          records_received?: number | null
+          records_updated?: number | null
+          started_at?: string | null
+          status: string
+          sync_type: string
+        }
+        Update: {
+          error_message?: string | null
+          errors_count?: number | null
+          finished_at?: string | null
+          id?: string
+          provider?: string
+          records_created?: number | null
+          records_received?: number | null
+          records_updated?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
+        }
+        Relationships: []
+      }
       teams: {
         Row: {
+          country: string | null
           created_at: string | null
           id: string
           logo_url: string | null
           name: string
+          provider_id: string | null
+          updated_at: string | null
         }
         Insert: {
+          country?: string | null
           created_at?: string | null
           id?: string
           logo_url?: string | null
           name: string
+          provider_id?: string | null
+          updated_at?: string | null
         }
         Update: {
+          country?: string | null
           created_at?: string | null
           id?: string
           logo_url?: string | null
           name?: string
+          provider_id?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
-import { getFixtures } from "@/lib/football.functions";
+import { getFixtures, getCompetitions } from "@/lib/football.functions";
+import { Fixture, Market, MarketOption } from "@/lib/types";
 import { placeBet } from "@/lib/betting.functions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -36,10 +37,19 @@ interface Selection {
 
 function FootballPage() {
   const { data: fixtures } = useSuspenseQuery(fixturesQueryOptions);
+  const { data: allCompetitions } = useSuspenseQuery(queryOptions({
+    queryKey: ["competitions"],
+    queryFn: () => getCompetitions(),
+  }));
+  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
   const [selections, setSelections] = useState<Selection[]>([]);
   const [stake, setStake] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const placeBetFn = useServerFn(placeBet);
+
+  const filteredFixtures = selectedCompetition 
+    ? fixtures.filter(f => f.competition_name === selectedCompetition)
+    : fixtures;
 
   const handlePlaceBet = async () => {
     if (selections.length === 0) return;
@@ -66,7 +76,7 @@ function FootballPage() {
     }
   };
 
-  const toggleSelection = (fixture: any, market: any, option: any) => {
+  const toggleSelection = (fixture: Fixture, market: Market, option: MarketOption) => {
     setSelections((prev) => {
       const exists = prev.find((s) => s.optionId === option.id);
       if (exists) {
@@ -94,22 +104,40 @@ function FootballPage() {
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
-      {/* Sidebar Esquerda (Compacta) */}
+      {/* Sidebar Esquerda (Ligas Reais) */}
       <div className="w-16 md:w-64 border-r bg-white dark:bg-slate-900 flex flex-none flex-col">
         <div className="p-4 border-b flex items-center gap-2">
           <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
           <span className="hidden md:block font-bold text-xl tracking-tight">GreenSport</span>
         </div>
-        <div className="flex-1 p-2">
-          <Button variant="ghost" className="w-full justify-start gap-3 mb-1">
-            <Trophy className="h-5 w-5 text-green-600" />
-            <span className="hidden md:block">Futebol</span>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 mb-1 opacity-50">
-            <Timer className="h-5 w-5" />
-            <span className="hidden md:block">Ao Vivo</span>
-          </Button>
-        </div>
+        <ScrollArea className="flex-1 p-2">
+          <div className="mb-4">
+            <h3 className="hidden md:block px-3 text-[10px] font-black uppercase text-slate-400 mb-2">Principais Ligas</h3>
+            <Button 
+              variant={selectedCompetition === null ? "secondary" : "ghost"} 
+              className="w-full justify-start gap-3 mb-1"
+              onClick={() => setSelectedCompetition(null)}
+            >
+              <Trophy className="h-5 w-5 text-green-600" />
+              <span className="hidden md:block">Todas</span>
+            </Button>
+            {allCompetitions.map((comp: any) => (
+              <Button 
+                key={comp.id}
+                variant={selectedCompetition === comp.name ? "secondary" : "ghost"} 
+                className="w-full justify-start gap-3 mb-1"
+                onClick={() => setSelectedCompetition(comp.name)}
+              >
+                {comp.logo_url ? (
+                  <img src={comp.logo_url} alt={comp.name} className="h-5 w-5 object-contain" />
+                ) : (
+                  <Trophy className="h-5 w-5 text-slate-400" />
+                )}
+                <span className="hidden md:block truncate">{comp.name}</span>
+              </Button>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Área Central */}
@@ -121,7 +149,7 @@ function FootballPage() {
         </header>
 
         <div className="grid gap-4">
-          {fixtures.map((fixture) => (
+          {filteredFixtures.map((fixture) => (
             <Card key={fixture.id} className="overflow-hidden border-slate-200">
               <CardHeader className="bg-slate-50/50 p-3 flex flex-row items-center justify-between space-y-0">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
@@ -135,20 +163,28 @@ function FootballPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="flex flex-col items-center gap-1 w-24 text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      {fixture.home_team_logo ? (
+                        <img src={fixture.home_team_logo} alt={fixture.home_team_name} className="w-12 h-12 object-contain mb-1" />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      )}
                       <span className="text-sm font-bold leading-tight">{fixture.home_team_name}</span>
                     </div>
                     <div className="text-2xl font-black text-slate-300">VS</div>
                     <div className="flex flex-col items-center gap-1 w-24 text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      {fixture.away_team_logo ? (
+                        <img src={fixture.away_team_logo} alt={fixture.away_team_name} className="w-12 h-12 object-contain mb-1" />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      )}
                       <span className="text-sm font-bold leading-tight">{fixture.away_team_name}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap gap-2 md:justify-end">
-                    {fixture.markets?.map((market) => (
+                    {fixture.markets?.map((market: Market) => (
                       <div key={market.id} className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-                        {market.options.map((option) => {
+                        {market.options.map((option: MarketOption) => {
                           const isSelected = selections.find((s) => s.optionId === option.id);
                           return (
                             <button
@@ -173,6 +209,12 @@ function FootballPage() {
               </CardContent>
             </Card>
           ))}
+          {filteredFixtures.length === 0 && (
+            <div className="text-center py-20 bg-white rounded-xl border-2 border-dashed border-slate-200">
+              <SoccerBall className="h-12 w-12 text-slate-200 mx-auto mb-4" />
+              <p className="text-slate-500 font-bold uppercase tracking-widest">Nenhuma partida encontrada</p>
+            </div>
+          )}
         </div>
       </main>
 

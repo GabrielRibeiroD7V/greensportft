@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FootballRouteImport } from './routes/football'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminCompetitionsRouteImport } from './routes/_authenticated/admin/competitions'
 import { Route as AuthenticatedAdminExposureRouteImport } from './routes/_authenticated/admin/exposure'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin/tickets'
@@ -49,6 +50,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminCompetitionsRoute =
+  AuthenticatedAdminCompetitionsRouteImport.update({
+    id: '/competitions',
+    path: '/competitions',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminExposureRoute =
   AuthenticatedAdminExposureRouteImport.update({
     id: '/exposure',
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/football': typeof FootballRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
@@ -88,6 +96,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/football': typeof FootballRoute
+  '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
@@ -101,6 +110,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/football': typeof FootballRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/_authenticated/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/football'
     | '/admin'
+    | '/admin/competitions'
     | '/admin/exposure'
     | '/admin/matches'
     | '/admin/tickets'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/football'
+    | '/admin/competitions'
     | '/admin/exposure'
     | '/admin/matches'
     | '/admin/tickets'
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/football'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/competitions'
     | '/_authenticated/admin/exposure'
     | '/_authenticated/admin/matches'
     | '/_authenticated/admin/tickets'
@@ -194,6 +207,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/competitions': {
+      id: '/_authenticated/admin/competitions'
+      path: '/competitions'
+      fullPath: '/admin/competitions'
+      preLoaderRoute: typeof AuthenticatedAdminCompetitionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/exposure': {
       id: '/_authenticated/admin/exposure'
       path: '/exposure'
@@ -226,6 +246,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminCompetitionsRoute: typeof AuthenticatedAdminCompetitionsRoute
   AuthenticatedAdminExposureRoute: typeof AuthenticatedAdminExposureRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
   AuthenticatedAdminTicketsRoute: typeof AuthenticatedAdminTicketsRoute
@@ -235,6 +256,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminCompetitionsRoute: AuthenticatedAdminCompetitionsRoute,
     AuthenticatedAdminExposureRoute: AuthenticatedAdminExposureRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
     AuthenticatedAdminTicketsRoute: AuthenticatedAdminTicketsRoute,

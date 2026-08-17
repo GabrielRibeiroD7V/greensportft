@@ -5,6 +5,14 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const getFixtures = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { data: settings } = await supabaseAdmin
+      .from("app_settings")
+      .select("football_data_mode")
+      .single();
+
+    const mode = settings?.football_data_mode || 'SIMULATION';
+    const isSimulated = mode === 'SIMULATION';
+
     const { data, error } = await supabaseAdmin
       .from("fixtures")
       .select(`
@@ -13,6 +21,7 @@ export const getFixtures = createServerFn({ method: "GET" })
         status,
         home_score,
         away_score,
+        is_simulated,
         competitions (name),
         home:teams!home_team_id (name, logo_url),
         away:teams!away_team_id (name, logo_url),
@@ -27,6 +36,7 @@ export const getFixtures = createServerFn({ method: "GET" })
           )
         )
       `)
+      .eq("is_simulated", isSimulated)
       .order("start_time", { ascending: true });
 
     if (error) throw error;
@@ -57,10 +67,19 @@ export const getFixtures = createServerFn({ method: "GET" })
 
 export const getCompetitions = createServerFn({ method: "GET" })
   .handler(async () => {
+    const { data: settings } = await supabaseAdmin
+      .from("app_settings")
+      .select("football_data_mode")
+      .single();
+
+    const mode = settings?.football_data_mode || 'SIMULATION';
+    const isSimulated = mode === 'SIMULATION';
+
     const { data, error } = await supabaseAdmin
       .from("competitions")
       .select("*")
       .eq("is_active", true)
+      .eq("is_simulated", isSimulated)
       .order("name", { ascending: true });
 
     if (error) throw error;

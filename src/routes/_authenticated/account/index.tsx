@@ -91,7 +91,10 @@ function AccountPageSkeleton() {
 
 function AccountPage() {
   const data = Route.useLoaderData();
-  const { user, profile, walletData, stats } = data as any;
+  const user = data?.user || { email: '---' };
+  const profile = data?.profile || { role: 'user' };
+  const walletData = data?.walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] };
+  const stats = data?.stats || { totalStaked: 0, totalTickets: 0, lastActivity: null };
   const [depositAmount, setDepositAmount] = useState("50");
   const queryClient = useQueryClient();
 

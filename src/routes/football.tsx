@@ -99,7 +99,7 @@ function FootballPage() {
     });
   };
 
-  const totalOdd = selections.reduce((acc, s) => acc * s.odd, 1);
+  const totalOdd = selections.length > 0 ? selections.reduce((acc, s) => acc * s.odd, 1) : 0;
   const potentialReturn = totalOdd * stake;
 
   return (

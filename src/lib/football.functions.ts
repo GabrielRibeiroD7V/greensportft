@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
 
 export const getFixtures = createServerFn({ method: "GET" })
   .handler(async () => {

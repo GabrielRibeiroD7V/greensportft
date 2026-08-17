@@ -20,16 +20,25 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
     return context.queryClient.ensureQueryData(queryOptions({
       queryKey: ["wallet-history", user?.id || 'anon'],
       queryFn: async () => {
-        const { data: wallet } = await supabase
+        let { data: wallet } = await supabase
           .from("wallets")
-          .select("balance")
+          .select("*")
           .eq("user_id", user?.id as string)
-          .single();
+          .maybeSingle();
+
+        if (!wallet && user?.id) {
+          const { data: newWallet } = await supabase
+            .from("wallets")
+            .insert({ user_id: user.id, balance: 0 })
+            .select()
+            .single();
+          wallet = newWallet;
+        }
         
         const { data: history } = await supabase
           .from("wallet_transactions")
           .select("*")
-          .eq("wallet_id", (wallet as any)?.id) // This assumes we get the wallet id
+          .eq("wallet_id", wallet?.id)
           .order("created_at", { ascending: false });
         
         return { wallet, history: history || [] };

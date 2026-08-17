@@ -17,11 +17,11 @@ export const Route = createFileRoute("/_authenticated/account/")({
     return context.queryClient.ensureQueryData(queryOptions({
       queryKey: ["user-account-data", user.id],
       queryFn: async () => {
-        const { data: profile } = await supabase
+        const { data: roleData } = await supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         const walletData = await getWalletData();
 
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
         const totalStaked = stats?.reduce((acc, curr) => acc + Number(curr.stake), 0) || 0;
         const totalTickets = stats?.length || 0;
 
-        return { user, profile, walletData, stats: { totalStaked, totalTickets } };
+        return { user, profile: roleData, walletData, stats: { totalStaked, totalTickets } };
       }
     }));
   },

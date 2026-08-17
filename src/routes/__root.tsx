@@ -141,21 +141,33 @@ function Header() {
     queryKey: ['auth-user'],
     queryFn: async () => {
       try {
-        const { data } = await supabase.auth.getSession();
-        if (!data.session?.user) return null;
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return null;
         
-        const userId = data.session.user.id;
+        const userId = session.user.id;
         
-        // Use Promise.all for faster fetching
-        const [roleRes, walletRes] = await Promise.all([
-          supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle(),
-          supabase.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
-        ]);
+        // Fetch role and wallet balance with separate try-catch to avoid global fail
+        let role = 'user';
+        let balance = 0;
+
+        try {
+          const { data: roleData } = await supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle();
+          if (roleData) role = roleData.role;
+        } catch (e) {
+          console.error("Error fetching user role:", e);
+        }
+
+        try {
+          const { data: walletData } = await supabase.from('wallets').select('balance').eq('user_id', userId).maybeSingle();
+          if (walletData) balance = Number(walletData.balance || 0);
+        } catch (e) {
+          console.error("Error fetching user wallet:", e);
+        }
           
         return { 
-          ...data.session.user, 
-          role: roleRes.data?.role, 
-          balance: Number(walletRes.data?.balance || 0) 
+          ...session.user, 
+          role, 
+          balance
         };
       } catch (err) {
         console.error("Header auth query error:", err);

@@ -41,7 +41,8 @@ export const Route = createFileRoute("/_authenticated/admin/finance/")({
 });
 
 function AdminFinancePage() {
-  const { data: { deposits, withdrawals } } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { deposits, withdrawals } = data as any;
   const [processingId, setProcessingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 

@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
 });
 
 function MyBetsPage() {
-  const { data: tickets } = useSuspenseQuery(Route.options.loader as any);
+  const { data: tickets } = useSuspenseQuery(Route.options.loader as any) as { data: any[] };
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">

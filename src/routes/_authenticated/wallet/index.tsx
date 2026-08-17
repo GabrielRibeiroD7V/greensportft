@@ -40,7 +40,8 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
 });
 
 function WalletPage() {
-  const { data: { wallet, history } } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { wallet, history } = data as any;
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">

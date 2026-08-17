@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin/settings/")({
       queryKey: ["admin-settings"],
       queryFn: async () => {
         const { data } = await supabase
-          .from("app_settings")
+          .from("app_settings" as any)
           .select("*")
           .single();
         return data || {
@@ -33,15 +33,15 @@ export const Route = createFileRoute("/_authenticated/admin/settings/")({
 });
 
 function AdminSettingsPage() {
-  const { data: initialSettings } = useSuspenseQuery(Route.options.loader as any);
-  const [settings, setSettings] = useState(initialSettings);
+  const { data: initialSettings } = useSuspenseQuery(Route.options.loader as any) as { data: any };
+  const [settings, setSettings] = useState<any>(initialSettings);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       const { error } = await supabase
-        .from("app_settings")
+        .from("app_settings" as any)
         .upsert({ ...settings, id: settings.id || undefined })
         .select();
       

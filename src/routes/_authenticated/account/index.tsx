@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/account/")({
+  pendingComponent: AccountPageSkeleton,
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });

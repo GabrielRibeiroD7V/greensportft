@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/wallet/")({
+  pendingComponent: WalletPageSkeleton,
   loader: async ({ context }) => {
     const { data: { user } } = await supabase.auth.getUser();
     return context.queryClient.ensureQueryData(queryOptions({

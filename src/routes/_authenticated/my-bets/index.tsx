@@ -13,11 +13,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Ticket, Search, Filter, History } from "lucide-react";
+import { Ticket, History, Filter } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Suspense } from "react";
 
 export const Route = createFileRoute("/_authenticated/my-bets/")({
+  pendingComponent: MyBetsSkeleton,
   validateSearch: (search: Record<string, unknown>) => ({
     status: (search['status'] as string) || 'all',
   }),

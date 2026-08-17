@@ -158,14 +158,14 @@ function Header() {
     <header className="h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
       <div className="h-full max-w-[1600px] mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/football" className="flex items-center gap-2">
+          <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center gap-2">
             <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
             <span className="font-black text-xl tracking-tighter hidden sm:block">GreenSport</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/football" className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
-            <Link to="/football" search={{ tab: 'live' }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
+            <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
+            <Link to="/football" search={{ tab: 'live', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
           </nav>
         </div>
 

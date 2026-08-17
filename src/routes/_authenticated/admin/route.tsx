@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
       .single();
 
     if (roleData?.role !== 'admin') {
-      throw redirect({ to: '/football' });
+      throw redirect({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });
     }
   },
   component: AdminLayout,

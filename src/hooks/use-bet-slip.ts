@@ -31,7 +31,7 @@ export const useBetSlip = create<BetSlipState>()(
       selections: [],
       isOpen: false,
       stake: 10,
-      addSelection: (fixture, market, option) => {
+      addSelection: (fixture: Fixture, market: Market, option: MarketOption) => {
         const { selections } = get();
         const exists = selections.find((s) => s.optionId === option.id);
         
@@ -62,14 +62,14 @@ export const useBetSlip = create<BetSlipState>()(
           isOpen: true // Auto open when adding first or new
         });
       },
-      removeSelection: (optionId) => {
+      removeSelection: (optionId: string) => {
         set((state) => ({
           selections: state.selections.filter((s) => s.optionId !== optionId)
         }));
       },
       clearSlip: () => set({ selections: [] }),
-      setOpen: (open) => set({ isOpen: open }),
-      setStake: (stake) => set({ stake }),
+      setOpen: (open: boolean) => set({ isOpen: open }),
+      setStake: (stake: number) => set({ stake }),
       toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
     }),
     {

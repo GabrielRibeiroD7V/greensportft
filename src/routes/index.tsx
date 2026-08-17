@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  beforeLoad: () => {
+  loader: () => {
     throw redirect({
       to: "/football",
       search: { tab: "all", competition: undefined, q: undefined },

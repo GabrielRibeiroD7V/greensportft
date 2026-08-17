@@ -1,45 +1,56 @@
-# Plano de Desenvolvimento - GreenSport Fase 5A: Preparação da Integração Real
+# Plan: GreenSport Phase 5C - Secure Asaas Payment Integration
 
-## Objetivos
-Implementar a arquitetura completa para integração com a API-Football v3, permitindo a transição segura entre dados simulados e reais, garantindo que o sistema opere corretamente mesmo sem a chave de API configurada.
+Implementation of the financial infrastructure for real Pix payments via Asaas, maintaining a simulation mode for development.
 
-## Ações Técnicas
+## User Review Required
 
-### 1. Banco de Dados e Mappings
-- **Migration SQL**:
-  - Adicionar `football_data_mode` (enum SIMULATION/REAL) à tabela `app_settings`.
-  - Garantir que a tabela `provider_mappings` suporte a relação entre `internal_id` e `provider_entity_id` para competições, times e fixtures.
-  - Adicionar coluna `is_simulated` (boolean) às tabelas `competitions`, `teams` e `fixtures` se ainda não existirem.
-  - Criar índices para performance em buscas por `provider_id` e mappings.
+> [!IMPORTANT]
+> This phase establishes the architecture for real financial transactions. Real payments will remain locked until valid Asaas credentials (API Key/Webhook Secret) are provided in the environment variables.
 
-### 2. Football Provider Engine
-- **FootballProvider Interface**: Consolidar a abstração para `getCompetitions`, `getTeams`, `getFixtures`, `getLiveFixtures`.
-- **ApiFootballProvider**: 
-  - Refatorar para lidar com a ausência de `API_FOOTBALL_KEY`.
-  - Implementar normalização de erros: `PROVIDER_NOT_CONFIGURED`, `RATE_LIMITED`, `INVALID_CREDENTIALS`.
-  - Garantir que a chave seja lida apenas no servidor (`process.env`).
+- **Asaas Credentials**: Requires `ASAAS_API_KEY` and `ASAAS_WEBHOOK_SECRET` for real/sandbox operations.
+- **Webhook Endpoint**: `/api/public/webhooks/asaas` will be created to receive payment confirmations.
 
-### 3. Serviços de Sincronização e Idempotência
-- **sync.server.ts**:
-  - Implementar `syncCompetitions`, `syncTeams`, `syncFixtures` com lógica de `UPSERT` e mapeamento.
-  - Garantir que rodar a sincronização repetidamente não crie duplicatas.
-  - Adicionar suporte a `football_data_mode` nos serviços internos.
+## Proposed Changes
 
-### 4. Admin Panel - Integrações
-- **Nova Rota `/admin/integrations`**:
-  - Card de status da API-Football (Configurado/Não configurado).
-  - Ação "Testar Conexão": Somente ADMIN, valida a presença da chave e faz um ping de saúde na API.
-  - Ação "Sincronizar Futebol": Gatilho manual para atualização de dados reais.
-  - Logs de integração: Exibir as últimas tentativas e erros.
+### Database & Schema
+- **Tables Expansion**:
+    - Update `deposits`: add `provider`, `provider_payment_id`, `provider_status`, `external_reference`, `idempotency_key`, `is_simulated`, `expires_at`, `paid_at`, `pix_qr_code`, `pix_copy_paste`.
+    - Update `withdrawals`: add `provider`, `provider_withdrawal_id`, `provider_status`, `is_simulated`, `pix_key`, `pix_key_type`.
+    - Create `provider_webhook_events`: log all incoming webhooks with status tracking.
+- **Settings**: Add `payment_mode` (`SIMULATION`, `SANDBOX`, `PRODUCTION`), `min_deposit`, `max_deposit`, `deposits_enabled`, `withdrawals_enabled` to `app_settings`.
+- **RBAC**: Strictly lock manual updates to `deposits` and `withdrawals` for non-admins.
 
-### 5. Frontend e Consumo de Dados
-- **football.functions.ts**: Atualizar para respeitar o `football_data_mode`.
-- **UI /football**: Garantir que mostre dados simulados quando em modo `SIMULATION` e oculte/prepare para dados reais.
+### Backend Infrastructure
+- **Payment Provider Abstraction**:
+    - `src/lib/payments/provider.interface.ts`: Generic interface for payment operations.
+    - `src/lib/payments/asaas.provider.ts`: Concrete implementation using Asaas API.
+- **Server Functions**:
+    - `createDeposit`: Handles both simulation and real Pix generation.
+    - `getDepositStatus`: For client-side polling/updates.
+    - `testPaymentConnection`: Admin tool to verify API keys.
+- **Webhook Handler**:
+    - `src/routes/api/public/webhooks/asaas.ts`: Public endpoint to process Asaas events with signature verification and idempotency.
 
-## Verificação e Testes
-- **Build & SSR**: Garantir que o build passe sem a chave de API.
-- **Segurança**: Confirmar que usuários comuns não acessam funções de sync ou chaves.
-- **Regressão**: Validar que o `place_bet` e `wallet` continuam funcionando com dados simulados.
+### Admin Panel
+- **Integrations**: Expand `/admin/integrations` with a "Payments" card showing Asaas status and configuration.
+- **Finance**: Update `/admin/finance` to show detailed deposit/withdrawal logs with provider IDs and data modes.
 
-## Conclusão da Fase 5A
-O sistema estará pronto para receber a `API_FOOTBALL_KEY` e ativar a sincronização real com um único clique no painel administrativo, mantendo a estabilidade do ambiente de simulação.
+### User Experience
+- **Wallet**: Enhanced deposit flow with Pix QR Code display and real-time status updates (polling + webhook).
+- **History**: Clear separation between simulated and real transaction history.
+
+## Technical Details
+- **Idempotency**: Use `external_reference` (e.g., `GS-DEP-UUID`) to prevent double-charging.
+- **Atomic Transactions**: Wallet credits only occur inside a database transaction after webhook validation.
+- **Security**: Asaas API key is strictly server-side; webhooks must pass signature verification.
+
+## Verification Plan
+### Automated Tests
+- [ ] TypeScript: `bunx tsgo --noEmit`
+- [ ] SSR: `bun run build`
+
+### Manual Verification
+1. **Simulation**: Verify that Pix deposits still work in `SIMULATION` mode without an API key.
+2. **Admin**: Toggle between modes and verify that `REAL` is blocked without credentials.
+3. **Webhook Mock**: Manually trigger a mock webhook event to verify atomic wallet credit.
+4. **Security**: Attempt to credit a wallet as a non-admin user (should fail).

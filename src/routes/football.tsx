@@ -54,6 +54,7 @@ function FootballPage() {
             odd: s.odd,
           })),
           stake,
+          idempotencyKey: crypto.randomUUID(),
         }
       });
       toast.success(`Aposta realizada com sucesso! Código: ${result.ticketCode}`);

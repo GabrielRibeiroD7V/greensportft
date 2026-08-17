@@ -101,7 +101,7 @@ function WalletPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {history.length === 0 && (
+              {(!history || history.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-12 text-slate-400 font-medium italic">
                     Nenhuma movimentação registrada.

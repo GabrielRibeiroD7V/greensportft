@@ -162,7 +162,10 @@ export async function syncMockData() {
   const compIds: Record<string, string> = {};
   for (const c of competitions) {
     const { data } = await supabaseAdmin.from("competitions").upsert({
-      ...c,
+      name: c.name,
+      country: c.country,
+      country_code: c.country_code,
+      type: c.type,
       is_active: true
     }, { onConflict: 'name' }).select().single();
     if (data) compIds[c.name] = data.id;
@@ -181,7 +184,8 @@ export async function syncMockData() {
   const teamIds: Record<string, string> = {};
   for (const t of teams) {
     const { data } = await supabaseAdmin.from("teams").upsert({
-      ...t
+      name: t.name,
+      country: t.country
     }, { onConflict: 'name' }).select().single();
     if (data) teamIds[t.name] = data.id;
   }
@@ -192,45 +196,54 @@ export async function syncMockData() {
   const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 16, 0);
 
   const fixtures = [
-    { competition_id: compIds["Brasileirão Série A"], home_team_id: teamIds["Palmeiras"], away_team_id: teamIds["Flamengo"], start_time: now.toISOString(), status: "LIVE", home_score: 1, away_score: 1 },
-    { competition_id: compIds["Premier League"], home_team_id: teamIds["Arsenal"], away_team_id: teamIds["Man City"], start_time: today.toISOString(), status: "NS" },
-    { competition_id: compIds["Champions League"], home_team_id: teamIds["Real Madrid"], away_team_id: teamIds["Bayern Munich"], start_time: tomorrow.toISOString(), status: "NS" }
+    { compName: "Brasileirão Série A", home: "Palmeiras", away: "Flamengo", time: now.toISOString(), status: "LIVE", homeScore: 1, awayScore: 1 },
+    { compName: "Premier League", home: "Arsenal", away: "Man City", time: today.toISOString(), status: "NS" },
+    { compName: "Champions League", home: "Real Madrid", away: "Bayern Munich", time: tomorrow.toISOString(), status: "NS" }
   ];
 
-  let fixturesSynced = 0;
+  let fixturesSyncedCount = 0;
   for (const f of fixtures) {
+    const competition_id = compIds[f.compName];
+    const home_team_id = teamIds[f.home];
+    const away_team_id = teamIds[f.away];
+
+    if (!competition_id || !home_team_id || !away_team_id) continue;
+
     const { data: fixture } = await supabaseAdmin.from("fixtures").upsert({
-      ...f
+      competition_id,
+      home_team_id,
+      away_team_id,
+      start_time: f.time,
+      status: f.status,
+      home_score: f.homeScore ?? null,
+      away_score: f.awayScore ?? null
     }, { onConflict: 'competition_id,home_team_id,away_team_id,start_time' }).select().single();
     
     if (fixture) {
-      fixturesSynced++;
+      fixturesSyncedCount++;
       // Add Markets for each fixture
-      const markets = [
-        { fixture_id: fixture.id, name: "Resultado Final", category: "Result" }
-      ];
+      const { data: market } = await supabaseAdmin.from("markets").upsert({
+        fixture_id: fixture.id,
+        name: "Resultado Final",
+        category: "Result"
+      }, { onConflict: 'fixture_id,name' }).select().single();
       
-      for (const m of markets) {
-        const { data: market } = await supabaseAdmin.from("markets").upsert({
-          ...m
-        }, { onConflict: 'fixture_id,name' }).select().single();
-        
-        if (market) {
-          // Add Options
-          const options = [
-            { market_id: market.id, name: "Home", odd: 2.10 },
-            { market_id: market.id, name: "Empate", odd: 3.25 },
-            { market_id: market.id, name: "Away", odd: 3.50 }
-          ];
-          for (const o of options) {
-            await supabaseAdmin.from("market_options").upsert({
-              ...o
-            }, { onConflict: 'market_id,name' });
-          }
+      if (market) {
+        const options = [
+          { name: "Home", odd: 2.10 },
+          { name: "Empate", odd: 3.25 },
+          { name: "Away", odd: 3.50 }
+        ];
+        for (const o of options) {
+          await supabaseAdmin.from("market_options").upsert({
+            market_id: market.id,
+            name: o.name,
+            odd: o.odd
+          }, { onConflict: 'market_id,name' });
         }
       }
     }
   }
 
-  return { competitions: { received: competitions.length, created: competitions.length }, fixturesSynced };
+  return { competitions: { received: competitions.length, created: competitions.length }, fixturesSynced: fixturesSyncedCount };
 }

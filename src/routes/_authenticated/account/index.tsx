@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Mail, Shield, Wallet, QrCode, Copy, RefreshCw, BarChart3, Clock, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { createDepositFn, getWalletData } from "@/lib/finance.functions";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,46 +13,56 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/account/")({
   pendingComponent: AccountPageSkeleton,
   loader: async ({ context }) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
-    
-    return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["user-account-data", user.id],
-      queryFn: async () => {
-        const { data: roleData } = await supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
+      
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-        const walletData = await getWalletData();
+      const walletData = await getWalletData();
 
-        const { data: stats } = await supabase
-          .from('betting_tickets')
-          .select('stake, status, created_at')
-          .eq('user_id', user.id);
-        
-        const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
-        const totalTickets = stats?.length || 0;
-        const sortedStats = [...(stats || [])].sort((a: any, b: any) => {
-          const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
-          const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
-          return timeB - timeA;
-        });
-        const lastActivity = sortedStats.length > 0 && sortedStats[0]?.created_at
-          ? new Date(sortedStats[0].created_at)
-          : null;
+      const { data: stats } = await supabase
+        .from('betting_tickets')
+        .select('stake, status, created_at')
+        .eq('user_id', user.id);
+      
+      const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
+      const totalTickets = stats?.length || 0;
+      
+      const sortedStats = [...(stats || [])].sort((a: any, b: any) => {
+        const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return timeB - timeA;
+      });
+      
+      const lastActivity = sortedStats.length > 0 && sortedStats[0]?.created_at
+        ? new Date(sortedStats[0].created_at)
+        : null;
 
-        return { 
-          user, 
-          profile: roleData || { role: 'user' }, 
-          walletData: walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
-          stats: { totalStaked, totalTickets, lastActivity } 
-        };
-      }
-    }));
+      return { 
+        user, 
+        profile: roleData || { role: 'user' }, 
+        walletData: walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
+        stats: { totalStaked, totalTickets, lastActivity } 
+      };
+    } catch (e) {
+      console.error("Account loader crash recovery:", e);
+      if (e instanceof Error && (e as any).status === 302) throw e;
+      if (e && typeof e === 'object' && 'to' in e) throw e;
+      
+      return { 
+        user: null, 
+        profile: { role: 'user' }, 
+        walletData: { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
+        stats: { totalStaked: 0, totalTickets: 0, lastActivity: null } 
+      };
+    }
   },
-  component: () => <AccountPage />,
+  component: AccountPage,
 });
 
 function AccountPageSkeleton() {
@@ -80,8 +90,11 @@ function AccountPageSkeleton() {
 }
 
 function AccountPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
-  const { user, profile, walletData, stats } = data as any;
+  const data = Route.useLoaderData();
+  const user = data?.user || { email: '---' };
+  const profile = data?.profile || { role: 'user' };
+  const walletData = data?.walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] };
+  const stats = data?.stats || { totalStaked: 0, totalTickets: 0, lastActivity: null };
   const [depositAmount, setDepositAmount] = useState("50");
   const queryClient = useQueryClient();
 
@@ -184,7 +197,7 @@ function AccountPage() {
                     <QrCode className="h-4 w-4" /> Depósito Pendente
                   </div>
                   
-                  {walletData?.activeDeposits[0].pix_qr_code ? (
+                  {walletData?.activeDeposits?.[0]?.pix_qr_code ? (
                     <div className="flex flex-col items-center gap-4">
                       <div className="bg-white p-3 rounded-xl border border-yellow-200 shadow-sm">
                         <img 
@@ -197,7 +210,7 @@ function AccountPage() {
                         variant="secondary" 
                         size="sm"
                         className="w-full font-black text-[10px] uppercase tracking-widest gap-2 bg-white hover:bg-yellow-100 text-yellow-900 border-yellow-200"
-                        onClick={() => copyToClipboard(walletData?.activeDeposits[0].pix_copy_paste)}
+                        onClick={() => copyToClipboard(walletData?.activeDeposits?.[0]?.pix_copy_paste || '')}
                       >
                         <Copy className="h-3 w-3" /> Copiar Código Pix
                       </Button>

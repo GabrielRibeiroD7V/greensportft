@@ -20,44 +20,59 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/_authenticated/wallet/")({
   pendingComponent: WalletPageSkeleton,
   loader: async ({ context }) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["wallet-history", user?.id || 'anon'],
-      queryFn: async () => {
-        let { data: wallet } = await supabase
-          .from("wallets")
-          .select("*")
-          .eq("user_id", user?.id as string)
-          .maybeSingle();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return { wallet: { balance: 0 }, history: [], totals: { deposited: 0, staked: 0, won: 0, withdrawn: 0 } };
 
-        if (!wallet && user?.id) {
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      let activeWallet = wallet;
+
+      if (!activeWallet) {
+        try {
           const { data: newWallet } = await supabase
             .from("wallets")
             .insert({ user_id: user.id, balance: 0 })
             .select()
-            .single();
-          wallet = newWallet;
+            .maybeSingle();
+          activeWallet = newWallet;
+        } catch (e) {
+          console.error("Wallet creation silent fail:", e);
         }
-        
-        const { data: history } = await supabase
-          .from("wallet_transactions")
-          .select("*")
-          .eq("wallet_id", wallet?.id || '00000000-0000-0000-0000-000000000000')
-          .order("created_at", { ascending: false });
-        
-        // Mock totals if not in DB, for UI consistency
-        const totals = {
-          deposited: history?.filter(t => t.type === 'deposit').reduce((sum, t) => sum + Number(t.amount || 0), 0) || 0,
-          staked: history?.filter(t => t.type === 'bet').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0) || 0,
-          won: history?.filter(t => t.type === 'win').reduce((sum, t) => sum + Number(t.amount || 0), 0) || 0,
-          withdrawn: history?.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0) || 0,
-        };
-        
-        return { wallet, history: history || [], totals };
       }
-    }));
+      
+      const { data: history } = await supabase
+        .from("wallet_transactions")
+        .select("*")
+        .eq("wallet_id", activeWallet?.id || '00000000-0000-0000-0000-000000000000')
+        .order("created_at", { ascending: false });
+      
+      const totals = {
+        deposited: history?.filter(t => t.type === 'deposit').reduce((sum, t) => sum + Number(t.amount || 0), 0) || 0,
+        staked: history?.filter(t => t.type === 'bet').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0) || 0,
+        won: history?.filter(t => t.type === 'win').reduce((sum, t) => sum + Number(t.amount || 0), 0) || 0,
+        withdrawn: history?.filter(t => t.type === 'withdrawal').reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0) || 0,
+      };
+      
+      return { 
+        wallet: activeWallet || { balance: 0 }, 
+        history: history || [], 
+        totals 
+      };
+    } catch (e) {
+      console.error("Wallet loader recovery:", e);
+      return { 
+        wallet: { balance: 0 }, 
+        history: [], 
+        totals: { deposited: 0, staked: 0, won: 0, withdrawn: 0 } 
+      };
+    }
   },
-  component: () => <WalletPage />,
+  component: WalletPage,
 });
 
 function WalletPageSkeleton() {
@@ -77,8 +92,10 @@ function WalletPageSkeleton() {
 }
 
 function WalletPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
-  const { wallet, history, totals } = data as any;
+  const data = Route.useLoaderData();
+  const wallet = data?.wallet || { balance: 0 };
+  const history = data?.history || [];
+  const totals = data?.totals || { deposited: 0, staked: 0, won: 0, withdrawn: 0 };
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">

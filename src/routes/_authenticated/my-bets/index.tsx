@@ -56,7 +56,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
       }
     }));
   },
-  component: MyBetsPage,
+  component: () => <MyBetsPage />,
 });
 
 function MyBetsSkeleton() {

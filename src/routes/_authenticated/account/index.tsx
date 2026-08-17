@@ -52,7 +52,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
       }
     }));
   },
-  component: AccountPage,
+  component: () => <AccountPage />,
 });
 
 function AccountPageSkeleton() {

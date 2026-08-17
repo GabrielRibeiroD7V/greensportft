@@ -57,7 +57,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
       }
     }));
   },
-  component: WalletPage,
+  component: () => <WalletPage />,
 });
 
 function WalletPageSkeleton() {

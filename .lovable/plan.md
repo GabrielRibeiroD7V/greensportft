@@ -1,33 +1,48 @@
-# Phase 2A: Real Football Data Integration
+# GreenSport Phase 2: Internal Simulation & Data Infrastructure
 
-This plan implements the infrastructure to ingest and synchronize real-world football data into GreenSport, replacing simulated data while maintaining architectural flexibility.
+We are transitioning the project to a high-fidelity simulation environment. This phase focuses on building a complete end-to-end operational flow using persistent database records, advanced betting logic, and comprehensive admin controls, without external API dependencies.
 
-## 1. Database Schema Evolution
-Add mapping and sync logging tables to handle external provider relationships.
-- Create `provider_mappings` table (Internal ID, Provider, External ID, Entity Type).
-- Create `sync_logs` table (Provider, Sync Type, Records Created/Updated, Errors).
-- Update existing tables (`competitions`, `teams`, `fixtures`) with `provider_id` and `last_updated` fields.
-- Add unique constraints for idempotency: `(provider, provider_entity_id, entity_type)`.
+## 1. Database & Simulation Seeds
+*   **Seed Strategy**: Create a robust set of persistent data in Supabase for:
+    *   **Competitions**: Major leagues (Brasileirão, Premier League, etc.).
+    *   **Fixtures**: Distributed across different timelines (Live, Today, Tomorrow, Future, Finished).
+    *   **Markets & Odds**: Comprehensive markets (Winner, BTTS, Over/Under, Corners, Cards) for each fixture.
+*   **Persistent Statuses**: Implement consistent internal states for fixtures (SCHEDULED, LIVE, FINISHED, etc.) and markets (OPEN, SUSPENDED, SETTLED).
 
-## 2. Football Provider Abstraction
-Implement a provider-agnostic layer.
-- `src/lib/football/provider.interface.ts`: Define `FootballProvider` interface.
-- `src/lib/football/api-football.provider.ts`: Concrete implementation for API-Football.
-- Use `process.env['API_FOOTBALL_KEY']` exclusively on the server.
+## 2. Public Simulation Experience (`/football`)
+*   **Enhanced Layout**:
+    *   **Sidebar**: Functional competition filter.
+    *   **Central Area**: Organized fixture list by time (Live, Today, Upcoming).
+    *   **Fixture Details**: Tabbed view for various market categories (Main, Goals, Corners, etc.).
+*   **Advanced Bet Slip**:
+    *   Support for multiple selections and accumulator calculation.
+    *   Real-time potential return calculation.
+    *   Conflict detection: Prevent multiple incompatible selections from the same match.
 
-## 3. Synchronization Services
-Robust backend services for data ingestion.
-- `src/lib/football/sync.server.ts`: Logic for `syncCompetitions`, `syncTeams`, `syncFixtures`.
-- Implement `UPSERT` logic to prevent duplicates.
-- Handle rate limits and partial failures with logging.
+## 3. Financial & User Infrastructure
+*   **Wallet & Ledger**:
+    *   Functional `/account` area showing balance and bet history.
+    *   Simulated deposit and withdrawal flow in the admin panel.
+    *   Immutable ledger (`wallet_transactions`) for every movement.
+*   **Authentication**:
+    *   Enable anonymous slip building.
+    *   Require login only at the point of placing the bet.
 
-## 4. Frontend & Admin Integration
-- Update `/football` to use synchronized data (handling "Live", "Today", "Next Games" logic).
-- Connect Admin `/admin/matches` and create `/admin/competitions` to manage real data.
-- Add a "Sync Now" button in the Admin dashboard for authorized users.
+## 4. Admin Operation & Settlement Engine
+*   **Match Simulation**:
+    *   Admin tool to set match scores, corners, and cards.
+    *   Status transition controls (e.g., LIVE -> FINISHED).
+*   **Settlement Motor**:
+    *   Implement `settleFixture` RPC/function.
+    *   Logic for Match Winner, Double Chance, Total Goals, BTTS, Corners, and Cards.
+    *   **VOID Handling**: Recalculate accumulator odds if a selection is voided.
+    *   **Atomic Payouts**: Prevent double-crediting of wins.
 
-## 5. Technical Details
-- **Timezone**: All dates stored as UTC; `date-fns-tz` for display.
-- **Rate Limiting**: Implementation will batch requests where possible.
-- **Fallbacks**: UI will use stale Supabase data if provider is unreachable.
-- **Integrity**: `place_bet` RPC remains untouched to ensure transactional safety.
+## 5. Security & Technical Stabilization
+*   **RLS Verification**: Ensure users can only access their own financial data.
+*   **Transactional Integrity**: Use PostgreSQL RPCs for critical actions (bet placement, settlement).
+
+## Technical Details
+*   **Backend**: TanStack Start server functions calling Supabase RPCs.
+*   **Frontend**: React 19, Tailwind v4, Lucide icons, Sonner toasts.
+*   **Database**: PostgreSQL with RLS and specific constraints for financial precision.

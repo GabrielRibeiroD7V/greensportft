@@ -31,6 +31,8 @@ export interface Fixture {
   competition_name: string;
   home_team_name: string;
   away_team_name: string;
+  home_team_logo?: string;
+  away_team_logo?: string;
   start_time: string;
   status: string;
   home_score?: number;

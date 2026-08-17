@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
-import { getFixtures } from "@/lib/football.functions";
+import { getFixtures, getCompetitions } from "@/lib/football.functions";
+import { Fixture, Market, MarketOption } from "@/lib/types";
 import { placeBet } from "@/lib/betting.functions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -66,7 +67,7 @@ function FootballPage() {
     }
   };
 
-  const toggleSelection = (fixture: any, market: any, option: any) => {
+  const toggleSelection = (fixture: Fixture, market: Market, option: MarketOption) => {
     setSelections((prev) => {
       const exists = prev.find((s) => s.optionId === option.id);
       if (exists) {
@@ -94,22 +95,22 @@ function FootballPage() {
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
-      {/* Sidebar Esquerda (Compacta) */}
+      {/* Sidebar Esquerda (Ligas Reais) */}
       <div className="w-16 md:w-64 border-r bg-white dark:bg-slate-900 flex flex-none flex-col">
         <div className="p-4 border-b flex items-center gap-2">
           <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
           <span className="hidden md:block font-bold text-xl tracking-tight">GreenSport</span>
         </div>
-        <div className="flex-1 p-2">
-          <Button variant="ghost" className="w-full justify-start gap-3 mb-1">
-            <Trophy className="h-5 w-5 text-green-600" />
-            <span className="hidden md:block">Futebol</span>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3 mb-1 opacity-50">
-            <Timer className="h-5 w-5" />
-            <span className="hidden md:block">Ao Vivo</span>
-          </Button>
-        </div>
+        <ScrollArea className="flex-1 p-2">
+          <div className="mb-4">
+            <h3 className="hidden md:block px-3 text-[10px] font-black uppercase text-slate-400 mb-2">Principais Ligas</h3>
+            <Button variant="ghost" className="w-full justify-start gap-3 mb-1">
+              <Trophy className="h-5 w-5 text-green-600" />
+              <span className="hidden md:block">Todas</span>
+            </Button>
+            {/* Ligas serão renderizadas aqui em um follow-up */}
+          </div>
+        </ScrollArea>
       </div>
 
       {/* Área Central */}
@@ -135,12 +136,20 @@ function FootballPage() {
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-center gap-4 flex-1">
                     <div className="flex flex-col items-center gap-1 w-24 text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      {fixture.home_team_logo ? (
+                        <img src={fixture.home_team_logo} alt={fixture.home_team_name} className="w-12 h-12 object-contain mb-1" />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      )}
                       <span className="text-sm font-bold leading-tight">{fixture.home_team_name}</span>
                     </div>
                     <div className="text-2xl font-black text-slate-300">VS</div>
                     <div className="flex flex-col items-center gap-1 w-24 text-center">
-                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      {fixture.away_team_logo ? (
+                        <img src={fixture.away_team_logo} alt={fixture.away_team_name} className="w-12 h-12 object-contain mb-1" />
+                      ) : (
+                        <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      )}
                       <span className="text-sm font-bold leading-tight">{fixture.away_team_name}</span>
                     </div>
                   </div>

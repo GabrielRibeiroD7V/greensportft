@@ -27,7 +27,7 @@ function AdminTickets() {
   const { data: tickets } = useSuspenseQuery(ticketsQueryOptions);
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-4 md:p-8 space-y-8 w-full max-w-[1600px] mx-auto">
       <div>
         <h1 className="text-3xl font-black uppercase tracking-tight">Gestão de Bilhetes</h1>
         <p className="text-slate-500 font-medium">Visualize e controle todas as apostas da plataforma.</p>

@@ -175,7 +175,15 @@ function FootballPage() {
         </div>
       </main>
 
-      <BetSlipSidebar />
+      {/* Bet Slip Integration */}
+      <div className={`
+        flex-none transition-all duration-300 overflow-hidden
+        hidden lg:block
+        ${selections.length > 0 ? 'w-80 border-l' : 'w-0'}
+      `}>
+        <BetSlipSidebar />
+      </div>
+      
       <BetSlipDrawer />
       <BetSlipButton />
     </div>

@@ -17,19 +17,19 @@ export const Route = createFileRoute("/_authenticated/account/")({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
       
-      const [{ data: roleData }, walletData, { data: stats }] = await Promise.all([
-        supabase
-          .from('user_roles')
-          .select('role')
-          .eq('user_id', user.id)
-          .maybeSingle(),
-        getWalletData(),
-        supabase
-          .from('betting_tickets')
-          .select('stake, status, created_at')
-          .eq('user_id', user.id)
-      ]);
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
+      const walletData = await getWalletData();
+
+      const { data: stats } = await supabase
+        .from('betting_tickets')
+        .select('stake, status, created_at')
+        .eq('user_id', user.id);
+      
       const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
       const totalTickets = stats?.length || 0;
       
@@ -51,8 +51,9 @@ export const Route = createFileRoute("/_authenticated/account/")({
       };
     } catch (e) {
       console.error("Account loader crash recovery:", e);
-      // If redirect happens in catch, re-throw it so TanStack handles it
-      if (e instanceof Error && e.name === 'TanStackRouterRedirect') throw e;
+      if (e instanceof Error && (e as any).status === 302) throw e;
+      if (e && typeof e === 'object' && 'to' in e) throw e;
+      
       return { 
         user: null, 
         profile: { role: 'user' }, 

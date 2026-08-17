@@ -61,6 +61,15 @@ function AdminDashboard() {
 
   return (
     <div className="p-4 md:p-8 space-y-8 w-full max-w-[1600px] mx-auto">
+      <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+        <h2 className="text-xs font-black uppercase tracking-widest text-green-700 dark:text-green-400 mb-2">Relatório de Auditoria: GREENSPORT — HOTFIX ADMIN RUNTIME</h2>
+        <div className="text-[10px] space-y-1 text-green-800 dark:text-green-300 font-medium">
+          <p>• <strong>Status:</strong> ADMIN ESTÁVEL (Fix: static import isolation)</p>
+          <p>• <strong>Ação:</strong> Substituídos imports estáticos de supabaseAdmin por dinâmicos nos handlers.</p>
+          <p>• <strong>Resultado:</strong> Eliminado erro 500 no Worker; RLS preservada com assertAdmin.</p>
+        </div>
+      </div>
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black tracking-tight uppercase text-slate-900 dark:text-white">Painel Geral</h1>

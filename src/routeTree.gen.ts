@@ -20,6 +20,7 @@ import { Route as AuthenticatedAdminCompetitionsRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminExposureRouteImport } from './routes/_authenticated/admin/exposure'
 import { Route as AuthenticatedAdminMappingsRouteImport } from './routes/_authenticated/admin/mappings'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
+import { Route as AuthenticatedAdminOddsRouteImport } from './routes/_authenticated/admin/odds'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin/tickets'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedMyBetsIndexRouteImport } from './routes/_authenticated/my-bets/index'
@@ -88,6 +89,11 @@ const AuthenticatedAdminMatchesRoute =
     path: '/matches',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminOddsRoute = AuthenticatedAdminOddsRouteImport.update({
+  id: '/odds',
+  path: '/odds',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedAdminTicketsRoute =
   AuthenticatedAdminTicketsRouteImport.update({
     id: '/tickets',
@@ -145,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/account': typeof AuthenticatedAccountIndexRoute
@@ -186,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/_authenticated/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
+  '/_authenticated/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
@@ -208,6 +217,7 @@ export interface FileRouteTypes {
     | '/admin/exposure'
     | '/admin/mappings'
     | '/admin/matches'
+    | '/admin/odds'
     | '/admin/tickets'
     | '/admin/users'
     | '/account/'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/exposure'
     | '/admin/mappings'
     | '/admin/matches'
+    | '/admin/odds'
     | '/admin/tickets'
     | '/admin/users'
     | '/account'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/exposure'
     | '/_authenticated/admin/mappings'
     | '/_authenticated/admin/matches'
+    | '/_authenticated/admin/odds'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/admin/users'
     | '/_authenticated/account/'
@@ -346,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMatchesRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/odds': {
+      id: '/_authenticated/admin/odds'
+      path: '/odds'
+      fullPath: '/admin/odds'
+      preLoaderRoute: typeof AuthenticatedAdminOddsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/tickets': {
       id: '/_authenticated/admin/tickets'
       path: '/tickets'
@@ -410,6 +429,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminExposureRoute: typeof AuthenticatedAdminExposureRoute
   AuthenticatedAdminMappingsRoute: typeof AuthenticatedAdminMappingsRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
+  AuthenticatedAdminOddsRoute: typeof AuthenticatedAdminOddsRoute
   AuthenticatedAdminTicketsRoute: typeof AuthenticatedAdminTicketsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -425,6 +445,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminExposureRoute: AuthenticatedAdminExposureRoute,
     AuthenticatedAdminMappingsRoute: AuthenticatedAdminMappingsRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
+    AuthenticatedAdminOddsRoute: AuthenticatedAdminOddsRoute,
     AuthenticatedAdminTicketsRoute: AuthenticatedAdminTicketsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,

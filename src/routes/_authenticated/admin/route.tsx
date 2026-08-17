@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
@@ -36,11 +37,12 @@ function AdminLayout() {
     <div className="flex h-screen bg-slate-100 dark:bg-slate-950">
       {/* Sidebar Admin */}
       <aside className="w-56 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800">
-        <div className="p-4 flex items-center gap-3 border-b border-slate-800">
-          <div className="w-8 h-8 bg-green-500 rounded flex items-center justify-center text-white shrink-0">
-            <ShieldCheck className="h-5 w-5" />
-          </div>
-          <span className="font-black text-lg tracking-tight text-white uppercase truncate">Green<span className="text-green-500">Admin</span></span>
+        <div className="p-4 flex items-center justify-center border-b border-slate-800">
+          <img 
+            src={logoAsset.url} 
+            alt="GreenSport" 
+            className="h-12 w-auto object-contain"
+          />
         </div>
 
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">

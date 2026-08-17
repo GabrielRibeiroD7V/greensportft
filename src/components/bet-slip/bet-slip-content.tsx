@@ -39,7 +39,18 @@ export function BetSlipContent({ isDrawer = false }: { isDrawer?: boolean }) {
       clearSlip();
       if (isDrawer) setOpen(false);
     } catch (error: any) {
-      toast.error(error.message || "Erro ao realizar aposta");
+      const errorMessages: Record<string, string> = {
+        'INSUFFICIENT_BALANCE': 'Saldo insuficiente para realizar esta aposta.',
+        'BETTING_DISABLED': 'As apostas estão temporariamente desabilitadas.',
+        'MIN_STAKE': 'O valor da aposta é menor que o mínimo permitido.',
+        'MAX_STAKE': 'O valor da aposta excede o máximo permitido.',
+        'TOO_MANY_SELECTIONS': 'O bilhete excedeu o número máximo de seleções.',
+        'FIXTURE_UNAVAILABLE': 'Uma ou mais partidas não estão disponíveis.',
+        'FIXTURE_STARTED': 'Uma ou mais partidas já começaram.',
+        'ODDS_CHANGED': 'As cotações mudaram. Por favor, revise seu bilhete.',
+        'UNAUTHORIZED': 'Você precisa estar logado para apostar.'
+      };
+      toast.error(errorMessages[error.message] || "Erro ao realizar aposta");
     } finally {
       setIsSubmitting(false);
     }

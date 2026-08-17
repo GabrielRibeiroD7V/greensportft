@@ -8,10 +8,13 @@ import { toast } from 'sonner'
 import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 export const Route = createFileRoute('/auth')({
-  beforeLoad: async () => {
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: (search.redirect as string) || undefined,
+  }),
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      throw redirect({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });
+      throw redirect({ to: search.redirect || '/football' });
     }
   },
   head: () => ({
@@ -35,6 +38,7 @@ export const Route = createFileRoute('/auth')({
 
 function AuthPage() {
   const navigate = useNavigate()
+  const { redirect } = Route.useSearch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -52,7 +56,7 @@ function AuthPage() {
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' });
         } else {
-          navigate({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });
+          window.location.href = redirect || '/football';
         }
       }
     });
@@ -78,7 +82,7 @@ function AuthPage() {
         if (roleData?.role === 'admin') {
           navigate({ to: '/admin' })
         } else {
-          navigate({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } })
+          window.location.href = redirect || '/football';
         }
       } else {
         const { error } = await supabase.auth.signUp({

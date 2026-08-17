@@ -19,7 +19,7 @@ const fixturesQueryOptions = queryOptions({
 });
 
 type FootballSearch = {
-  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming' | undefined;
+  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming';
   competition?: string | undefined;
   q?: string | undefined;
 };
@@ -57,8 +57,19 @@ function FootballPage() {
     
     if (tab === 'live') return f.status === 'LIVE';
     if (tab === 'today') {
-        const today = new Date().toISOString().split('T')[0];
-        return f.start_time.startsWith(today);
+      const today = new Date().toISOString().split('T')[0];
+      return f.start_time.startsWith(today);
+    }
+    if (tab === 'tomorrow') {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+      return f.start_time.startsWith(tomorrowStr);
+    }
+    if (tab === 'upcoming') {
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return new Date(f.start_time) > tomorrow;
     }
     return true;
   });
@@ -67,6 +78,7 @@ function FootballPage() {
     { label: "Tudo", icon: SoccerBall, tab: 'all' },
     { label: "Ao Vivo", icon: Radio, tab: 'live', color: 'text-red-500' },
     { label: "Hoje", icon: Calendar, tab: 'today' },
+    { label: "Amanhã", icon: Calendar, tab: 'tomorrow' },
     { label: "Favoritos", icon: Star, tab: 'all', color: 'text-amber-500' },
   ];
 
@@ -83,24 +95,40 @@ function FootballPage() {
           <div className="p-3 space-y-6">
             <section className="space-y-1">
               <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Explorar</h3>
-              <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
+              <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
                 <SoccerBall className="h-4 w-4" /> Futebol
               </Link>
-              <Link to="/football" search={{ tab: 'live', competition: undefined, q: undefined }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
+              <Link to="/football" search={{ tab: 'live' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
                 <Radio className="h-4 w-4 text-red-500" /> Ao Vivo
               </Link>
-              <Link to="/football" search={{ tab: 'today', competition: undefined, q: undefined }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
+              <Link to="/football" search={{ tab: 'today' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
                 <Calendar className="h-4 w-4" /> Hoje
+              </Link>
+              <Link to="/football" search={{ tab: 'tomorrow' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
+                <Calendar className="h-4 w-4" /> Amanhã
+              </Link>
+              <Link to="/football" search={{ tab: 'upcoming' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
+                <Calendar className="h-4 w-4" /> Próximos
               </Link>
             </section>
 
             <section className="space-y-1">
               <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Minha Área</h3>
-              <Link to="/my-bets" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors">
-                <History className="h-4 w-4" /> Minhas Apostas
+              <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
+                <div className="flex items-center gap-3">
+                  <History className="h-4 w-4" /> Minhas Apostas
+                </div>
               </Link>
-              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors">
+              <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
+                <div className="flex items-center gap-3">
+                  <Ticket className="h-4 w-4" /> Bilhetes em Aberto
+                </div>
+              </Link>
+              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
                 <Wallet className="h-4 w-4" /> Carteira
+              </Link>
+              <Link to="/account" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
+                <Star className="h-4 w-4" /> Conta
               </Link>
             </section>
 

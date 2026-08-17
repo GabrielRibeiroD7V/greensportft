@@ -39,6 +39,7 @@ export function BottomNav() {
       
       <Link 
         to="/my-bets" 
+        search={{ status: 'all' }}
         className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
       >
         <History className="h-5 w-5" />

@@ -23,10 +23,13 @@ const SIGN_IN_ROUTE = '/auth'
 
 export const Route = createFileRoute('/_authenticated')({
   ssr: false,
-  beforeLoad: async () => {
+  beforeLoad: async ({ location }) => {
     const { data, error } = await supabase.auth.getUser()
     if (error || !data.user) {
-      throw redirect({ to: SIGN_IN_ROUTE })
+      throw redirect({ 
+        to: SIGN_IN_ROUTE, 
+        search: { redirect: location.href } 
+      })
     }
     return { user: data.user }
   },

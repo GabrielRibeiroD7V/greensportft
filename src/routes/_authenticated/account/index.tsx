@@ -197,7 +197,7 @@ function AccountPage() {
                     <QrCode className="h-4 w-4" /> Depósito Pendente
                   </div>
                   
-                  {walletData?.activeDeposits[0].pix_qr_code ? (
+                  {walletData?.activeDeposits?.[0]?.pix_qr_code ? (
                     <div className="flex flex-col items-center gap-4">
                       <div className="bg-white p-3 rounded-xl border border-yellow-200 shadow-sm">
                         <img 
@@ -210,7 +210,7 @@ function AccountPage() {
                         variant="secondary" 
                         size="sm"
                         className="w-full font-black text-[10px] uppercase tracking-widest gap-2 bg-white hover:bg-yellow-100 text-yellow-900 border-yellow-200"
-                        onClick={() => copyToClipboard(walletData?.activeDeposits[0].pix_copy_paste)}
+                        onClick={() => copyToClipboard(walletData?.activeDeposits?.[0]?.pix_copy_paste || '')}
                       >
                         <Copy className="h-3 w-3" /> Copiar Código Pix
                       </Button>

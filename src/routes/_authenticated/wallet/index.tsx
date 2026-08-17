@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
         const { data: wallet } = await supabase
           .from("wallets")
           .select("balance")
-          .eq("user_id", user?.id || '')
+          .eq("user_id", user?.id as string)
           .single();
         
         const { data: history } = await supabase

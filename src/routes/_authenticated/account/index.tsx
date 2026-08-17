@@ -124,7 +124,7 @@ function AccountPage() {
                   />
                 </div>
                 <Button 
-                  onClick={() => depositMutation.mutate({ amount: Number(depositAmount) })}
+                  onClick={() => depositMutation.mutate({ data: { amount: Number(depositAmount) } } as any)}
                   disabled={depositMutation.isPending}
                   className="bg-green-600 hover:bg-green-700 text-white font-black uppercase"
                 >

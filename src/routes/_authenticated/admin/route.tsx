@@ -89,10 +89,17 @@ function AdminLayout() {
             <span className="font-medium">Exposição</span>
           </Link>
           <Link 
+            to="/admin/integrations" 
+            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white text-sm"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            <span className="font-medium">Integrações</span>
+          </Link>
+          <Link 
             to="/admin/logs" 
             className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white text-sm"
           >
-            <Settings className="h-4 w-4" />
+            <ShieldCheck className="h-4 w-4" />
             <span className="font-medium">Logs</span>
           </Link>
           <Link 

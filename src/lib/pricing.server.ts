@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 
 export const pricingConfigSchema = z.object({
   global_margin_percentage: z.number().default(0),
@@ -22,7 +22,8 @@ export type PricingConfig = z.infer<typeof pricingConfigSchema>;
 
 export async function getPricingConfig(): Promise<PricingConfig> {
   try {
-    const { data, error } = await supabase
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
       .from("app_settings")
       .select("*")
       .maybeSingle();

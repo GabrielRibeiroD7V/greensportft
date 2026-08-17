@@ -1,6 +1,6 @@
 import { FootballProvider, ExternalTeam, ExternalFixture } from "./provider.interface";
 import { ApiFootballProvider } from "./api-football.provider";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+// import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export async function getProvider(): Promise<FootballProvider> {
   const apiKey = process.env['API_FOOTBALL_KEY'];
@@ -11,6 +11,7 @@ export async function getProvider(): Promise<FootballProvider> {
 }
 
 export async function syncCompetitions() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const provider = await getProvider();
   const externalCompetitions = await provider.getCompetitions();
   
@@ -57,6 +58,7 @@ export async function syncCompetitions() {
 }
 
 async function getOrSyncTeam(provider: FootballProvider, extId: string, name: string, logo?: string) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: mapping } = await supabaseAdmin
     .from("provider_mappings")
     .select("internal_id")
@@ -91,6 +93,7 @@ async function getOrSyncTeam(provider: FootballProvider, extId: string, name: st
 }
 
 export async function syncFixtures(competitionId: string, season: number) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const provider = await getProvider();
   const { data: internalComp } = await supabaseAdmin
     .from("competitions")
@@ -155,6 +158,7 @@ export async function syncFixtures(competitionId: string, season: number) {
 }
 
 export async function syncMockData() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   // 1. Create Competitions
   const competitions = [
     { name: "Brasileirão Série A", country: "Brazil", country_code: "BR", type: "league" },

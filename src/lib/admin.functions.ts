@@ -1,19 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
+// import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { assertAdmin } from "./admin-guard.server";
 import { z } from "zod";
 
 export const getAdminStats = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   // 1. Get overall ticket stats
-  const { data: ticketStats, error: ticketError } = await supabase
+  const { data: ticketStats, error: ticketError } = await supabaseAdmin
     .from("betting_tickets")
     .select("stake, potential_return, status, created_at");
 
   if (ticketError) throw ticketError;
 
   // 2. Get user count
-  const { count: userCount } = await supabase
+  const { count: userCount } = await supabaseAdmin
     .from("user_roles")
     .select("*", { count: 'exact', head: true });
 
@@ -44,7 +45,7 @@ export const getAdminStats = createServerFn({ method: "GET" }).handler(async () 
   });
 
   // 4. Get recent tickets
-  const { data: recentTickets } = await supabase
+  const { data: recentTickets } = await supabaseAdmin
     .from("betting_tickets")
     .select(`
       id,
@@ -73,7 +74,8 @@ export const getAdminStats = createServerFn({ method: "GET" }).handler(async () 
 });
 
 export const getTickets = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
     .from("betting_tickets")
     .select(`
       *,
@@ -87,7 +89,8 @@ export const getTickets = createServerFn({ method: "GET" }).handler(async () => 
 });
 
 export const getAdminMatches = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
     .from("fixtures")
     .select(`
       *,
@@ -122,7 +125,8 @@ export const settleMatch = createServerFn({ method: "POST" })
   });
 
 export const getAdminUsers = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
     .from("user_roles")
     .select(`
       *,
@@ -167,8 +171,9 @@ export const approveDepositFn = createServerFn({ method: "POST" })
   });
 
 export const getRiskExposure = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   // Exposure by Fixture
-  const { data: fixtureExposure } = await supabase
+  const { data: fixtureExposure } = await supabaseAdmin
     .from("betting_tickets")
     .select(`
       potential_return,

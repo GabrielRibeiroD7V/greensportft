@@ -20,27 +20,51 @@ const fixturesQueryOptions = queryOptions({
 });
 
 export const Route = createFileRoute("/football")({
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      tab: (search.tab as string) || 'all',
+      competition: (search.competition as string) || undefined,
+      q: (search.q as string) || undefined,
+    };
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(fixturesQueryOptions),
   component: FootballPage,
 });
 
 function FootballPage() {
+  const { tab, competition, q } = Route.useSearch();
   const { data: fixtures } = useSuspenseQuery(fixturesQueryOptions);
   const { data: allCompetitions } = useSuspenseQuery(queryOptions({
     queryKey: ["competitions"],
     queryFn: () => getCompetitions(),
   }));
-  const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("Tudo");
   
   const { selections, addSelection } = useBetSlip();
 
   const filteredFixtures = fixtures.filter(f => {
-    const matchComp = !selectedCompetition || f.competition_name === selectedCompetition;
-    return matchComp;
+    if (competition && f.competition_name !== competition) return false;
+    if (q) {
+        const searchLower = q.toLowerCase();
+        if (!f.home_team_name.toLowerCase().includes(searchLower) && 
+            !f.away_team_name.toLowerCase().includes(searchLower) &&
+            !f.competition_name.toLowerCase().includes(searchLower)) return false;
+    }
+    
+    if (tab === 'live') return f.status === 'LIVE';
+    if (tab === 'today') {
+        const today = new Date().toISOString().split('T')[0];
+        return f.start_time.startsWith(today);
+    }
+    return true;
   });
 
-  const categories = ["Tudo", "Ao Vivo", "Hoje", "Amanhã", "Próximos"];
+  const categories = [
+    { label: "Tudo", value: "all" },
+    { label: "Ao Vivo", value: "live" },
+    { label: "Hoje", value: "today" },
+    { label: "Amanhã", value: "tomorrow" },
+    { label: "Próximos", value: "upcoming" }
+  ];
 
 
 

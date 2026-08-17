@@ -52,7 +52,7 @@ export const placeBet = createServerFn({ method: "POST" })
         .eq('id', selection.fixtureId)
         .single();
         
-      if (!fixture || fixture.status !== 'NS' || fixture.status === 'SUSPENDED') {
+      if (!fixture || (fixture.status !== 'NS' && fixture.status !== 'LIVE') || fixture.status === 'SUSPENDED') {
         throw new Error("FIXTURE_UNAVAILABLE");
       }
 

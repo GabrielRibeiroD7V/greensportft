@@ -24,6 +24,7 @@ import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authentic
 import { Route as AuthenticatedMyBetsIndexRouteImport } from './routes/_authenticated/my-bets/index'
 import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
 import { Route as AuthenticatedAdminFinanceIndexRouteImport } from './routes/_authenticated/admin/finance/index'
+import { Route as AuthenticatedAdminIntegrationsIndexRouteImport } from './routes/_authenticated/admin/integrations/index'
 import { Route as AuthenticatedAdminLogsIndexRouteImport } from './routes/_authenticated/admin/logs/index'
 import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
 
@@ -109,6 +110,12 @@ const AuthenticatedAdminFinanceIndexRoute =
     path: '/finance/',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAdminIntegrationsIndexRoute =
+  AuthenticatedAdminIntegrationsIndexRouteImport.update({
+    id: '/integrations/',
+    path: '/integrations/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminLogsIndexRoute =
   AuthenticatedAdminLogsIndexRouteImport.update({
     id: '/logs/',
@@ -137,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/my-bets/': typeof AuthenticatedMyBetsIndexRoute
   '/wallet/': typeof AuthenticatedWalletIndexRoute
   '/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
+  '/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
   '/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/my-bets': typeof AuthenticatedMyBetsIndexRoute
   '/wallet': typeof AuthenticatedWalletIndexRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceIndexRoute
+  '/admin/integrations': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/admin/logs': typeof AuthenticatedAdminLogsIndexRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsIndexRoute
 }
@@ -174,6 +183,7 @@ export interface FileRoutesById {
   '/_authenticated/my-bets/': typeof AuthenticatedMyBetsIndexRoute
   '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
   '/_authenticated/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
+  '/_authenticated/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/_authenticated/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
   '/_authenticated/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/my-bets/'
     | '/wallet/'
     | '/admin/finance/'
+    | '/admin/integrations/'
     | '/admin/logs/'
     | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
@@ -211,6 +222,7 @@ export interface FileRouteTypes {
     | '/my-bets'
     | '/wallet'
     | '/admin/finance'
+    | '/admin/integrations'
     | '/admin/logs'
     | '/admin/settings'
   id:
@@ -230,6 +242,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-bets/'
     | '/_authenticated/wallet/'
     | '/_authenticated/admin/finance/'
+    | '/_authenticated/admin/integrations/'
     | '/_authenticated/admin/logs/'
     | '/_authenticated/admin/settings/'
   fileRoutesById: FileRoutesById
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminFinanceIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/integrations/': {
+      id: '/_authenticated/admin/integrations/'
+      path: '/integrations'
+      fullPath: '/admin/integrations/'
+      preLoaderRoute: typeof AuthenticatedAdminIntegrationsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/logs/': {
       id: '/_authenticated/admin/logs/'
       path: '/logs'
@@ -373,6 +393,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminFinanceIndexRoute: typeof AuthenticatedAdminFinanceIndexRoute
+  AuthenticatedAdminIntegrationsIndexRoute: typeof AuthenticatedAdminIntegrationsIndexRoute
   AuthenticatedAdminLogsIndexRoute: typeof AuthenticatedAdminLogsIndexRoute
   AuthenticatedAdminSettingsIndexRoute: typeof AuthenticatedAdminSettingsIndexRoute
 }
@@ -386,6 +407,8 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
     AuthenticatedAdminFinanceIndexRoute: AuthenticatedAdminFinanceIndexRoute,
+    AuthenticatedAdminIntegrationsIndexRoute:
+      AuthenticatedAdminIntegrationsIndexRoute,
     AuthenticatedAdminLogsIndexRoute: AuthenticatedAdminLogsIndexRoute,
     AuthenticatedAdminSettingsIndexRoute: AuthenticatedAdminSettingsIndexRoute,
   }

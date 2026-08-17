@@ -123,7 +123,7 @@ function AdminIntegrationsPage() {
                   <Label className="text-xs font-black uppercase">Chave de API</Label>
                   <p className="text-[10px] text-slate-500">Configurada via variável de ambiente.</p>
                 </div>
-                {process.env.API_FOOTBALL_KEY ? (
+                {typeof process !== 'undefined' && process.env['API_FOOTBALL_KEY'] ? (
                     <ShieldCheck className="h-5 w-5 text-green-600" />
                 ) : (
                     <ShieldAlert className="h-5 w-5 text-amber-500" />

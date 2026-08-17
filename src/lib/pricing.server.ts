@@ -10,6 +10,11 @@ export const pricingConfigSchema = z.object({
   betting_enabled: z.boolean().default(true),
   football_data_mode: z.enum(['SIMULATION', 'REAL']).default('SIMULATION'),
   odds_data_mode: z.enum(['SIMULATION', 'REAL']).default('SIMULATION'),
+  payment_mode: z.enum(['SIMULATION', 'SANDBOX', 'PRODUCTION']).default('SIMULATION'),
+  min_deposit: z.number().default(10),
+  max_deposit: z.number().default(10000),
+  deposits_enabled: z.boolean().default(true),
+  withdrawals_enabled: z.boolean().default(true),
   odds_stale_after_seconds: z.number().default(60),
 });
 

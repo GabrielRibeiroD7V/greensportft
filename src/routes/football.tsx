@@ -20,9 +20,9 @@ const fixturesQueryOptions = queryOptions({
 });
 
 type FootballSearch = {
-  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming';
-  competition?: string;
-  q?: string;
+  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming' | undefined;
+  competition?: string | undefined;
+  q?: string | undefined;
 };
 
 export const Route = createFileRoute("/football")({

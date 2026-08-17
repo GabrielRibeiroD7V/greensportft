@@ -203,7 +203,7 @@ function FootballPage() {
               <div className="flex items-center justify-between px-1">
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Destaques</h2>
               </div>
-              <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+              <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
                 {highlights.map(f => (
                   <MatchCardHighlight key={f.id} fixture={f} />
                 ))}

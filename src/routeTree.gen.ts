@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as FootballRouteImport } from './routes/football'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin/tickets'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 
@@ -36,6 +37,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminMatchesRoute =
+  AuthenticatedAdminMatchesRouteImport.update({
+    id: '/matches',
+    path: '/matches',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminTicketsRoute =
   AuthenticatedAdminTicketsRouteImport.update({
     id: '/tickets',
@@ -52,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/football': typeof FootballRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -59,6 +67,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/football': typeof FootballRoute
+  '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -68,6 +77,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/football': typeof FootballRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -75,14 +85,27 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/football' | '/admin' | '/admin/tickets' | '/admin/users' | '/admin/'
+    | '/'
+    | '/football'
+    | '/admin'
+    | '/admin/matches'
+    | '/admin/tickets'
+    | '/admin/users'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/football' | '/admin/tickets' | '/admin/users' | '/admin'
+  to:
+    | '/'
+    | '/football'
+    | '/admin/matches'
+    | '/admin/tickets'
+    | '/admin/users'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/football'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/matches'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/'
@@ -124,6 +147,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/matches': {
+      id: '/_authenticated/admin/matches'
+      path: '/matches'
+      fullPath: '/admin/matches'
+      preLoaderRoute: typeof AuthenticatedAdminMatchesRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/tickets': {
       id: '/_authenticated/admin/tickets'
       path: '/tickets'
@@ -142,6 +172,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
   AuthenticatedAdminTicketsRoute: typeof AuthenticatedAdminTicketsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -149,6 +180,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
     AuthenticatedAdminTicketsRoute: AuthenticatedAdminTicketsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,

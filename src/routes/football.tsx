@@ -19,10 +19,16 @@ const fixturesQueryOptions = queryOptions({
   queryFn: () => getFixtures(),
 });
 
+type FootballSearch = {
+  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming';
+  competition?: string;
+  q?: string;
+};
+
 export const Route = createFileRoute("/football")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): FootballSearch => {
     return {
-      tab: (search['tab'] as string) || 'all',
+      tab: (search['tab'] as any) || 'all',
       competition: (search['competition'] as string) || undefined,
       q: (search['q'] as string) || undefined,
     };
@@ -192,6 +198,7 @@ function FootballPage() {
                                         <Link 
                                             to="/football/match/$fixtureId" 
                                             params={{ fixtureId: fixture.id }}
+                                            search={{ tab, competition, q }}
                                             className="flex-1 flex items-center px-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors h-full"
                                         >
                                             <div className="flex flex-col gap-1 w-full">
@@ -241,6 +248,7 @@ function FootballPage() {
                                             <Link 
                                                 to="/football/match/$fixtureId" 
                                                 params={{ fixtureId: fixture.id }}
+                                                search={{ tab, competition, q }}
                                                 className="text-[9px] font-black text-slate-400 hover:text-green-500 uppercase tracking-widest px-2"
                                             >
                                                 +{fixture.markets?.length || 0}

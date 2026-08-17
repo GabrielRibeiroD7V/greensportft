@@ -45,6 +45,8 @@ export const placeBet = createServerFn({ method: "POST" })
 
     // Server-side validation of odds and market status
     for (const selection of data.selections) {
+      // 1. Check for fixture isolation (Requirement #3)
+      // Real fixtures MUST NOT use simulated odds
       const { data: fixture } = await supabase
         .from('fixtures')
         .select('status, start_time, is_simulated')
@@ -69,15 +71,33 @@ export const placeBet = createServerFn({ method: "POST" })
 
       const { data: option } = await supabase
         .from('market_options')
-        .select('odd, status, last_provider_update, is_simulated')
-        .eq('id', selection.fixtureId) // Still matching current simulation logic for ID
+        .select(`
+          odd, 
+          status, 
+          last_provider_update, 
+          is_simulated,
+          market:markets!inner(
+            fixture:fixtures!inner(
+              id,
+              is_simulated
+            )
+          )
+        `)
+        .eq('id', selection.fixtureId) // Selection ID is market_option ID in current schema
         .single();
 
       if (!option) throw new Error("ODD_NOT_FOUND");
 
       // Validate status
-      if (option.status === 'SUSPENDED') throw new Error("ODD_SUSPENDED");
-      if (option.status === 'CLOSED') throw new Error("ODD_CLOSED");
+      if (option.status !== 'OPEN') {
+        throw new Error(`ODD_${option.status}`);
+      }
+      
+      // Requirement #3: Fixture real sem odds reais
+      // If fixture is REAL, odds MUST be REAL (not simulated)
+      if (!fixture.is_simulated && option.is_simulated) {
+        throw new Error("REAL_FIXTURE_REQUIRES_REAL_ODDS");
+      }
       
       // Check for STALE odds
       if (option.last_provider_update) {
@@ -89,7 +109,13 @@ export const placeBet = createServerFn({ method: "POST" })
       }
 
       if (Math.abs(option.odd - selection.odd) > 0.001) {
-        throw new Error("ODDS_CHANGED");
+        return { 
+          success: false, 
+          error: "ODDS_CHANGED", 
+          oldOdd: selection.odd, 
+          newOdd: option.odd,
+          fixtureId: selection.fixtureId
+        };
       }
     }
 
@@ -111,6 +137,7 @@ export const placeBet = createServerFn({ method: "POST" })
 
     if (rpcError) {
       if (rpcError.message.includes('insufficient_balance')) throw new Error("INSUFFICIENT_BALANCE");
+      // Wallet remains intact if RPC fails because it's an atomic transaction
       throw new Error(rpcError.message || "BET_ERROR");
     }
 

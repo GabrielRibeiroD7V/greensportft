@@ -125,11 +125,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-slate-50">
         <Header />
-        <div className="flex-1 pb-16 md:pb-0">
+        <main className="flex-1 pb-20 md:pb-8 min-h-[calc(100vh-48px)]">
           <Outlet />
-        </div>
+        </main>
         <BottomNav />
       </div>
     </QueryClientProvider>

@@ -13,7 +13,6 @@ export type PricingConfig = z.infer<typeof pricingConfigSchema>;
 
 export async function getPricingConfig(): Promise<PricingConfig> {
   // We'll simulate fetching from DB for now as app_settings might not exist in schema yet
-  // or return default if there's any schema mismatch
   return pricingConfigSchema.parse({});
 }
 

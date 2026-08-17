@@ -20,16 +20,25 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
     return context.queryClient.ensureQueryData(queryOptions({
       queryKey: ["wallet-history", user?.id || 'anon'],
       queryFn: async () => {
-        const { data: wallet } = await supabase
+        let { data: wallet } = await supabase
           .from("wallets")
-          .select("balance")
+          .select("*")
           .eq("user_id", user?.id as string)
-          .single();
+          .maybeSingle();
+
+        if (!wallet && user?.id) {
+          const { data: newWallet } = await supabase
+            .from("wallets")
+            .insert({ user_id: user.id, balance: 0 })
+            .select()
+            .single();
+          wallet = newWallet;
+        }
         
         const { data: history } = await supabase
           .from("wallet_transactions")
           .select("*")
-          .eq("wallet_id", (wallet as any)?.id) // This assumes we get the wallet id
+          .eq("wallet_id", wallet?.id || '00000000-0000-0000-0000-000000000000')
           .order("created_at", { ascending: false });
         
         return { wallet, history: history || [] };
@@ -73,12 +82,12 @@ function WalletPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((tx: any) => (
+              {history?.map((tx: any) => (
                 <TableRow key={tx.id}>
                   <TableCell className="text-xs text-slate-500 pl-6">{format(new Date(tx.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-[10px] font-black uppercase flex w-fit gap-1 items-center">
-                      {tx.type === 'DEPOSIT' || tx.type === 'WIN' ? (
+                      {tx.type === 'deposit' || tx.type === 'win' ? (
                         <ArrowDownCircle className="h-3 w-3 text-green-500" />
                       ) : (
                         <ArrowUpCircle className="h-3 w-3 text-red-500" />
@@ -87,12 +96,12 @@ function WalletPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs font-medium text-slate-500 truncate max-w-[200px]">{tx.reference_id || '-'}</TableCell>
-                  <TableCell className={`text-right pr-6 font-black text-sm ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.amount > 0 ? '+' : ''} R$ {Number(tx.amount).toFixed(2)}
+                  <TableCell className={`text-right pr-6 font-black text-sm ${Number(tx.amount || 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {Number(tx.amount || 0) > 0 ? '+' : ''} R$ {Number(tx.amount || 0).toFixed(2)}
                   </TableCell>
                 </TableRow>
               ))}
-              {history.length === 0 && (
+              {(!history || history.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-12 text-slate-400 font-medium italic">
                     Nenhuma movimentação registrada.

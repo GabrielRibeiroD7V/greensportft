@@ -5,6 +5,7 @@ import { getPricingConfig } from "./pricing.server";
 
 const betSelectionSchema = z.object({
   fixtureId: z.string().uuid(),
+  selectionId: z.string().uuid().optional(), // ID of market_option
   marketName: z.string(),
   selectionName: z.string(),
   odd: z.number().positive(),
@@ -83,7 +84,7 @@ export const placeBet = createServerFn({ method: "POST" })
             )
           )
         `)
-        .eq('id', selection.fixtureId) // Selection ID is market_option ID in current schema
+        .eq('id', selection.selectionId || selection.fixtureId) // Selection ID is market_option ID, falling back to fixtureId if legacy
         .single();
 
       if (!option) throw new Error("ODD_NOT_FOUND");

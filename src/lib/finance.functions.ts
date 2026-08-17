@@ -13,9 +13,19 @@ export const getWalletData = createServerFn({ method: "GET" })
       .from("wallets")
       .select("*")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (walletError) throw walletError;
+    if (!wallet) {
+      // Provision wallet automatically if it doesn't exist
+      const { data: newWallet, error: createError } = await supabase
+        .from("wallets")
+        .insert({ user_id: user.id, balance: 0 })
+        .select()
+        .single();
+      
+      if (createError) throw createError;
+      return { wallet: newWallet, recentTransactions: [], activeDeposits: [] };
+    }
 
     const { data: recentTransactions, error: txError } = await supabase
       .from("wallet_transactions")

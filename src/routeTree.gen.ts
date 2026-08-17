@@ -27,6 +27,7 @@ import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedMyBetsIndexRouteImport } from './routes/_authenticated/my-bets/index'
 import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
+import { Route as ApiPublicHealthRouteImport } from './routes/api/public/health'
 import { Route as FootballMatchFixtureIdRouteImport } from './routes/football/match.$fixtureId'
 import { Route as AuthenticatedAdminFinanceIndexRouteImport } from './routes/_authenticated/admin/finance/index'
 import { Route as AuthenticatedAdminIntegrationsIndexRouteImport } from './routes/_authenticated/admin/integrations/index'
@@ -131,6 +132,11 @@ const AuthenticatedWalletIndexRoute =
     path: '/wallet/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicHealthRoute = ApiPublicHealthRouteImport.update({
+  id: '/api/public/health',
+  path: '/api/public/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FootballMatchFixtureIdRoute = FootballMatchFixtureIdRouteImport.update({
   id: '/match/$fixtureId',
   path: '/match/$fixtureId',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/football/match/$fixtureId': typeof FootballMatchFixtureIdRoute
   '/account/': typeof AuthenticatedAccountIndexRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/football/match/$fixtureId': typeof FootballMatchFixtureIdRoute
   '/account': typeof AuthenticatedAccountIndexRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/odds': typeof AuthenticatedAdminOddsRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/api/public/health': typeof ApiPublicHealthRoute
   '/football/match/$fixtureId': typeof FootballMatchFixtureIdRoute
   '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/admin/odds'
     | '/admin/tickets'
     | '/admin/users'
+    | '/api/public/health'
     | '/football/match/$fixtureId'
     | '/account/'
     | '/admin/'
@@ -282,6 +292,7 @@ export interface FileRouteTypes {
     | '/admin/odds'
     | '/admin/tickets'
     | '/admin/users'
+    | '/api/public/health'
     | '/football/match/$fixtureId'
     | '/account'
     | '/admin'
@@ -308,6 +319,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/odds'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/admin/users'
+    | '/api/public/health'
     | '/football/match/$fixtureId'
     | '/_authenticated/account/'
     | '/_authenticated/admin/'
@@ -327,6 +339,7 @@ export interface RootRouteChildren {
   FootballRoute: typeof FootballRouteWithChildren
   RulesRoute: typeof RulesRoute
   SupportRoute: typeof SupportRoute
+  ApiPublicHealthRoute: typeof ApiPublicHealthRoute
   ApiPublicWebhooksAsaasRoute: typeof ApiPublicWebhooksAsaasRoute
 }
 
@@ -458,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedWalletIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/health': {
+      id: '/api/public/health'
+      path: '/api/public/health'
+      fullPath: '/api/public/health'
+      preLoaderRoute: typeof ApiPublicHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/football/match/$fixtureId': {
       id: '/football/match/$fixtureId'
       path: '/match/$fixtureId'
@@ -576,6 +596,7 @@ const rootRouteChildren: RootRouteChildren = {
   FootballRoute: FootballRouteWithChildren,
   RulesRoute: RulesRoute,
   SupportRoute: SupportRoute,
+  ApiPublicHealthRoute: ApiPublicHealthRoute,
   ApiPublicWebhooksAsaasRoute: ApiPublicWebhooksAsaasRoute,
 }
 export const routeTree = rootRouteImport

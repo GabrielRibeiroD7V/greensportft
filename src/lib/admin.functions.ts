@@ -40,6 +40,7 @@ export const getTickets = createServerFn({ method: "GET" }).handler(async () => 
     .from("betting_tickets")
     .select(`
       *,
+      profiles:user_id (email),
       betting_ticket_items (*)
     `)
     .order("created_at", { ascending: false });

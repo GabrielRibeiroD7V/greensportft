@@ -39,6 +39,7 @@ function AdminTickets() {
             <TableHeader className="bg-slate-50 dark:bg-slate-800/50">
               <TableRow>
                 <TableHead className="text-[10px] font-black uppercase pl-6">ID Bilhete</TableHead>
+                <TableHead className="text-[10px] font-black uppercase">Usuário</TableHead>
                 <TableHead className="text-[10px] font-black uppercase">Data/Hora</TableHead>
                 <TableHead className="text-[10px] font-black uppercase text-right">Stake</TableHead>
                 <TableHead className="text-[10px] font-black uppercase text-center">Odd Total</TableHead>
@@ -50,6 +51,7 @@ function AdminTickets() {
               {tickets?.map((ticket: any) => (
                 <TableRow key={ticket.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20">
                   <TableCell className="font-bold text-xs text-blue-600 pl-6">{ticket.ticket_code}</TableCell>
+                  <TableCell className="text-xs font-medium">{ticket.profiles?.email || 'N/A'}</TableCell>
                   <TableCell className="text-xs text-slate-500">{format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
                   <TableCell className="text-xs font-black text-right">R$ {Number(ticket.stake).toFixed(2)}</TableCell>
                   <TableCell className="text-xs font-bold text-center text-slate-500">{Number(ticket.total_odd).toFixed(2)}</TableCell>

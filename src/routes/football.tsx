@@ -69,7 +69,7 @@ function FootballPage() {
     { label: "Favoritos", icon: Star, tab: 'all', color: 'text-amber-500' },
   ];
 
-  const highlights = filteredFixtures.filter(f => f.status === 'LIVE' || f.is_highlight).slice(0, 5);
+  const highlights = filteredFixtures.filter(f => f.status === 'LIVE').slice(0, 5);
   if (highlights.length === 0 && filteredFixtures.length > 0) {
       highlights.push(...filteredFixtures.slice(0, 3));
   }

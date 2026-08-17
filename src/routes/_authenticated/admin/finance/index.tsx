@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { approveWithdrawalFn, rejectWithdrawalFn } from "@/lib/admin.functions";
+import { approveWithdrawalFn, rejectWithdrawalFn, approveDepositFn } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/finance/")({
   loader: async ({ context }) => {
@@ -48,13 +48,13 @@ function AdminFinancePage() {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const queryClient = useQueryClient();
   const approveWithdrawal = useServerFn(approveWithdrawalFn);
+  const approveDeposit = useServerFn(approveDepositFn);
   const rejectWithdrawal = useServerFn(rejectWithdrawalFn);
 
   const handleApproveDeposit = async (id: string) => {
     setProcessingId(id);
     try {
-      const { error } = await supabase.rpc('approve_deposit', { p_deposit_id: id });
-      if (error) throw error;
+      await approveDeposit({ data: { depositId: id } });
       toast.success("Depósito aprovado com sucesso!");
       queryClient.invalidateQueries({ queryKey: ["admin-finance"] });
     } catch (e: any) {

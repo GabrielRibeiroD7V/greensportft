@@ -94,7 +94,7 @@ function FootballPage() {
         <ScrollArea className="flex-1">
           <div className="p-3 space-y-6">
             <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Explorar</h3>
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Explorar</h3>
               <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
                 <SoccerBall className="h-3.5 w-3.5" /> Futebol
               </Link>
@@ -130,7 +130,7 @@ function FootballPage() {
             </section>
 
             <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Principais Ligas</h3>
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Principais Ligas</h3>
               {allCompetitions.map((comp: any) => (
                 <Link 
                   key={comp.id}

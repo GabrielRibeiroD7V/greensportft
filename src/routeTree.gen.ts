@@ -18,6 +18,7 @@ import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminCompetitionsRouteImport } from './routes/_authenticated/admin/competitions'
 import { Route as AuthenticatedAdminExposureRouteImport } from './routes/_authenticated/admin/exposure'
+import { Route as AuthenticatedAdminMappingsRouteImport } from './routes/_authenticated/admin/mappings'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin/tickets'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
@@ -73,6 +74,12 @@ const AuthenticatedAdminExposureRoute =
   AuthenticatedAdminExposureRouteImport.update({
     id: '/exposure',
     path: '/exposure',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminMappingsRoute =
+  AuthenticatedAdminMappingsRouteImport.update({
+    id: '/mappings',
+    path: '/mappings',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
 const AuthenticatedAdminMatchesRoute =
@@ -136,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
+  '/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -154,6 +162,7 @@ export interface FileRoutesByTo {
   '/football': typeof FootballRoute
   '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
+  '/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -175,6 +184,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/_authenticated/admin/exposure': typeof AuthenticatedAdminExposureRoute
+  '/_authenticated/admin/mappings': typeof AuthenticatedAdminMappingsRoute
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/competitions'
     | '/admin/exposure'
+    | '/admin/mappings'
     | '/admin/matches'
     | '/admin/tickets'
     | '/admin/users'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/football'
     | '/admin/competitions'
     | '/admin/exposure'
+    | '/admin/mappings'
     | '/admin/matches'
     | '/admin/tickets'
     | '/admin/users'
@@ -234,6 +246,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/admin/competitions'
     | '/_authenticated/admin/exposure'
+    | '/_authenticated/admin/mappings'
     | '/_authenticated/admin/matches'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/admin/users'
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminExposureRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/mappings': {
+      id: '/_authenticated/admin/mappings'
+      path: '/mappings'
+      fullPath: '/admin/mappings'
+      preLoaderRoute: typeof AuthenticatedAdminMappingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/matches': {
       id: '/_authenticated/admin/matches'
       path: '/matches'
@@ -388,6 +408,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminCompetitionsRoute: typeof AuthenticatedAdminCompetitionsRoute
   AuthenticatedAdminExposureRoute: typeof AuthenticatedAdminExposureRoute
+  AuthenticatedAdminMappingsRoute: typeof AuthenticatedAdminMappingsRoute
   AuthenticatedAdminMatchesRoute: typeof AuthenticatedAdminMatchesRoute
   AuthenticatedAdminTicketsRoute: typeof AuthenticatedAdminTicketsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
@@ -402,6 +423,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
   {
     AuthenticatedAdminCompetitionsRoute: AuthenticatedAdminCompetitionsRoute,
     AuthenticatedAdminExposureRoute: AuthenticatedAdminExposureRoute,
+    AuthenticatedAdminMappingsRoute: AuthenticatedAdminMappingsRoute,
     AuthenticatedAdminMatchesRoute: AuthenticatedAdminMatchesRoute,
     AuthenticatedAdminTicketsRoute: AuthenticatedAdminTicketsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,

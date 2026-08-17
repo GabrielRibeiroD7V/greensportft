@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FootballRouteImport } from './routes/football'
+import { Route as RulesRouteImport } from './routes/rules'
+import { Route as SupportRouteImport } from './routes/support'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated/account/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -49,6 +51,16 @@ const AuthRoute = AuthRouteImport.update({
 const FootballRoute = FootballRouteImport.update({
   id: '/football',
   path: '/football',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RulesRoute = RulesRouteImport.update({
+  id: '/rules',
+  path: '/rules',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SupportRoute = SupportRouteImport.update({
+  id: '/support',
+  path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
@@ -158,6 +170,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/football': typeof FootballRouteWithChildren
+  '/rules': typeof RulesRoute
+  '/support': typeof SupportRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
@@ -181,6 +195,8 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/football': typeof FootballRouteWithChildren
+  '/rules': typeof RulesRoute
+  '/support': typeof SupportRoute
   '/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/admin/exposure': typeof AuthenticatedAdminExposureRoute
   '/admin/mappings': typeof AuthenticatedAdminMappingsRoute
@@ -205,6 +221,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/football': typeof FootballRouteWithChildren
+  '/rules': typeof RulesRoute
+  '/support': typeof SupportRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/admin/competitions': typeof AuthenticatedAdminCompetitionsRoute
   '/_authenticated/admin/exposure': typeof AuthenticatedAdminExposureRoute
@@ -230,6 +248,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/football'
+    | '/rules'
+    | '/support'
     | '/admin'
     | '/admin/competitions'
     | '/admin/exposure'
@@ -253,6 +273,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/football'
+    | '/rules'
+    | '/support'
     | '/admin/competitions'
     | '/admin/exposure'
     | '/admin/mappings'
@@ -276,6 +298,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/football'
+    | '/rules'
+    | '/support'
     | '/_authenticated/admin'
     | '/_authenticated/admin/competitions'
     | '/_authenticated/admin/exposure'
@@ -301,6 +325,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   FootballRoute: typeof FootballRouteWithChildren
+  RulesRoute: typeof RulesRoute
+  SupportRoute: typeof SupportRoute
   ApiPublicWebhooksAsaasRoute: typeof ApiPublicWebhooksAsaasRoute
 }
 
@@ -332,6 +358,20 @@ declare module '@tanstack/react-router' {
       path: '/football'
       fullPath: '/football'
       preLoaderRoute: typeof FootballRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rules': {
+      id: '/rules'
+      path: '/rules'
+      fullPath: '/rules'
+      preLoaderRoute: typeof RulesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/support': {
+      id: '/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -534,6 +574,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   FootballRoute: FootballRouteWithChildren,
+  RulesRoute: RulesRoute,
+  SupportRoute: SupportRoute,
   ApiPublicWebhooksAsaasRoute: ApiPublicWebhooksAsaasRoute,
 }
 export const routeTree = rootRouteImport

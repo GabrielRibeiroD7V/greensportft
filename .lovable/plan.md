@@ -1,48 +1,32 @@
-# GreenSport Phase 2: Internal Simulation & Data Infrastructure
+---
+title: GreenSport Phase 3 Completion Plan
+path: .lovable/plan.md
+---
 
-We are transitioning the project to a high-fidelity simulation environment. This phase focuses on building a complete end-to-end operational flow using persistent database records, advanced betting logic, and comprehensive admin controls, without external API dependencies.
+# Plan: GreenSport Phase 3 - Completion & Operational Stabilization
 
-## 1. Database & Simulation Seeds
-*   **Seed Strategy**: Create a robust set of persistent data in Supabase for:
-    *   **Competitions**: Major leagues (Brasileirão, Premier League, etc.).
-    *   **Fixtures**: Distributed across different timelines (Live, Today, Tomorrow, Future, Finished).
-    *   **Markets & Odds**: Comprehensive markets (Winner, BTTS, Over/Under, Corners, Cards) for each fixture.
-*   **Persistent Statuses**: Implement consistent internal states for fixtures (SCHEDULED, LIVE, FINISHED, etc.) and markets (OPEN, SUSPENDED, SETTLED).
+Finalize the operational infrastructure, security model, and user area for the GreenSport football betting platform.
 
-## 2. Public Simulation Experience (`/football`)
-*   **Enhanced Layout**:
-    *   **Sidebar**: Functional competition filter.
-    *   **Central Area**: Organized fixture list by time (Live, Today, Upcoming).
-    *   **Fixture Details**: Tabbed view for various market categories (Main, Goals, Corners, etc.).
-*   **Advanced Bet Slip**:
-    *   Support for multiple selections and accumulator calculation.
-    *   Real-time potential return calculation.
-    *   Conflict detection: Prevent multiple incompatible selections from the same match.
+## 1. Database & Security Infrastructure
+- Create a new migration for `app_settings` table and functional financial management.
+- Implement `request_withdrawal` and `approve_withdrawal` RPCs with atomic balance checks.
+- Audit `SECURITY DEFINER` functions to ensure only `service_role` can execute sensitive administrative tasks.
 
-## 3. Financial & User Infrastructure
-*   **Wallet & Ledger**:
-    *   Functional `/account` area showing balance and bet history.
-    *   Simulated deposit and withdrawal flow in the admin panel.
-    *   Immutable ledger (`wallet_transactions`) for every movement.
-*   **Authentication**:
-    *   Enable anonymous slip building.
-    *   Require login only at the point of placing the bet.
+## 2. Server-Side Logic (Phase 3 Core)
+- Update `src/lib/pricing.server.ts` to fetch real config from `app_settings`.
+- Refactor `src/lib/betting.functions.ts` to enforce server-side margins and dynamic limits fetched from the DB.
+- Implement withdrawal server functions in `src/lib/admin.functions.ts`.
 
-## 4. Admin Operation & Settlement Engine
-*   **Match Simulation**:
-    *   Admin tool to set match scores, corners, and cards.
-    *   Status transition controls (e.g., LIVE -> FINISHED).
-*   **Settlement Motor**:
-    *   Implement `settleFixture` RPC/function.
-    *   Logic for Match Winner, Double Chance, Total Goals, BTTS, Corners, and Cards.
-    *   **VOID Handling**: Recalculate accumulator odds if a selection is voided.
-    *   **Atomic Payouts**: Prevent double-crediting of wins.
+## 3. User Area Enhancement
+- **Dashboard (/account):** Replace mocks with real aggregates (Total Apostado, Bilhetes, Saldo).
+- **History (/my-bets):** Add detailed ticket view and status badges.
+- **Wallet (/wallet):** Ensure transaction history reflects both manual deposits/withdrawals and automated bet settlements (win/loss).
 
-## 5. Security & Technical Stabilization
-*   **RLS Verification**: Ensure users can only access their own financial data.
-*   **Transactional Integrity**: Use PostgreSQL RPCs for critical actions (bet placement, settlement).
+## 4. Admin Panel Polish
+- **Financials (/admin/finance):** Implement the withdrawal management tab (Approve/Reject).
+- **Settings (/admin/settings):** Ensure full synchronization with the `app_settings` table.
+- **Logs (/admin/logs):** Implement a simple audit log view for financial and settlement actions.
 
-## Technical Details
-*   **Backend**: TanStack Start server functions calling Supabase RPCs.
-*   **Frontend**: React 19, Tailwind v4, Lucide icons, Sonner toasts.
-*   **Database**: PostgreSQL with RLS and specific constraints for financial precision.
+## 5. Final Audit & Stabilization
+- End-to-end verification of the betting lifecycle: Placement -> Sync -> Settlement -> Payout.
+- Verification of RLS policies for global data privacy.

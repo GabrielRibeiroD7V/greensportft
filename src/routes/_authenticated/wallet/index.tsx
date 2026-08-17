@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/wallet/")({
         const { data: history } = await supabase
           .from("wallet_transactions")
           .select("*")
-          .eq("wallet_id", wallet?.id)
+          .eq("wallet_id", wallet?.id || '00000000-0000-0000-0000-000000000000')
           .order("created_at", { ascending: false });
         
         return { wallet, history: history || [] };

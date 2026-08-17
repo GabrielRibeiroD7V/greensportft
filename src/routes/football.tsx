@@ -11,6 +11,7 @@ import logoAsset from "@/assets/greensport-logo.png.asset.json";
 import { MatchCardHighlight } from "@/components/football/match-card-highlight";
 import { MatchCardCompact } from "@/components/football/match-card-compact";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { HomeBannerCarousel } from "@/components/football/home-banner-carousel";
 
 const fixturesQueryOptions = queryOptions({
   queryKey: ["fixtures"],
@@ -156,6 +157,9 @@ function FootballPage() {
         </div>
 
         <div className="p-4 md:p-6 space-y-8 max-w-[1200px] mx-auto">
+          {/* Carrossel de Banners Oficiais */}
+          <HomeBannerCarousel />
+
           {/* Seção Destaques */}
           {highlights.length > 0 && (
             <section className="space-y-4">

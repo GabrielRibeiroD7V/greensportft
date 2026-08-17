@@ -48,10 +48,11 @@ function FootballPage() {
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
       {/* Sidebar Esquerda (Ligas Reais) */}
       <div className="w-16 md:w-64 border-r bg-white dark:bg-slate-900 flex flex-none flex-col">
-        <div className="p-4 border-b flex items-center gap-2">
-          <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
-          <span className="hidden md:block font-bold text-xl tracking-tight">GreenSport</span>
+        <div className="p-4 border-b flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50">
+          <Trophy className="h-5 w-5 text-green-600" />
+          <span className="hidden md:block font-black text-xs uppercase tracking-widest text-slate-500">Navegação</span>
         </div>
+
         <ScrollArea className="flex-1 p-2">
           <div className="mb-4">
             <h3 className="hidden md:block px-3 text-[10px] font-black uppercase text-slate-400 mb-2">Principais Ligas</h3>

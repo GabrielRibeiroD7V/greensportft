@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { getFixtures } from "@/lib/football.functions";
+import { placeBet } from "@/lib/betting.functions";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Ticket, Trophy, Timer, Trash2, Dribbble as SoccerBall } from "lucide-react";
+import { Ticket, Trophy, Timer, Trash2, Dribbble as SoccerBall, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { format } from "date-fns";
 
 const fixturesQueryOptions = queryOptions({
@@ -34,6 +37,32 @@ function FootballPage() {
   const { data: fixtures } = useSuspenseQuery(fixturesQueryOptions);
   const [selections, setSelections] = useState<Selection[]>([]);
   const [stake, setStake] = useState<number>(10);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const placeBetFn = useServerFn(placeBet);
+
+  const handlePlaceBet = async () => {
+    if (selections.length === 0) return;
+    setIsSubmitting(true);
+    try {
+      const result = await placeBetFn({
+        data: {
+          selections: selections.map(s => ({
+            fixtureId: s.fixtureId,
+            marketName: s.marketName,
+            selectionName: s.selectionName,
+            odd: s.odd,
+          })),
+          stake,
+        }
+      });
+      toast.success(`Aposta realizada com sucesso! Código: ${result.ticketCode}`);
+      setSelections([]);
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao realizar aposta");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const toggleSelection = (fixture: any, market: any, option: any) => {
     setSelections((prev) => {
@@ -211,8 +240,12 @@ function FootballPage() {
               <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
             </div>
 
-            <Button className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold text-lg shadow-lg shadow-green-600/20 uppercase tracking-wider">
-              Apostar Agora
+            <Button 
+              onClick={handlePlaceBet}
+              disabled={isSubmitting || selections.length === 0}
+              className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold text-lg shadow-lg shadow-green-600/20 uppercase tracking-wider"
+            >
+              {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Apostar Agora"}
             </Button>
           </div>
         )}

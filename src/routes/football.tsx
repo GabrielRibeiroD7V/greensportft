@@ -195,7 +195,7 @@ function FootballPage() {
 
         <div className="p-4 md:p-6 space-y-8 max-w-[1200px] mx-auto">
           {/* Carrossel de Banners Oficiais */}
-          <div className="rounded-xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-800">
+          <div className="w-full">
             <HomeBannerCarousel />
           </div>
 

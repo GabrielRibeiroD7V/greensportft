@@ -11,6 +11,9 @@ import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import logoAsset from "@/assets/greensport-logo.png.asset.json";
+import { BottomNav } from "@/components/layout/bottom-nav";
+import { MobileDrawer } from "@/components/layout/mobile-drawer";
+import { Search } from "lucide-react";
 
 
 import appCss from "../styles.css?url";
@@ -124,9 +127,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen flex flex-col">
         <Header />
-        <div className="flex-1">
+        <div className="flex-1 pb-16 md:pb-0">
           <Outlet />
         </div>
+        <BottomNav />
       </div>
     </QueryClientProvider>
   );
@@ -156,14 +160,16 @@ function Header() {
   }));
 
   return (
-    <header className="h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
-      <div className="h-full max-w-[1600px] mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+    <header className="h-14 md:h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
+      <div className="h-full max-w-[1600px] mx-auto px-3 md:px-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 md:gap-8">
+          <MobileDrawer userRole={user?.role} />
+          
           <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center">
             <img 
               src={logoAsset.url} 
               alt="GreenSport" 
-              className="h-[45px] md:h-[55px] w-auto object-contain"
+              className="h-[38px] md:h-[55px] w-auto object-contain"
             />
           </Link>
 
@@ -174,31 +180,36 @@ function Header() {
         </div>
 
         <div className="hidden md:flex flex-1 max-w-sm mx-4">
-            <input 
-                type="text" 
-                placeholder="Buscar time ou liga..." 
-                className="w-full bg-slate-800 border-none rounded-md px-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:ring-1 focus:ring-green-500 outline-none"
-            />
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+              <input 
+                  type="text" 
+                  placeholder="Buscar time ou liga..." 
+                  className="w-full bg-slate-800 border-none rounded-md pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:ring-1 focus:ring-green-500 outline-none"
+              />
+            </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          <button className="p-2 md:hidden text-slate-300">
+            <Search className="h-5 w-5" />
+          </button>
+          
           {user ? (
             <>
-              <div className="hidden sm:flex flex-col items-end">
-                <span className="text-[9px] font-black uppercase text-slate-400 leading-none">Saldo</span>
-                <span className="font-black text-xs text-green-500">R$ {Number(user.balance).toFixed(2)}</span>
+              <div className="flex flex-col items-end">
+                <span className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 leading-none">Saldo</span>
+                <span className="font-black text-[11px] md:text-xs text-green-500">R$ {Number(user.balance).toFixed(2)}</span>
               </div>
-              <Link to="/my-bets" className="text-[10px] font-black uppercase text-slate-300 hover:text-white hidden md:block">Bilhete</Link>
-              <Link to="/wallet" className="text-[10px] font-black uppercase text-slate-300 hover:text-white hidden md:block">Carteira</Link>
               <Link to="/account" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-black border border-slate-700 capitalize text-xs">
                 {user.email?.[0]}
               </Link>
             </>
           ) : (
             <div className="flex items-center gap-2">
-                <Link to="/auth" className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-3">Entrar</Link>
+                <Link to="/auth" className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-2">Entrar</Link>
                 <Link to="/auth">
-                    <Button size="sm" className="font-black uppercase tracking-widest text-[10px] bg-green-600 hover:bg-green-700">Criar conta</Button>
+                    <Button size="sm" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] h-8 md:h-9 bg-green-600 hover:bg-green-700">Criar conta</Button>
                 </Link>
             </div>
           )}

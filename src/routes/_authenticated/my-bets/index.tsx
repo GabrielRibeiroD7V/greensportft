@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
           .order("created_at", { ascending: false });
 
         if (search.status && search.status !== 'all') {
-          query = query.eq('status', search.status.toUpperCase());
+          query = query.eq('status', search.status.toUpperCase() as any);
         }
 
         const { data } = await query;

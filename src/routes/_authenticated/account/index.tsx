@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
           .select('stake, status')
           .eq('user_id', user.id);
         
-        const totalStaked = stats?.reduce((acc, curr) => acc + Number(curr.stake), 0) || 0;
+        const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
         const totalTickets = stats?.length || 0;
 
         return { user, profile: roleData, walletData, stats: { totalStaked, totalTickets } };
@@ -178,11 +178,11 @@ function AccountPage() {
               <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
                 <div className="text-center">
                   <span className="text-[10px] font-black uppercase opacity-70 block mb-1">Total Apostado</span>
-                  <div className="text-lg font-black">R$ {stats.totalStaked.toFixed(2)}</div>
+                  <div className="text-lg font-black">R$ {(stats?.totalStaked || 0).toFixed(2)}</div>
                 </div>
                 <div className="text-center">
                   <span className="text-[10px] font-black uppercase opacity-70 block mb-1">Bilhetes</span>
-                  <div className="text-lg font-black">{stats.totalTickets}</div>
+                  <div className="text-lg font-black">{stats?.totalTickets || 0}</div>
                 </div>
               </div>
             </CardContent>
@@ -204,7 +204,7 @@ function AccountPage() {
                         <div className="text-sm font-bold text-slate-700">{tx.type}</div>
                       </div>
                       <div className={`text-sm font-black ${tx.amount > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {tx.amount > 0 ? '+' : ''} R$ {tx.amount.toFixed(2)}
+                        {tx.amount > 0 ? '+' : ''} R$ {Number(tx.amount || 0).toFixed(2)}
                       </div>
                     </div>
                   ))

@@ -42,14 +42,16 @@ function FootballPage() {
     queryFn: () => getCompetitions(),
   }));
   const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Tudo");
   const [selections, setSelections] = useState<Selection[]>([]);
   const [stake, setStake] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const placeBetFn = useServerFn(placeBet);
 
-  const filteredFixtures = selectedCompetition 
-    ? fixtures.filter(f => f.competition_name === selectedCompetition)
-    : fixtures;
+  const filteredFixtures = fixtures.filter(f => {
+    const matchComp = !selectedCompetition || f.competition_name === selectedCompetition;
+    return matchComp;
+  });
 
   const handlePlaceBet = async () => {
     if (selections.length === 0) return;
@@ -82,10 +84,16 @@ function FootballPage() {
       if (exists) {
         return prev.filter((s) => s.optionId !== option.id);
       }
-      // Remove other selections from the same market for this fixture
-      const filtered = prev.filter((s) => s.fixtureId !== fixture.id || s.marketName !== market.name);
+      
+      // Rule 13: Conflict detection (basic: one market per fixture)
+      const sameFixtureSelections = prev.filter(s => s.fixtureId === fixture.id);
+      if (sameFixtureSelections.length > 0) {
+        toast.warning("Você já possui uma seleção para este jogo.");
+        return prev;
+      }
+
       return [
-        ...filtered,
+        ...prev,
         {
           fixtureId: fixture.id,
           fixtureName: `${fixture.home_team_name} x ${fixture.away_team_name}`,
@@ -101,6 +109,10 @@ function FootballPage() {
 
   const totalOdd = selections.length > 0 ? selections.reduce((acc, s) => acc * s.odd, 1) : 0;
   const potentialReturn = totalOdd * stake;
+  const potentialProfit = potentialReturn - stake;
+
+  const categories = ["Tudo", "Ao Vivo", "Hoje", "Amanhã", "Próximos"];
+
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">

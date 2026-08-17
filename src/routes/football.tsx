@@ -95,20 +95,20 @@ function FootballPage() {
           <div className="p-3 space-y-6">
             <section className="space-y-1">
               <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Explorar</h3>
-              <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <SoccerBall className="h-4 w-4" /> Futebol
+              <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <SoccerBall className="h-3.5 w-3.5" /> Futebol
               </Link>
-              <Link to="/football" search={{ tab: 'live' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Radio className="h-4 w-4 text-red-500" /> Ao Vivo
+              <Link to="/football" search={{ tab: 'live' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Radio className="h-3.5 w-3.5 text-red-500" /> Ao Vivo
               </Link>
-              <Link to="/football" search={{ tab: 'today' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Hoje
+              <Link to="/football" search={{ tab: 'today' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Hoje
               </Link>
-              <Link to="/football" search={{ tab: 'tomorrow' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Amanhã
+              <Link to="/football" search={{ tab: 'tomorrow' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Amanhã
               </Link>
-              <Link to="/football" search={{ tab: 'upcoming' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Próximos
+              <Link to="/football" search={{ tab: 'upcoming' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Próximos
               </Link>
             </section>
 
@@ -136,13 +136,13 @@ function FootballPage() {
                   key={comp.id}
                   to="/football"
                   search={{ competition: comp.name }}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${competition === comp.name ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+                  className={`flex items-center justify-between px-3 py-2 rounded text-[11px] font-bold transition-all ${competition === comp.name ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
                 >
                   <div className="flex items-center gap-3 truncate">
                       {comp.logo_url ? (
-                        <img src={comp.logo_url} alt="" className="h-4 w-4 object-contain" />
+                        <img src={comp.logo_url} alt="" className="h-3.5 w-3.5 object-contain" />
                       ) : (
-                        <Trophy className="h-4 w-4 opacity-20" />
+                        <Trophy className="h-3.5 w-3.5 opacity-20" />
                       )}
                       <span className="truncate">{comp.name}</span>
                   </div>
@@ -174,7 +174,7 @@ function FootballPage() {
               key={idx}
               to="/football"
               search={{ tab: s.tab as any }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${tab === s.tab && !competition ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${tab === s.tab && !competition ? 'bg-green-600 border-green-600 text-white font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               <s.icon className={`h-3.5 w-3.5 ${s.color || ''}`} />
               <span className="text-[10px] uppercase tracking-widest">{s.label}</span>
@@ -185,7 +185,7 @@ function FootballPage() {
               key={comp.id}
               to="/football"
               search={{ competition: comp.name }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${competition === comp.name ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${competition === comp.name ? 'bg-green-600 border-green-600 text-white font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               {comp.logo_url && <img src={comp.logo_url} className="h-3.5 w-3.5 object-contain" alt="" />}
               <span className="text-[10px] uppercase tracking-widest">{comp.name}</span>

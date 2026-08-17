@@ -169,7 +169,7 @@ export async function syncMockData() {
       is_active: true
     }, { onConflict: 'name' }).select();
 
-    if (data) compIds[c.name] = data.id;
+    if (data && data[0]) compIds[c.name] = data[0].id;
   }
 
   // 2. Create Teams

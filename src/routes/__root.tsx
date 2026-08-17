@@ -160,7 +160,7 @@ function Header() {
   }));
 
   return (
-    <header className="h-14 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
+    <header className="h-12 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
       <div className="h-full max-w-[1600px] mx-auto px-3 md:px-4 flex items-center justify-between">
         <div className="flex items-center gap-2 md:gap-8">
           <MobileDrawer userRole={user?.role} />
@@ -169,7 +169,7 @@ function Header() {
             <img 
               src={logoAsset.url} 
               alt="GreenSport" 
-              className="h-[38px] md:h-[45px] w-auto object-contain"
+              className="h-[32px] md:h-[38px] w-auto object-contain"
             />
           </Link>
 
@@ -197,10 +197,11 @@ function Header() {
           
           {user ? (
             <div className="flex items-center gap-4">
-              <Link to="/my-bets" search={{ status: 'all' }} className="hidden md:block text-[10px] font-black uppercase text-slate-300 hover:text-white">Minhas Apostas</Link>
+              <Link to="/my-bets" search={{ status: 'all' }} className="hidden md:block text-[9px] font-black uppercase text-slate-300 hover:text-white">Minhas Apostas</Link>
+              <Link to="/wallet" className="hidden md:block text-[9px] font-black uppercase text-slate-300 hover:text-white">Carteira</Link>
               <div className="flex flex-col items-end">
-                <span className="text-[8px] font-black uppercase text-slate-500 leading-none">Saldo</span>
-                <span className="font-black text-[11px] text-green-500">R$ {Number(user.balance).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                <span className="text-[7px] font-black uppercase text-slate-500 leading-none">Saldo</span>
+                <span className="font-black text-[10px] text-green-500">R$ {Number(user.balance).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
               </div>
               <Link to="/account" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-black border border-slate-700 capitalize text-xs hover:border-green-500 transition-colors">
                 {user.email?.[0]}

@@ -219,9 +219,11 @@ function FootballPage() {
 
           {/* Lista Principal Grouped */}
           <section className="space-y-6">
-            <div className="flex flex-col gap-1 px-1">
-              <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Futebol</h2>
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{filteredFixtures.length} partidas disponíveis</p>
+            <div className="flex items-center justify-between px-1">
+              <div className="flex flex-col gap-1">
+                <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Futebol</h2>
+                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500">{filteredFixtures.length} partidas disponíveis</p>
+              </div>
             </div>
             
             <div className="space-y-8">

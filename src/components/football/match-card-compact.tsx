@@ -9,8 +9,8 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
   const market = fixture.markets?.find((m: any) => m.name === 'Match Winner' || m.name === '1x2');
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-md overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:ring-1 hover:ring-green-500/20 transition-all">
-      <div className="p-2">
+    <div className="bg-white dark:bg-slate-900 rounded-sm overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:ring-1 hover:ring-green-500/20 transition-all">
+      <div className="p-1.5">
         {/* Header Compacto */}
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -67,7 +67,7 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
                   key={option.id}
                   onClick={() => addSelection(fixture, market as any, option)}
                   className={`
-                    flex flex-col items-center justify-center w-10 h-10 rounded-sm border transition-all
+                    flex flex-col items-center justify-center w-12 h-9 rounded-sm border transition-all
                     ${isSelected 
                       ? "bg-green-600 border-green-600 text-white shadow-sm scale-[0.98]" 
                       : "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 hover:border-green-500/50 text-slate-700 dark:text-slate-300"}

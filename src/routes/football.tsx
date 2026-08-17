@@ -182,9 +182,9 @@ function FootballPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 md:justify-end">
-                    {fixture.markets?.map((market) => (
+                    {fixture.markets?.map((market: Market) => (
                       <div key={market.id} className="flex gap-1 bg-slate-100 p-1 rounded-lg">
-                        {market.options.map((option) => {
+                        {market.options.map((option: MarketOption) => {
                           const isSelected = selections.find((s) => s.optionId === option.id);
                           return (
                             <button

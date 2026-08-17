@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { getAdminStats } from "@/lib/admin.functions";
+import { runFullSync } from "@/lib/football/sync.functions";
 import { 
   TrendingUp, 
   Users, 
@@ -9,8 +10,14 @@ import {
   AlertTriangle,
   ArrowUpRight,
   ArrowDownRight,
-  Activity
+  Activity,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle
 } from "lucide-react";
+import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Table, 
@@ -37,12 +44,36 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 
 function AdminDashboard() {
   const { data: { stats, recentTickets } } = useSuspenseQuery(adminStatsQueryOptions);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const runSync = useServerFn(runFullSync);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      const result = await runSync();
+      toast.success(`Sincronização concluída: ${result.competitions.received} competições e ${result.fixturesSynced} partidas.`);
+    } catch (e: any) {
+      toast.error(e.message || "Erro ao sincronizar dados");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   return (
     <div className="p-6 md:p-8 space-y-8">
-      <div>
-        <h1 className="text-3xl font-black tracking-tight uppercase text-slate-900 dark:text-white">Painel Geral</h1>
-        <p className="text-slate-500 font-medium">Bem-vindo à central de operações GreenSport.</p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tight uppercase text-slate-900 dark:text-white">Painel Geral</h1>
+          <p className="text-slate-500 font-medium">Bem-vindo à central de operações GreenSport.</p>
+        </div>
+        <Button 
+          onClick={handleSync} 
+          disabled={isSyncing}
+          className="bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-widest gap-2"
+        >
+          {isSyncing ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          Sincronizar Dados
+        </Button>
       </div>
 
       {/* Stats Cards */}

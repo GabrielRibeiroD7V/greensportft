@@ -1,0 +1,222 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
+import { getFixtures } from "@/lib/football.functions";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Ticket, Trophy, Timer, Trash2, Dribbble as SoccerBall } from "lucide-react";
+import { format } from "date-fns";
+
+const fixturesQueryOptions = queryOptions({
+  queryKey: ["fixtures"],
+  queryFn: () => getFixtures(),
+});
+
+export const Route = createFileRoute("/football")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(fixturesQueryOptions),
+  component: FootballPage,
+});
+
+interface Selection {
+  fixtureId: string;
+  fixtureName: string;
+  marketName: string;
+  optionId: string;
+  optionName: string;
+  odd: number;
+}
+
+function FootballPage() {
+  const { data: fixtures } = useSuspenseQuery(fixturesQueryOptions);
+  const [selections, setSelections] = useState<Selection[]>([]);
+  const [stake, setStake] = useState<number>(10);
+
+  const toggleSelection = (fixture: any, market: any, option: any) => {
+    setSelections((prev) => {
+      const exists = prev.find((s) => s.optionId === option.id);
+      if (exists) {
+        return prev.filter((s) => s.optionId !== option.id);
+      }
+      // Remove other selections from the same market for this fixture
+      const filtered = prev.filter((s) => s.fixtureId !== fixture.id || s.marketName !== market.name);
+      return [
+        ...filtered,
+        {
+          fixtureId: fixture.id,
+          fixtureName: `${fixture.home_team_name} x ${fixture.away_team_name}`,
+          marketName: market.name,
+          optionId: option.id,
+          optionName: option.name,
+          odd: option.odd,
+        },
+      ];
+    });
+  };
+
+  const totalOdd = selections.reduce((acc, s) => acc * s.odd, 1);
+  const potentialReturn = totalOdd * stake;
+
+  return (
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
+      {/* Sidebar Esquerda (Compacta) */}
+      <div className="w-16 md:w-64 border-r bg-white dark:bg-slate-900 flex flex-none flex-col">
+        <div className="p-4 border-b flex items-center gap-2">
+          <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
+          <span className="hidden md:block font-bold text-xl tracking-tight">GreenSport</span>
+        </div>
+        <div className="flex-1 p-2">
+          <Button variant="ghost" className="w-full justify-start gap-3 mb-1">
+            <Trophy className="h-5 w-5 text-green-600" />
+            <span className="hidden md:block">Futebol</span>
+          </Button>
+          <Button variant="ghost" className="w-full justify-start gap-3 mb-1 opacity-50">
+            <Timer className="h-5 w-5" />
+            <span className="hidden md:block">Ao Vivo</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Área Central */}
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+        <header className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <SoccerBall className="text-green-600" /> Próximas Partidas
+          </h1>
+        </header>
+
+        <div className="grid gap-4">
+          {fixtures.map((fixture) => (
+            <Card key={fixture.id} className="overflow-hidden border-slate-200">
+              <CardHeader className="bg-slate-50/50 p-3 flex flex-row items-center justify-between space-y-0">
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  {fixture.competition_name} • {format(new Date(fixture.start_time), "dd/MM HH:mm")}
+                </span>
+                <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium uppercase">
+                  {fixture.status}
+                </span>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                  <div className="flex items-center gap-4 flex-1">
+                    <div className="flex flex-col items-center gap-1 w-24 text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      <span className="text-sm font-bold leading-tight">{fixture.home_team_name}</span>
+                    </div>
+                    <div className="text-2xl font-black text-slate-300">VS</div>
+                    <div className="flex flex-col items-center gap-1 w-24 text-center">
+                      <div className="w-12 h-12 bg-slate-100 rounded-full mb-1" />
+                      <span className="text-sm font-bold leading-tight">{fixture.away_team_name}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 md:justify-end">
+                    {fixture.markets?.map((market) => (
+                      <div key={market.id} className="flex gap-1 bg-slate-100 p-1 rounded-lg">
+                        {market.options.map((option) => {
+                          const isSelected = selections.find((s) => s.optionId === option.id);
+                          return (
+                            <button
+                              key={option.id}
+                              onClick={() => toggleSelection(fixture, market, option)}
+                              className={`
+                                flex flex-col items-center justify-center min-w-[60px] md:min-w-[80px] p-2 rounded-md transition-all
+                                ${isSelected ? "bg-green-600 text-white shadow-lg scale-105" : "bg-white hover:bg-slate-50 text-slate-700"}
+                              `}
+                            >
+                              <span className="text-[10px] uppercase font-bold opacity-70">
+                                {option.name === fixture.home_team_name ? "1" : option.name === fixture.away_team_name ? "2" : "X"}
+                              </span>
+                              <span className="text-sm font-black">{option.odd.toFixed(2)}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
+
+      {/* Sidebar Direita (Bilhete) */}
+      <aside className="w-80 border-l bg-white dark:bg-slate-900 hidden lg:flex flex-col shadow-xl">
+        <div className="p-4 border-b flex items-center justify-between bg-slate-900 text-white">
+          <div className="flex items-center gap-2">
+            <Ticket className="h-5 w-5 text-green-500" />
+            <h2 className="font-bold">Bilhete de Aposta</h2>
+          </div>
+          {selections.length > 0 && (
+            <span className="bg-green-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase">
+              {selections.length} Seleções
+            </span>
+          )}
+        </div>
+
+        <ScrollArea className="flex-1 p-4">
+          {selections.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-40">
+              <Ticket className="h-12 w-12 mb-2" />
+              <p className="text-sm font-medium">Selecione uma cotação para começar seu bilhete</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {selections.map((s) => (
+                <div key={s.optionId} className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 relative group">
+                  <button
+                    onClick={() => setSelections((prev) => prev.filter((p) => p.optionId !== s.optionId))}
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </button>
+                  <div className="text-[10px] font-bold text-green-600 uppercase mb-1">{s.marketName}</div>
+                  <div className="text-xs font-bold truncate mb-1">{s.fixtureName}</div>
+                  <div className="flex justify-between items-end">
+                    <span className="text-sm font-black">{s.optionName}</span>
+                    <span className="text-sm font-black text-green-600">x{s.odd.toFixed(2)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+
+        {selections.length > 0 && (
+          <div className="p-4 border-t bg-slate-50 dark:bg-slate-800/50 space-y-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs font-medium text-slate-500 uppercase">
+                <span>Cotação Total</span>
+                <span className="font-black text-slate-900 dark:text-white">{totalOdd.toFixed(2)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold">R$</span>
+                <Input
+                  type="number"
+                  value={stake}
+                  onChange={(e) => setStake(Number(e.target.value))}
+                  className="h-9 font-black"
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-bold text-slate-500 uppercase">Retorno</span>
+              <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
+            </div>
+
+            <Button className="w-full h-12 bg-green-600 hover:bg-green-700 text-white font-bold text-lg shadow-lg shadow-green-600/20 uppercase tracking-wider">
+              Apostar Agora
+            </Button>
+          </div>
+        )}
+      </aside>
+    </div>
+  );
+}

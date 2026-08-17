@@ -9,8 +9,8 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
   const market = fixture.markets?.find((m: any) => m.name === 'Match Winner' || m.name === '1x2');
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:ring-1 hover:ring-green-500/20 transition-all">
-      <div className="p-3">
+    <div className="bg-white dark:bg-slate-900 rounded-md overflow-hidden border border-slate-100 dark:border-slate-800 shadow-sm hover:ring-1 hover:ring-green-500/20 transition-all">
+      <div className="p-2">
         {/* Header Compacto */}
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-1.5 min-w-0">
@@ -34,7 +34,7 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
         </div>
 
         {/* Centro: Times e Placar */}
-        <div className="flex items-center gap-4 mb-3">
+        <div className="flex items-center gap-4 mb-2">
           <Link 
             to="/football/match/$fixtureId" 
             params={{ fixtureId: fixture.id }}
@@ -57,7 +57,7 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
           </Link>
 
           {/* Odds 1X2 */}
-          <div className="flex gap-1 shrink-0">
+          <div className="flex gap-1 shrink-0 items-center">
             {market?.options.map((option: MarketOption) => {
               const isSelected = selections.find((s) => s.optionId === option.id);
               const label = option.name === fixture.home_team_name ? '1' : option.name === fixture.away_team_name ? '2' : 'X';
@@ -67,7 +67,7 @@ export function MatchCardCompact({ fixture }: { fixture: Fixture }) {
                   key={option.id}
                   onClick={() => addSelection(fixture, market as any, option)}
                   className={`
-                    flex flex-col items-center justify-center w-11 h-11 rounded border transition-all
+                    flex flex-col items-center justify-center w-10 h-10 rounded-sm border transition-all
                     ${isSelected 
                       ? "bg-green-600 border-green-600 text-white" 
                       : "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-800 hover:border-green-500 text-slate-700 dark:text-slate-300"}

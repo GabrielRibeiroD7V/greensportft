@@ -84,9 +84,10 @@ export function BetSlipContent({ isDrawer = false }: { isDrawer?: boolean }) {
 
       <ScrollArea className="flex-1 p-4">
         {selections.length === 0 ? (
-          <div className="h-full min-h-[200px] flex flex-col items-center justify-center text-center p-8 opacity-40">
-            <Ticket className="h-12 w-12 mb-2" />
-            <p className="text-sm font-medium">Selecione uma cotação para começar seu bilhete</p>
+          <div className="h-full min-h-[300px] flex flex-col items-center justify-center text-center p-8 opacity-40">
+            <Ticket className="h-10 w-10 mb-3 text-slate-500" />
+            <h3 className="text-xs font-black uppercase tracking-widest mb-1">Bilhete de Aposta</h3>
+            <p className="text-[10px] font-bold">Selecione uma cotação</p>
           </div>
         ) : (
           <div className="space-y-3">

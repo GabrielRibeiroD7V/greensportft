@@ -10,7 +10,7 @@ export const Route = createFileRoute('/auth')({
   beforeLoad: async () => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      throw redirect({ to: '/football' });
+      throw redirect({ to: '/football', search: { tab: 'all', competition: undefined, q: undefined } });
     }
   },
   head: () => ({

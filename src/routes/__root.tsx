@@ -155,48 +155,48 @@ function Header() {
   }));
 
   return (
-    <header className="h-16 border-b bg-white dark:bg-slate-900 sticky top-0 z-40 shrink-0">
+    <header className="h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
       <div className="h-full max-w-[1600px] mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/football" className="flex items-center gap-2">
+          <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center gap-2">
             <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
-            <span className="font-bold text-xl tracking-tighter hidden sm:block">GreenSport</span>
+            <span className="font-black text-xl tracking-tighter hidden sm:block">GreenSport</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/football" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Futebol</Link>
-            {user && (
-              <>
-                <Link to="/my-bets" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Minhas Apostas</Link>
-                <Link to="/wallet" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Carteira</Link>
-              </>
-            )}
+            <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
+            <Link to="/football" search={{ tab: 'live', competition: undefined, q: undefined }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
           </nav>
+        </div>
+
+        <div className="hidden md:flex flex-1 max-w-sm mx-4">
+            <input 
+                type="text" 
+                placeholder="Buscar time ou liga..." 
+                className="w-full bg-slate-800 border-none rounded-md px-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:ring-1 focus:ring-green-500 outline-none"
+            />
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <>
               <div className="hidden sm:flex flex-col items-end">
-                <span className="text-[10px] font-black uppercase text-slate-400 leading-none">Saldo</span>
-                <span className="font-black text-sm text-green-600">R$ {Number(user.balance).toFixed(2)}</span>
+                <span className="text-[9px] font-black uppercase text-slate-400 leading-none">Saldo</span>
+                <span className="font-black text-xs text-green-500">R$ {Number(user.balance).toFixed(2)}</span>
               </div>
-              <div className="h-8 w-px bg-slate-200 hidden sm:block" />
-              <Link to="/account" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold border capitalize">
-                  {user.email?.[0]}
-                </div>
+              <Link to="/my-bets" className="text-[10px] font-black uppercase text-slate-300 hover:text-white hidden md:block">Bilhete</Link>
+              <Link to="/wallet" className="text-[10px] font-black uppercase text-slate-300 hover:text-white hidden md:block">Carteira</Link>
+              <Link to="/account" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-black border border-slate-700 capitalize text-xs">
+                {user.email?.[0]}
               </Link>
-              {user.role === 'admin' && (
-                <Link to="/admin" className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors">
-                  Painel Admin
-                </Link>
-              )}
             </>
           ) : (
-            <Link to="/auth">
-              <Button size="sm" className="font-black uppercase tracking-widest text-[10px] px-6">Entrar</Button>
-            </Link>
+            <div className="flex items-center gap-2">
+                <Link to="/auth" className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-3">Entrar</Link>
+                <Link to="/auth">
+                    <Button size="sm" className="font-black uppercase tracking-widest text-[10px] bg-green-600 hover:bg-green-700">Criar conta</Button>
+                </Link>
+            </div>
           )}
         </div>
       </div>

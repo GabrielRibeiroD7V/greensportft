@@ -30,6 +30,7 @@ interface Selection {
   marketName: string;
   optionId: string;
   optionName: string;
+  selectionName: string;
   odd: number;
 }
 
@@ -80,6 +81,7 @@ function FootballPage() {
           marketName: market.name,
           optionId: option.id,
           optionName: option.name,
+          selectionName: option.name,
           odd: option.odd,
         },
       ];

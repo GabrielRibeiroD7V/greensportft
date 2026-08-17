@@ -66,6 +66,7 @@ export type Database = {
         Row: {
           created_at: string | null
           id: string
+          idempotency_key: string | null
           potential_return: number
           stake: number
           status: Database["public"]["Enums"]["ticket_status"] | null
@@ -76,6 +77,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           id?: string
+          idempotency_key?: string | null
           potential_return: number
           stake: number
           status?: Database["public"]["Enums"]["ticket_status"] | null
@@ -86,6 +88,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           id?: string
+          idempotency_key?: string | null
           potential_return?: number
           stake?: number
           status?: Database["public"]["Enums"]["ticket_status"] | null
@@ -368,6 +371,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      place_bet: {
+        Args: {
+          p_idempotency_key: string
+          p_selections: Json
+          p_stake: number
+          p_user_id: string
+        }
+        Returns: string
       }
     }
     Enums: {

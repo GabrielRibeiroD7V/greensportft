@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          betting_enabled: boolean | null
+          global_margin_percentage: number | null
+          id: string
+          max_payout: number | null
+          max_stake: number | null
+          max_ticket_selections: number | null
+          min_stake: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          betting_enabled?: boolean | null
+          global_margin_percentage?: number | null
+          id?: string
+          max_payout?: number | null
+          max_stake?: number | null
+          max_ticket_selections?: number | null
+          min_stake?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          betting_enabled?: boolean | null
+          global_margin_percentage?: number | null
+          id?: string
+          max_payout?: number | null
+          max_stake?: number | null
+          max_ticket_selections?: number | null
+          min_stake?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       betting_ticket_items: {
         Row: {
           created_at: string | null
@@ -566,6 +599,10 @@ export type Database = {
     }
     Functions: {
       approve_deposit: { Args: { p_deposit_id: string }; Returns: boolean }
+      approve_withdrawal: {
+        Args: { p_withdrawal_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -580,6 +617,11 @@ export type Database = {
           p_stake: number
           p_user_id: string
         }
+        Returns: string
+      }
+      reject_withdrawal: { Args: { p_withdrawal_id: string }; Returns: boolean }
+      request_withdrawal: {
+        Args: { p_amount: number; p_user_id: string }
         Returns: string
       }
       settle_fixture: {

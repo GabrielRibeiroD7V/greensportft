@@ -128,6 +128,22 @@ export const getAdminUsers = createServerFn({ method: "GET" }).handler(async () 
   return data;
 });
 
+export const approveWithdrawalFn = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({ withdrawalId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase.rpc('approve_withdrawal', { p_withdrawal_id: data.withdrawalId });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const rejectWithdrawalFn = createServerFn({ method: "POST" })
+  .validator((data: unknown) => z.object({ withdrawalId: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    const { error } = await supabase.rpc('reject_withdrawal', { p_withdrawal_id: data.withdrawalId });
+    if (error) throw error;
+    return { success: true };
+  });
+
 export const getRiskExposure = createServerFn({ method: "GET" }).handler(async () => {
   const { data, error } = await supabase
     .from("betting_tickets")

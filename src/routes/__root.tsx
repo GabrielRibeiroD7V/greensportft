@@ -118,8 +118,85 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1">
+          <Outlet />
+        </div>
+      </div>
     </QueryClientProvider>
+  );
+}
+
+function Header() {
+  const { data: user } = useSuspenseQuery(queryOptions({
+    queryKey: ['auth-user'],
+    queryFn: async () => {
+      const { data } = await supabase.auth.getUser();
+      if (!data.user) return null;
+      
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .single();
+        
+      const { data: wallet } = await supabase
+        .from('wallets')
+        .select('balance')
+        .eq('user_id', data.user.id)
+        .single();
+        
+      return { ...data.user, role: roleData?.role, balance: wallet?.balance || 0 };
+    }
+  }));
+
+  return (
+    <header className="h-16 border-b bg-white dark:bg-slate-900 sticky top-0 z-40 shrink-0">
+      <div className="h-full max-w-[1600px] mx-auto px-4 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <Link to="/football" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
+            <span className="font-bold text-xl tracking-tighter hidden sm:block">GreenSport</span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-6">
+            <Link to="/football" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Futebol</Link>
+            {user && (
+              <>
+                <Link to="/my-bets" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Minhas Apostas</Link>
+                <Link to="/wallet" className="text-sm font-bold uppercase tracking-widest text-slate-600 hover:text-green-600 transition-colors [&.active]:text-green-600">Carteira</Link>
+              </>
+            )}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {user ? (
+            <>
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-[10px] font-black uppercase text-slate-400 leading-none">Saldo</span>
+                <span className="font-black text-sm text-green-600">R$ {Number(user.balance).toFixed(2)}</span>
+              </div>
+              <div className="h-8 w-px bg-slate-200 hidden sm:block" />
+              <Link to="/account" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold border capitalize">
+                  {user.email?.[0]}
+                </div>
+              </Link>
+              {user.role === 'admin' && (
+                <Link to="/admin" className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white rounded-md text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-colors">
+                  Painel Admin
+                </Link>
+              )}
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button size="sm" className="font-black uppercase tracking-widest text-[10px] px-6">Entrar</Button>
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

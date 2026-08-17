@@ -1,12 +1,13 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Green Sport" },
-      { name: "description", content: "Green Sport — performance, sustainability, movement." },
-      { property: "og:title", content: "Green Sport" },
-      { property: "og:description", content: "Green Sport — performance, sustainability, movement." },
+      { title: "GreenSport - Apostas Esportivas de Futebol" },
+      { name: "description", content: "A plataforma de apostas exclusiva para futebol com a melhor tecnologia e segurança." },
+      { property: "og:title", content: "GreenSport" },
+      { property: "og:description", content: "Apostas esportivas exclusivas para futebol." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -14,8 +15,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-import { Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
 
 function Index() {
   return (

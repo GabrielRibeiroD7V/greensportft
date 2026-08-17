@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { AsaasPaymentProvider } from "./payments/asaas.provider";
+import { Database } from "@/integrations/supabase/types";
 
 export const getWalletData = createServerFn({ method: "GET" })
   .handler(async () => {
@@ -55,11 +56,11 @@ export const createDepositFn = createServerFn({ method: "POST" })
       .select("*")
       .single();
 
-    const mode = (settings as any)?.payment_mode || 'SIMULATION';
-    const minDeposit = Number((settings as any)?.min_deposit || 10);
-    const maxDeposit = Number((settings as any)?.max_deposit || 10000);
-    const depositsEnabled = (settings as any)?.deposits_enabled !== false;
-    const asaasKey = (settings as any)?.asaas_api_key;
+    const mode = settings?.payment_mode || 'SIMULATION';
+    const minDeposit = Number(settings?.min_deposit || 10);
+    const maxDeposit = Number(settings?.max_deposit || 10000);
+    const depositsEnabled = settings?.deposits_enabled !== false;
+    const asaasKey = (settings as any)?.asaas_api_key; // asaas_api_key might not be in types yet if not added to Row
 
     if (!depositsEnabled) throw new Error("Deposits are currently disabled");
     if (data.amount < minDeposit) throw new Error(`Minimum deposit is R$ ${minDeposit}`);
@@ -75,8 +76,13 @@ export const createDepositFn = createServerFn({ method: "POST" })
         status: 'PENDING',
         provider: 'simulation',
         external_reference: externalReference,
-        is_simulated: true
-      }).select().single();
+        is_simulated: true,
+        pix_copy_paste: null,
+        pix_qr_code: null,
+        expires_at: null,
+        provider_payment_id: null,
+        provider_status: 'PENDING'
+      } as Database["public"]["Tables"]["deposits"]["Insert"]).select().single();
 
       if (error) throw error;
       return { deposit };
@@ -85,12 +91,6 @@ export const createDepositFn = createServerFn({ method: "POST" })
       const asaasMode = mode === 'PRODUCTION' ? 'PRODUCTION' : 'SANDBOX';
       const asaas = new AsaasPaymentProvider(asaasKey, asaasMode);
       
-      const { data: profile } = await supabase
-        .from("profiles" as any)
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
       const asaasResult = await asaas.createDeposit({
         amount: data.amount,
         externalReference
@@ -104,10 +104,11 @@ export const createDepositFn = createServerFn({ method: "POST" })
         provider_payment_id: asaasResult.providerPaymentId,
         external_reference: externalReference,
         is_simulated: mode !== 'PRODUCTION',
-        pix_qr_code: asaasResult.pixQrCode,
-        pix_copy_paste: asaasResult.pixCopyPaste,
-        expires_at: asaasResult.expiresAt ? new Date(asaasResult.expiresAt).toISOString() : null
-      }).select().single();
+        pix_qr_code: asaasResult.pixQrCode || null,
+        pix_copy_paste: asaasResult.pixCopyPaste || null,
+        expires_at: asaasResult.expiresAt ? new Date(asaasResult.expiresAt).toISOString() : null,
+        provider_status: asaasResult.providerStatus
+      } as Database["public"]["Tables"]["deposits"]["Insert"]).select().single();
 
       if (error) throw error;
       return { deposit };
@@ -125,19 +126,20 @@ export const requestWithdrawalFn = createServerFn({ method: "POST" })
     if (!user) throw new Error("Unauthorized");
 
     const { data: settings } = await supabase.from("app_settings").select("*").single();
-    const { data: wallet } = await supabase.from("wallets").select("balance").eq("user_id", user.id).single();
+    const { data: wallet } = await supabase.from("wallets").select("*").eq("user_id", user.id).single();
 
-    if (!wallet || wallet.balance < data.amount) throw new Error("Insufficient balance");
-    if ((settings as any)?.withdrawals_enabled === false) throw new Error("Withdrawals are currently disabled");
+    if (!wallet || (wallet.balance ?? 0) < data.amount) throw new Error("Insufficient balance");
+    if (settings?.withdrawals_enabled === false) throw new Error("Withdrawals are currently disabled");
 
-    const mode = (settings as any)?.payment_mode || 'SIMULATION';
+    const mode = settings?.payment_mode || 'SIMULATION';
 
-    const { error: rpcError } = await supabase.rpc('request_withdrawal', {
+    const { error: rpcError } = await (supabase.rpc as any)('request_withdrawal', {
       p_amount: data.amount,
       p_pix_key: data.pixKey,
       p_pix_key_type: data.pixKeyType,
       p_provider: mode === 'SIMULATION' ? 'simulation' : 'asaas',
-      p_is_simulated: mode !== 'PRODUCTION'
+      p_is_simulated: mode !== 'PRODUCTION',
+      p_user_id: user.id
     });
 
     if (rpcError) throw rpcError;

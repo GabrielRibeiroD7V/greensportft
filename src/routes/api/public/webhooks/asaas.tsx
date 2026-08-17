@@ -10,6 +10,7 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         
         // 1. Signature Verification
         const webhookSecret = process.env['ASAAS_WEBHOOK_AUTH_TOKEN'];
+        const authToken = request.headers.get('asaas-access-token');
         
         if (webhookSecret && authToken !== webhookSecret) {
            console.error('[Asaas Webhook] Unauthorized attempt - Invalid token');

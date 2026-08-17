@@ -1,57 +1,38 @@
-# Sportsbook UI/UX Overhaul Plan
+# Plan: Hardening Authenticated Routes Visibility
 
-Transform the GreenSport public interface into a professional football-only sportsbook with high information density, navy-themed styling, and professional layouts while preserving existing functional navigation and logic.
+The goal is to eliminate the "blank screen" issue on `/wallet`, `/my-bets`, and `/account` by ensuring robust data loading, handling all states (loading, empty, error), and correcting layout constraints.
 
-## Technical Details
-- **Theme Updates**: Enforce `bg-slate-900` (Navy) for structural components (Header, Sidebar, Bet Slip headers) and high-density white cards for content.
-- **Components**: 
-    - Create `src/components/football/match-list-grouped.tsx` for league-grouped fixture display.
-    - Update `MatchCardCompact` for maximum density (1/X/2 odds in a single row).
-    - Update `BetSlipSidebar` to include "empty" states and summary sections as specified.
-- **Layout**: Refine `src/routes/football.tsx` for 3-column desktop (230px | flex:1 | 330px) and layer-based mobile view.
-- **Navigation**: Sync all links with TanStack Router typed search params (`tab`, `competition`, `q`).
+## User Review Required
+
+> [!IMPORTANT]
+> This fix involves updating the layout shell and specific private routes. If you have custom CSS overrides for these pages, please verify them after the update.
 
 ## Proposed Changes
 
-### 1. Global Layout & Header
-- **src/routes/__root.tsx**: 
-    - Update `Header` to be more compact (14px/16px height).
-    - Implement professional search bar with "Buscar time, campeonato ou partida".
-    - Add user balance and quick links (Minhas Apostas, Carteira) to the desktop header.
-- **src/components/layout/bottom-nav.tsx**: Add active state highlighting based on current URL params.
+### 1. Layout & Shell Stability
+- **`src/routes/__root.tsx`**: Add `min-h-[calc(100vh-48px)]` to the main `Outlet` container and ensure `pb-20` (padding bottom) is applied for mobile bottom navigation to prevent content from being hidden.
+- **`src/routes/_authenticated/route.tsx`**: Maintain `ssr: false` but add a visible loading skeleton while checking the session to prevent "flash of white".
 
-### 2. Sidebar Redesign (Desktop & Mobile Drawer)
-- **src/routes/football.tsx** & **src/components/layout/mobile-drawer.tsx**:
-    - Implement structured sections: EXPLORAR, MINHA ÁREA, PRINCIPAIS LIGAS, CONTA.
-    - Add match count badges to league names where available.
-    - Remove Admin link for non-admin users.
+### 2. Route Hardening (Wallet, My Bets, Account)
+- **`src/routes/_authenticated/wallet/index.tsx`**: 
+  - Add `WalletSkeleton` for the balance card and transaction table.
+  - Implement a dedicated "Carteira" header with subtext.
+  - Ensure the balance card always shows "R$ 0,00" if data is missing.
+  - Add summary cards for "Depositado", "Apostado", "Ganhos", "Sacado".
+- **`src/routes/_authenticated/my-bets/index.tsx`**:
+  - Add `BetsSkeleton`.
+  - Ensure filters are always visible even if no tickets exist.
+  - Implement "Você ainda não possui bilhetes" empty state with a "Ver Jogos" CTA.
+- **`src/routes/_authenticated/account/index.tsx`**:
+  - Add `AccountSkeleton`.
+  - Ensure profile and stats cards render with "0" or "N/A" instead of returning `null`.
 
-### 3. Football Feed Density
-- **src/routes/football.tsx**:
-    - Add "Futebol" context header with total match count.
-    - Implement "Atalhos Horizontais" (Ao Vivo, Hoje, Top Leagues) with scrollable mobile view.
-    - Group list by Competition with logo and country info.
-- **src/components/football/match-card-highlight.tsx**: 
-    - Desktop: Up to 3 cards side-by-side.
-    - Mobile: Carousel with partial visibility of next card.
+### 3. Data Flow & Security
+- **Server Functions**: Audit `getWalletData` to ensure it returns a consistent shape even for new users.
+- **Error Boundaries**: Wrap components in local error boundaries to show "Try Again" buttons rather than crashing the whole page.
 
-### 4. Match & Market Presentation
-- **src/components/football/match-card-compact.tsx**:
-    - Reduce vertical padding and font sizes for high density.
-    - Standardize 1/X/2 odd buttons with GreenSport "Selected" state.
-    - Add "LIVE" badge with pulse and elapsed time (if available).
-- **src/routes/football/match.$fixtureId.tsx**:
-    - Refine scoreboard visual.
-    - Categorize markets (Gols, Escanteios, etc.) using tabs.
-    - Display markets in compact rows (e.g., Over/Under pairs).
+## Technical Details
 
-### 5. Bet Slip Enhancements
-- **src/components/bet-slip/bet-slip-sidebar.tsx**:
-    - Add compact "Selecione uma cotação" empty state.
-    - Implement summary section with Stake, Payout, and "APOSTAR AGORA" CTA.
-- **src/components/bet-slip/bet-slip-drawer.tsx**:
-    - Ensure Sheet/Drawer preserves state and has a clear close mechanism.
-
-### 6. Validation & Stability
-- Run `bun run build` to verify no regressions in TypeScript or SSR.
-- Audit all navigation deep-links to ensure `tab` and `competition` params persist correctly.
+- **Skeleton Pattern**: Use `animate-pulse` and slate-based divs to match the high-density Navy theme.
+- **Mobile First**: Use `sticky top-12` for sub-headers on mobile to maintain context while scrolling.
+- **Null Safety**: Strict use of `Number(val || 0)` and `?.` operator across all financial displays.

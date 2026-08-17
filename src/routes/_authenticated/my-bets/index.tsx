@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
         const { data } = await supabase
           .from("betting_tickets")
           .select("*, betting_ticket_items(*)")
-          .eq("user_id", user?.id)
+          .eq("user_id", user?.id || '')
           .order("created_at", { ascending: false });
         return data || [];
       }

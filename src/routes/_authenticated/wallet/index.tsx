@@ -80,7 +80,7 @@ function WalletPageSkeleton() {
 }
 
 function WalletPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
   const { wallet, history, totals } = data as any;
 
   return (

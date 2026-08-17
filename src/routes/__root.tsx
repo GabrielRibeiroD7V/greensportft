@@ -155,7 +155,7 @@ function Header() {
         .eq('user_id', data.user.id)
         .single();
         
-      return { ...data.user, role: roleData?.role, balance: wallet?.balance || 0 };
+      return { ...data.user, role: roleData?.role, balance: Number(wallet?.balance || 0) };
     }
   }));
 

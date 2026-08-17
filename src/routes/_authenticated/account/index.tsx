@@ -33,8 +33,9 @@ export const Route = createFileRoute("/_authenticated/account/")({
         
         const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
         const totalTickets = stats?.length || 0;
-        const lastActivity = stats && stats.length > 0 
-          ? new Date(stats.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0].created_at || 0)
+        const sortedStats = [...(stats || [])].sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+        const lastActivity = sortedStats.length > 0 
+          ? new Date(sortedStats[0].created_at || 0)
           : null;
 
         return { 
@@ -78,7 +79,7 @@ function AccountPageSkeleton() {
 }
 
 function AccountPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any);
+  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
   const { user, profile, walletData, stats } = data as any;
   const [depositAmount, setDepositAmount] = useState("50");
   const queryClient = useQueryClient();

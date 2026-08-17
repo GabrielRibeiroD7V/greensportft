@@ -52,7 +52,7 @@ export const placeBet = createServerFn({ method: "POST" })
         .from('fixtures')
         .select('status, start_time, is_simulated')
         .eq('id', selection.fixtureId)
-        .single();
+        .maybeSingle();
         
       if (!fixture) throw new Error("FIXTURE_NOT_FOUND");
       
@@ -85,7 +85,7 @@ export const placeBet = createServerFn({ method: "POST" })
           )
         `)
         .eq('id', selection.selectionId || selection.fixtureId) // Selection ID is market_option ID, falling back to fixtureId if legacy
-        .single();
+        .maybeSingle();
 
       if (!option) throw new Error("ODD_NOT_FOUND");
 
@@ -147,7 +147,7 @@ export const placeBet = createServerFn({ method: "POST" })
       .from("betting_tickets")
       .select("ticket_code")
       .eq("id", ticketId)
-      .single();
+      .maybeSingle();
 
     return { success: true, ticketCode: ticket?.ticket_code };
   });

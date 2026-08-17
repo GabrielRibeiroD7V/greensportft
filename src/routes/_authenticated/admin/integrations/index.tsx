@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/admin/integrations/")({
         const { data } = await supabase
           .from("app_settings" as any)
           .select("football_data_mode, odds_data_mode, id")
-          .single();
+          .maybeSingle();
         return data;
       }
     }));

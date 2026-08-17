@@ -64,7 +64,7 @@ export const createDepositFn = createServerFn({ method: "POST" })
     const { data: settings } = await supabase
       .from("app_settings")
       .select("*")
-      .single();
+      .maybeSingle();
 
     const mode = settings?.payment_mode || 'SIMULATION';
     const minDeposit = Number(settings?.min_deposit || 10);
@@ -141,8 +141,8 @@ export const requestWithdrawalFn = createServerFn({ method: "POST" })
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const { data: settings } = await supabase.from("app_settings").select("*").single();
-    const { data: wallet } = await supabase.from("wallets").select("*").eq("user_id", user.id).single();
+    const { data: settings } = await supabase.from("app_settings").select("*").maybeSingle();
+    const { data: wallet } = await supabase.from("wallets").select("*").eq("user_id", user.id).maybeSingle();
 
     if (!wallet || (wallet.balance ?? 0) < data.amount) throw new Error("Insufficient balance");
     if (settings?.withdrawals_enabled === false) throw new Error("Withdrawals are currently disabled");

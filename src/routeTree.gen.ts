@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminFinanceIndexRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminIntegrationsIndexRouteImport } from './routes/_authenticated/admin/integrations/index'
 import { Route as AuthenticatedAdminLogsIndexRouteImport } from './routes/_authenticated/admin/logs/index'
 import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
+import { Route as ApiPublicWebhooksAsaasRouteImport } from './routes/api/public/webhooks/asaas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -141,6 +142,11 @@ const AuthenticatedAdminSettingsIndexRoute =
     path: '/settings/',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const ApiPublicWebhooksAsaasRoute = ApiPublicWebhooksAsaasRouteImport.update({
+  id: '/api/public/webhooks/asaas',
+  path: '/api/public/webhooks/asaas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/my-bets/': typeof AuthenticatedMyBetsIndexRoute
   '/wallet/': typeof AuthenticatedWalletIndexRoute
+  '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
   '/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/my-bets': typeof AuthenticatedMyBetsIndexRoute
   '/wallet': typeof AuthenticatedWalletIndexRoute
+  '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/admin/finance': typeof AuthenticatedAdminFinanceIndexRoute
   '/admin/integrations': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/admin/logs': typeof AuthenticatedAdminLogsIndexRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/my-bets/': typeof AuthenticatedMyBetsIndexRoute
   '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
+  '/api/public/webhooks/asaas': typeof ApiPublicWebhooksAsaasRoute
   '/_authenticated/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
   '/_authenticated/admin/integrations/': typeof AuthenticatedAdminIntegrationsIndexRoute
   '/_authenticated/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
@@ -224,6 +233,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/my-bets/'
     | '/wallet/'
+    | '/api/public/webhooks/asaas'
     | '/admin/finance/'
     | '/admin/integrations/'
     | '/admin/logs/'
@@ -244,6 +254,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/my-bets'
     | '/wallet'
+    | '/api/public/webhooks/asaas'
     | '/admin/finance'
     | '/admin/integrations'
     | '/admin/logs'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/my-bets/'
     | '/_authenticated/wallet/'
+    | '/api/public/webhooks/asaas'
     | '/_authenticated/admin/finance/'
     | '/_authenticated/admin/integrations/'
     | '/_authenticated/admin/logs/'
@@ -277,6 +289,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   FootballRoute: typeof FootballRoute
+  ApiPublicWebhooksAsaasRoute: typeof ApiPublicWebhooksAsaasRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -421,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/api/public/webhooks/asaas': {
+      id: '/api/public/webhooks/asaas'
+      path: '/api/public/webhooks/asaas'
+      fullPath: '/api/public/webhooks/asaas'
+      preLoaderRoute: typeof ApiPublicWebhooksAsaasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -483,6 +503,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   FootballRoute: FootballRoute,
+  ApiPublicWebhooksAsaasRoute: ApiPublicWebhooksAsaasRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

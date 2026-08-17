@@ -75,7 +75,7 @@ export const placeBet = createServerFn({ method: "POST" })
 
     const { error: itemsError } = await supabase
       .from("betting_ticket_items")
-      .insert(itemsToInsert);
+      .insert(itemsToInsert as any);
 
     if (itemsError) throw itemsError;
 

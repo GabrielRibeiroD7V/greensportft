@@ -45,13 +45,15 @@ function FootballPage() {
     setIsSubmitting(true);
     try {
       const result = await placeBetFn({
-        selections: selections.map(s => ({
-          fixtureId: s.fixtureId,
-          marketName: s.marketName,
-          selectionName: s.selectionName,
-          odd: s.odd,
-        })),
-        stake,
+        data: {
+          selections: selections.map(s => ({
+            fixtureId: s.fixtureId,
+            marketName: s.marketName,
+            selectionName: s.selectionName,
+            odd: s.odd,
+          })),
+          stake,
+        }
       });
       toast.success(`Aposta realizada com sucesso! Código: ${result.ticketCode}`);
       setSelections([]);

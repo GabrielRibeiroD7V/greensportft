@@ -12,8 +12,16 @@ export const pricingConfigSchema = z.object({
 export type PricingConfig = z.infer<typeof pricingConfigSchema>;
 
 export async function getPricingConfig(): Promise<PricingConfig> {
-  // We'll simulate fetching from DB for now as app_settings might not exist in schema yet
-  return pricingConfigSchema.parse({});
+  const { data, error } = await supabase
+    .from("app_settings")
+    .select("*")
+    .single();
+
+  if (error || !data) {
+    return pricingConfigSchema.parse({});
+  }
+
+  return pricingConfigSchema.parse(data);
 }
 
 export function calculateDisplayOdd(providerOdd: number, marginPercentage: number): number {

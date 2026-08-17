@@ -2,32 +2,33 @@ import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import { AsaasPaymentProvider } from "./payments/asaas.provider";
-import { requireSupabaseAuth } from "@/start";
 
 export const getWalletData = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data: wallet, error: walletError } = await context.supabase
+  .handler(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: wallet, error: walletError } = await supabase
       .from("wallets")
       .select("*")
-      .eq("user_id", context.userId)
+      .eq("user_id", user.id)
       .single();
 
     if (walletError) throw walletError;
 
-    const { data: recentTransactions, error: txError } = await context.supabase
+    const { data: recentTransactions, error: txError } = await supabase
       .from("ledger")
       .select("*")
-      .eq("user_id", context.userId)
+      .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(10);
 
     if (txError) throw txError;
 
-    const { data: activeDeposits, error: depError } = await context.supabase
+    const { data: activeDeposits, error: depError } = await supabase
       .from("deposits")
       .select("*")
-      .eq("user_id", context.userId)
+      .eq("user_id", user.id)
       .eq("status", "PENDING")
       .order("created_at", { ascending: false });
 
@@ -41,13 +42,15 @@ export const getWalletData = createServerFn({ method: "GET" })
   });
 
 export const createDepositFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({
-    amount: z.number().min(10), // This should ideally come from app_settings
+    amount: z.number().min(10),
   }).parse(data))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
     // 1. Get settings
-    const { data: settings } = await context.supabase
+    const { data: settings } = await supabase
       .from("app_settings")
       .select("*")
       .single();
@@ -56,17 +59,18 @@ export const createDepositFn = createServerFn({ method: "POST" })
     const minDeposit = Number((settings as any)?.min_deposit || 10);
     const maxDeposit = Number((settings as any)?.max_deposit || 10000);
     const depositsEnabled = (settings as any)?.deposits_enabled !== false;
+    const asaasKey = (settings as any)?.asaas_api_key;
 
     if (!depositsEnabled) throw new Error("Deposits are currently disabled");
     if (data.amount < minDeposit) throw new Error(`Minimum deposit is R$ ${minDeposit}`);
     if (data.amount > maxDeposit) throw new Error(`Maximum deposit is R$ ${maxDeposit}`);
 
-    const externalReference = `DEP_${context.userId}_${Date.now()}`;
+    const externalReference = `DEP_${user.id}_${Date.now()}`;
     
     // 2. Routing between providers
-    if (mode === 'SIMULATION') {
-      const { data: deposit, error } = await context.supabase.from("deposits").insert({
-        user_id: context.userId,
+    if (mode === 'SIMULATION' || !asaasKey) {
+      const { data: deposit, error } = await supabase.from("deposits").insert({
+        user_id: user.id,
         amount: data.amount,
         status: 'PENDING',
         provider: 'simulation',
@@ -78,29 +82,22 @@ export const createDepositFn = createServerFn({ method: "POST" })
       return { deposit };
     } else {
       // Real Asaas Integration
-      const asaas = new AsaasPaymentProvider();
+      const asaasMode = mode === 'PRODUCTION' ? 'PRODUCTION' : 'SANDBOX';
+      const asaas = new AsaasPaymentProvider(asaasKey, asaasMode);
       
-      // We need user info for Asaas (name, cpf/email)
-      // In a real app, we'd fetch these from a profiles table
-      const { data: profile } = await context.supabase
+      const { data: profile } = await supabase
         .from("profiles" as any)
         .select("*")
-        .eq("id", context.userId)
+        .eq("id", user.id)
         .single();
 
       const asaasResult = await asaas.createDeposit({
         amount: data.amount,
-        userId: context.userId,
-        externalReference,
-        customer: {
-          name: (profile as any)?.full_name || 'Usuário GreenSport',
-          cpfCnpj: (profile as any)?.cpf || '00000000000', // Placeholder
-          email: (profile as any)?.email
-        }
+        externalReference
       });
 
-      const { data: deposit, error } = await context.supabase.from("deposits").insert({
-        user_id: context.userId,
+      const { data: deposit, error } = await supabase.from("deposits").insert({
+        user_id: user.id,
         amount: data.amount,
         status: 'PENDING',
         provider: 'asaas',
@@ -109,7 +106,7 @@ export const createDepositFn = createServerFn({ method: "POST" })
         is_simulated: mode !== 'PRODUCTION',
         pix_qr_code: asaasResult.pixQrCode,
         pix_copy_paste: asaasResult.pixCopyPaste,
-        expires_at: asaasResult.expiresAt.toISOString()
+        expires_at: asaasResult.expiresAt ? new Date(asaasResult.expiresAt).toISOString() : null
       }).select().single();
 
       if (error) throw error;
@@ -118,24 +115,24 @@ export const createDepositFn = createServerFn({ method: "POST" })
   });
 
 export const requestWithdrawalFn = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator((data: unknown) => z.object({
     amount: z.number().min(20),
     pixKey: z.string().min(5),
     pixKeyType: z.enum(['CPF', 'EMAIL', 'PHONE', 'RANDOM'])
   }).parse(data))
-  .handler(async ({ data, context }) => {
-    // 1. Get settings and wallet
-    const { data: settings } = await context.supabase.from("app_settings").select("*").single();
-    const { data: wallet } = await context.supabase.from("wallets").select("balance").eq("user_id", context.userId).single();
+  .handler(async ({ data }) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: settings } = await supabase.from("app_settings").select("*").single();
+    const { data: wallet } = await supabase.from("wallets").select("balance").eq("user_id", user.id).single();
 
     if (!wallet || wallet.balance < data.amount) throw new Error("Insufficient balance");
     if ((settings as any)?.withdrawals_enabled === false) throw new Error("Withdrawals are currently disabled");
 
     const mode = (settings as any)?.payment_mode || 'SIMULATION';
 
-    // Atomic withdrawal request (stored procedure/RPC for balance lock recommended but let's use transaction logic)
-    const { error: rpcError } = await context.supabase.rpc('request_withdrawal', {
+    const { error: rpcError } = await supabase.rpc('request_withdrawal', {
       p_amount: data.amount,
       p_pix_key: data.pixKey,
       p_pix_key_type: data.pixKeyType,

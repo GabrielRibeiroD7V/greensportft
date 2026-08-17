@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { getFixtures, getCompetitions } from "@/lib/football.functions";
@@ -19,13 +19,19 @@ const fixturesQueryOptions = queryOptions({
   queryFn: () => getFixtures(),
 });
 
+type FootballSearch = {
+  tab?: 'all' | 'live' | 'today' | 'tomorrow' | 'upcoming' | undefined;
+  competition?: string | undefined;
+  q?: string | undefined;
+};
+
 export const Route = createFileRoute("/football")({
-  validateSearch: (search: Record<string, unknown>) => {
+  validateSearch: (search: Record<string, unknown>): FootballSearch => {
     return {
-      tab: (search['tab'] as string) || 'all',
+      tab: (search['tab'] as any) || 'all',
       competition: (search['competition'] as string) || undefined,
       q: (search['q'] as string) || undefined,
-    } as const;
+    };
   },
   loader: ({ context }) => context.queryClient.ensureQueryData(fixturesQueryOptions),
   component: FootballPage,
@@ -58,7 +64,7 @@ function FootballPage() {
     return true;
   });
 
-  const categories = [
+  const categories: { label: string; value: FootballSearch['tab'] }[] = [
     { label: "Tudo", value: "all" },
     { label: "Ao Vivo", value: "live" },
     { label: "Hoje", value: "today" },
@@ -192,6 +198,7 @@ function FootballPage() {
                                         <Link 
                                             to="/football/match/$fixtureId" 
                                             params={{ fixtureId: fixture.id }}
+                                            search={{ tab, competition, q }}
                                             className="flex-1 flex items-center px-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors h-full"
                                         >
                                             <div className="flex flex-col gap-1 w-full">
@@ -241,6 +248,7 @@ function FootballPage() {
                                             <Link 
                                                 to="/football/match/$fixtureId" 
                                                 params={{ fixtureId: fixture.id }}
+                                                search={{ tab, competition, q }}
                                                 className="text-[9px] font-black text-slate-400 hover:text-green-500 uppercase tracking-widest px-2"
                                             >
                                                 +{fixture.markets?.length || 0}

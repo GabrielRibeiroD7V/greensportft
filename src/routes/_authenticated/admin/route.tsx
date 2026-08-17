@@ -126,6 +126,7 @@ function AdminLayout() {
 
           <Link 
             to="/football" 
+            search={{ tab: 'all', competition: undefined, q: undefined }}
             className="flex items-center gap-3 px-3 py-2 mt-4 rounded-lg border border-slate-800 hover:bg-slate-800 hover:text-white transition-colors text-sm"
           >
             <ShieldCheck className="h-4 w-4 text-green-500" />

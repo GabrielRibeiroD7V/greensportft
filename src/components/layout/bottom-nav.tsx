@@ -10,7 +10,7 @@ export function BottomNav() {
       <Link 
         to="/football" 
         search={{ tab: 'all' }}
-        className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
+        className="flex flex-col items-center gap-1 text-slate-500 transition-colors [&.active]:text-green-500"
       >
         <SoccerBall className="h-5 w-5" />
         <span className="text-[10px] font-black uppercase tracking-tight">Futebol</span>
@@ -19,7 +19,7 @@ export function BottomNav() {
       <Link 
         to="/football" 
         search={{ tab: 'live' }}
-        className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
+        className="flex flex-col items-center gap-1 text-slate-500 transition-colors [&.active]:text-green-500"
       >
         <Radio className="h-5 w-5" />
         <span className="text-[10px] font-black uppercase tracking-tight">Ao Vivo</span>
@@ -40,7 +40,7 @@ export function BottomNav() {
       <Link 
         to="/my-bets" 
         search={{ status: 'all' }}
-        className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
+        className="flex flex-col items-center gap-1 text-slate-500 transition-colors [&.active]:text-green-500"
       >
         <History className="h-5 w-5" />
         <span className="text-[10px] font-black uppercase tracking-tight">Apostas</span>
@@ -48,7 +48,7 @@ export function BottomNav() {
       
       <Link 
         to="/wallet" 
-        className="flex flex-col items-center gap-1 text-slate-400 [&.active]:text-green-500"
+        className="flex flex-col items-center gap-1 text-slate-500 transition-colors [&.active]:text-green-500"
       >
         <Wallet className="h-5 w-5" />
         <span className="text-[10px] font-black uppercase tracking-tight">Carteira</span>

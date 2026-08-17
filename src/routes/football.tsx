@@ -90,67 +90,76 @@ function FootballPage() {
   return (
     <div className="flex h-[calc(100vh-3.5rem)] md:h-[calc(100vh-4rem)] bg-slate-50 dark:bg-[#0f172a] overflow-hidden">
       {/* Sidebar Desktop */}
-      <aside className="w-[240px] border-r border-slate-800 bg-slate-900 hidden md:flex flex-col shrink-0">
+      <aside className="w-[230px] border-r border-slate-800 bg-slate-950 hidden md:flex flex-col shrink-0">
         <ScrollArea className="flex-1">
           <div className="p-3 space-y-6">
             <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Explorar</h3>
-              <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <SoccerBall className="h-4 w-4" /> Futebol
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Explorar</h3>
+              <Link to="/football" search={{ tab: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <SoccerBall className="h-3.5 w-3.5" /> Futebol
               </Link>
-              <Link to="/football" search={{ tab: 'live' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Radio className="h-4 w-4 text-red-500" /> Ao Vivo
+              <Link to="/football" search={{ tab: 'live' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Radio className="h-3.5 w-3.5 text-red-500" /> Ao Vivo
               </Link>
-              <Link to="/football" search={{ tab: 'today' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Hoje
+              <Link to="/football" search={{ tab: 'today' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Hoje
               </Link>
-              <Link to="/football" search={{ tab: 'tomorrow' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Amanhã
+              <Link to="/football" search={{ tab: 'tomorrow' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Amanhã
               </Link>
-              <Link to="/football" search={{ tab: 'upcoming' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold transition-colors [&.active]:bg-slate-800 [&.active]:text-white text-slate-400">
-                <Calendar className="h-4 w-4" /> Próximos
-              </Link>
-            </section>
-
-            <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Minha Área</h3>
-              <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <div className="flex items-center gap-3">
-                  <History className="h-4 w-4" /> Minhas Apostas
-                </div>
-              </Link>
-              <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <div className="flex items-center gap-3">
-                  <Ticket className="h-4 w-4" /> Bilhetes em Aberto
-                </div>
-              </Link>
-              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <Wallet className="h-4 w-4" /> Carteira
-              </Link>
-              <Link to="/account" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-800 text-xs font-bold text-slate-400 transition-colors [&.active]:bg-slate-800 [&.active]:text-white">
-                <Star className="h-4 w-4" /> Conta
+              <Link to="/football" search={{ tab: 'upcoming' }} className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold transition-colors [&.active]:bg-slate-900 [&.active]:text-white text-slate-400">
+                <Calendar className="h-3.5 w-3.5" /> Próximos
               </Link>
             </section>
 
             <section className="space-y-1">
-              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Principais Ligas</h3>
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Minha Área</h3>
+              <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
+                <div className="flex items-center gap-3">
+                  <History className="h-3.5 w-3.5" /> Minhas Apostas
+                </div>
+              </Link>
+              <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center justify-between px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
+                <div className="flex items-center gap-3">
+                  <Ticket className="h-3.5 w-3.5" /> Bilhetes em Aberto
+                </div>
+              </Link>
+              <Link to="/wallet" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors [&.active]:bg-slate-900 [&.active]:text-white">
+                <Wallet className="h-3.5 w-3.5" /> Carteira
+              </Link>
+            </section>
+
+            <section className="space-y-1">
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Principais Ligas</h3>
               {allCompetitions.map((comp: any) => (
                 <Link 
                   key={comp.id}
                   to="/football"
                   search={{ competition: comp.name }}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-bold transition-all ${competition === comp.name ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800'}`}
+                  className={`flex items-center justify-between px-3 py-2 rounded text-[11px] font-bold transition-all ${competition === comp.name ? 'bg-slate-900 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-900'}`}
                 >
                   <div className="flex items-center gap-3 truncate">
                       {comp.logo_url ? (
-                        <img src={comp.logo_url} alt="" className="h-4 w-4 object-contain" />
+                        <img src={comp.logo_url} alt="" className="h-3.5 w-3.5 object-contain" />
                       ) : (
-                        <Trophy className="h-4 w-4 opacity-20" />
+                        <Trophy className="h-3.5 w-3.5 opacity-20" />
                       )}
                       <span className="truncate">{comp.name}</span>
                   </div>
                 </Link>
               ))}
+            </section>
+            <section className="space-y-1 pt-4 border-t border-slate-900">
+              <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-600">Conta</h3>
+              <Link to="/rules" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Regras
+              </Link>
+              <Link to="/support" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Suporte
+              </Link>
+              <Link to="/account" className="flex items-center gap-3 px-3 py-2 rounded hover:bg-slate-900 text-[11px] font-bold text-slate-400 transition-colors">
+                Minha Conta
+              </Link>
             </section>
           </div>
         </ScrollArea>
@@ -165,7 +174,7 @@ function FootballPage() {
               key={idx}
               to="/football"
               search={{ tab: s.tab as any }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${tab === s.tab && !competition ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${tab === s.tab && !competition ? 'bg-green-600 border-green-600 text-white font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               <s.icon className={`h-3.5 w-3.5 ${s.color || ''}`} />
               <span className="text-[10px] uppercase tracking-widest">{s.label}</span>
@@ -176,7 +185,7 @@ function FootballPage() {
               key={comp.id}
               to="/football"
               search={{ competition: comp.name }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${competition === comp.name ? 'bg-green-600 border-green-600 text-white font-black' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full border whitespace-nowrap transition-all ${competition === comp.name ? 'bg-green-600 border-green-600 text-white font-black shadow-sm' : 'bg-slate-50 dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-400 font-bold'}`}
             >
               {comp.logo_url && <img src={comp.logo_url} className="h-3.5 w-3.5 object-contain" alt="" />}
               <span className="text-[10px] uppercase tracking-widest">{comp.name}</span>
@@ -186,15 +195,21 @@ function FootballPage() {
 
         <div className="p-4 md:p-6 space-y-8 max-w-[1200px] mx-auto">
           {/* Carrossel de Banners Oficiais */}
-          <HomeBannerCarousel />
+          <div className="rounded-xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-800">
+            <HomeBannerCarousel />
+          </div>
 
           {/* Seção Destaques */}
           {highlights.length > 0 && (
             <section className="space-y-4">
               <div className="flex items-center justify-between px-1">
-                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Destaques</h2>
+                <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Destaques</h2>
+                <div className="flex gap-1">
+                   <div className="w-2 h-0.5 bg-green-500 rounded-full" />
+                   <div className="w-1 h-0.5 bg-slate-300 rounded-full" />
+                </div>
               </div>
-              <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+              <div className="flex gap-4 overflow-x-auto pb-4 snap-x scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
                 {highlights.map(f => (
                   <MatchCardHighlight key={f.id} fixture={f} />
                 ))}
@@ -204,10 +219,9 @@ function FootballPage() {
 
           {/* Lista Principal Grouped */}
           <section className="space-y-6">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                {competition || (tab === 'live' ? 'Partidas Ao Vivo' : 'Próximas Partidas')}
-              </h2>
+            <div className="flex flex-col gap-1 px-1">
+              <h2 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">Futebol</h2>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{filteredFixtures.length} partidas disponíveis</p>
             </div>
             
             <div className="space-y-8">
@@ -221,9 +235,9 @@ function FootballPage() {
                   }, {} as Record<string, typeof filteredFixtures>)
                 ).map(([compName, compFixtures]) => (
                   <div key={compName} className="space-y-3">
-                    <div className="flex items-center gap-2 px-1">
+                    <div className="flex items-center gap-2 px-1 border-b border-slate-100 dark:border-slate-800 pb-2 mb-2">
                       <div className="w-1 h-3 bg-green-500 rounded-full" />
-                      <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300">{compName}</h3>
+                      <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">{compName}</h3>
                     </div>
                     <div className="grid gap-2">
                       {compFixtures.map(f => (
@@ -247,7 +261,7 @@ function FootballPage() {
       <div className={`
         flex-none transition-all duration-300 overflow-hidden
         hidden lg:block
-        ${selections.length > 0 ? 'w-[360px] border-l border-slate-800' : 'w-0'}
+        w-[330px] border-l border-slate-800
       `}>
         <BetSlipSidebar />
       </div>

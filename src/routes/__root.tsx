@@ -160,7 +160,7 @@ function Header() {
   }));
 
   return (
-    <header className="h-14 md:h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
+    <header className="h-14 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
       <div className="h-full max-w-[1600px] mx-auto px-3 md:px-4 flex items-center justify-between">
         <div className="flex items-center gap-2 md:gap-8">
           <MobileDrawer userRole={user?.role} />
@@ -169,11 +169,11 @@ function Header() {
             <img 
               src={logoAsset.url} 
               alt="GreenSport" 
-              className="h-[38px] md:h-[55px] w-auto object-contain"
+              className="h-[38px] md:h-[45px] w-auto object-contain"
             />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-6">
+          <nav className="hidden lg:flex items-center gap-6">
             <Link to="/football" search={{ tab: 'all' }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Futebol</Link>
             <Link to="/football" search={{ tab: 'live' }} className="text-[10px] font-black uppercase tracking-widest text-slate-300 hover:text-white transition-colors [&.active]:text-green-500">Ao Vivo</Link>
           </nav>
@@ -181,35 +181,36 @@ function Header() {
 
         <div className="hidden md:flex flex-1 max-w-sm mx-4">
             <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3 w-3 text-slate-500" />
               <input 
                   type="text" 
-                  placeholder="Buscar time ou liga..." 
-                  className="w-full bg-slate-800 border-none rounded-md pl-9 pr-3 py-1.5 text-xs text-white placeholder:text-slate-500 focus:ring-1 focus:ring-green-500 outline-none"
+                  placeholder="Buscar time, campeonato ou partida" 
+                  className="w-full bg-slate-800 border-none rounded-md pl-8 pr-3 py-1.5 text-[10px] text-white placeholder:text-slate-500 focus:ring-1 focus:ring-green-500 outline-none uppercase font-bold"
               />
             </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-6">
           <button className="p-2 md:hidden text-slate-300">
             <Search className="h-5 w-5" />
           </button>
           
           {user ? (
-            <>
+            <div className="flex items-center gap-4">
+              <Link to="/my-bets" search={{ status: 'all' }} className="hidden md:block text-[10px] font-black uppercase text-slate-300 hover:text-white">Minhas Apostas</Link>
               <div className="flex flex-col items-end">
-                <span className="text-[8px] md:text-[9px] font-black uppercase text-slate-400 leading-none">Saldo</span>
-                <span className="font-black text-[11px] md:text-xs text-green-500">R$ {Number(user.balance).toFixed(2)}</span>
+                <span className="text-[8px] font-black uppercase text-slate-500 leading-none">Saldo</span>
+                <span className="font-black text-[11px] text-green-500">R$ {Number(user.balance).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
               </div>
-              <Link to="/account" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-black border border-slate-700 capitalize text-xs">
+              <Link to="/account" className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-white font-black border border-slate-700 capitalize text-xs hover:border-green-500 transition-colors">
                 {user.email?.[0]}
               </Link>
-            </>
+            </div>
           ) : (
             <div className="flex items-center gap-2">
                 <Link to="/auth" search={{ redirect: undefined }} className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-2">Entrar</Link>
                 <Link to="/auth" search={{ redirect: undefined }}>
-                    <Button size="sm" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] h-8 md:h-9 bg-green-600 hover:bg-green-700">Criar conta</Button>
+                    <Button size="sm" className="font-black uppercase tracking-widest text-[9px] h-8 bg-green-600 hover:bg-green-700">Criar conta</Button>
                 </Link>
             </div>
           )}

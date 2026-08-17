@@ -26,13 +26,13 @@ export const getAdminStats = createServerFn({ method: "GET" }).handler(async () 
   let exposicaoBruta = 0;
 
   ticketStats?.forEach(ticket => {
-    const ticketDate = new Date(ticket.created_at);
+    const ticketDate = ticket.created_at ? new Date(ticket.created_at) : null;
     const stake = Number(ticket.stake);
     
-    if (ticketDate >= todayStart) {
+    if (ticketDate && ticketDate >= todayStart) {
       totalApostadoHoje += stake;
     }
-    if (ticketDate >= monthStart) {
+    if (ticketDate && ticketDate >= monthStart) {
       totalApostadoMes += stake;
     }
     if (ticket.status === 'PENDING') {
@@ -60,7 +60,7 @@ export const getAdminStats = createServerFn({ method: "GET" }).handler(async () 
     stats: {
       totalApostadoHoje,
       totalApostadoMes,
-      bilhetesHoje: ticketStats?.filter(t => new Date(t.created_at) >= todayStart).length || 0,
+      bilhetesHoje: ticketStats?.filter(t => t.created_at && new Date(t.created_at) >= todayStart).length || 0,
       bilhetesPendentes,
       usuariosCadastrados: userCount || 0,
       exposicaoMaxima: exposicaoBruta,

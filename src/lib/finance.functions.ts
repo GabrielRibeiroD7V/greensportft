@@ -18,9 +18,9 @@ export const getWalletData = createServerFn({ method: "GET" })
     if (walletError) throw walletError;
 
     const { data: recentTransactions, error: txError } = await supabase
-      .from("ledger")
+      .from("wallet_transactions")
       .select("*")
-      .eq("user_id", user.id)
+      .eq("wallet_id", wallet.id)
       .order("created_at", { ascending: false })
       .limit(10);
 
@@ -60,7 +60,7 @@ export const createDepositFn = createServerFn({ method: "POST" })
     const minDeposit = Number(settings?.min_deposit || 10);
     const maxDeposit = Number(settings?.max_deposit || 10000);
     const depositsEnabled = settings?.deposits_enabled !== false;
-    const asaasKey = (settings as any)?.asaas_api_key; // asaas_api_key might not be in types yet if not added to Row
+    const asaasKey = (settings as any)?.asaas_api_key;
 
     if (!depositsEnabled) throw new Error("Deposits are currently disabled");
     if (data.amount < minDeposit) throw new Error(`Minimum deposit is R$ ${minDeposit}`);
@@ -81,8 +81,11 @@ export const createDepositFn = createServerFn({ method: "POST" })
         pix_qr_code: null,
         expires_at: null,
         provider_payment_id: null,
-        provider_status: 'PENDING'
-      } as Database["public"]["Tables"]["deposits"]["Insert"]).select().single();
+        provider_status: 'PENDING',
+        error_log: null,
+        idempotency_key: null,
+        paid_at: null
+      }).select().single();
 
       if (error) throw error;
       return { deposit };
@@ -107,8 +110,11 @@ export const createDepositFn = createServerFn({ method: "POST" })
         pix_qr_code: asaasResult.pixQrCode || null,
         pix_copy_paste: asaasResult.pixCopyPaste || null,
         expires_at: asaasResult.expiresAt ? new Date(asaasResult.expiresAt).toISOString() : null,
-        provider_status: asaasResult.providerStatus
-      } as Database["public"]["Tables"]["deposits"]["Insert"]).select().single();
+        provider_status: asaasResult.providerStatus,
+        error_log: null,
+        idempotency_key: null,
+        paid_at: null
+      }).select().single();
 
       if (error) throw error;
       return { deposit };
@@ -135,11 +141,11 @@ export const requestWithdrawalFn = createServerFn({ method: "POST" })
 
     const { error: rpcError } = await (supabase.rpc as any)('request_withdrawal', {
       p_amount: data.amount,
+      p_user_id: user.id,
       p_pix_key: data.pixKey,
       p_pix_key_type: data.pixKeyType,
       p_provider: mode === 'SIMULATION' ? 'simulation' : 'asaas',
-      p_is_simulated: mode !== 'PRODUCTION',
-      p_user_id: user.id
+      p_is_simulated: mode !== 'PRODUCTION'
     });
 
     if (rpcError) throw rpcError;

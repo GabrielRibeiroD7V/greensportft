@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, redirect } from "@tanstack/react-router";
 import { 
   LayoutDashboard, 
   Ticket, 
@@ -10,8 +10,24 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: async () => {
+    // 1. Get user role from DB
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw redirect({ to: '/auth' });
+
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+
+    if (roleData?.role !== 'admin') {
+      throw redirect({ to: '/football' });
+    }
+  },
   component: AdminLayout,
 });
 
@@ -19,7 +35,7 @@ function AdminLayout() {
   return (
     <div className="flex h-screen bg-slate-100 dark:bg-slate-950">
       {/* Sidebar Admin */}
-      <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col">
+      <aside className="w-60 bg-slate-900 text-slate-300 flex flex-col shrink-0">
         <div className="p-6 flex items-center gap-3 border-b border-slate-800">
           <div className="w-8 h-8 bg-green-500 rounded flex items-center justify-center text-white">
             <ShieldCheck className="h-5 w-5" />
@@ -57,13 +73,12 @@ function AdminLayout() {
             <span className="font-medium">Partidas</span>
           </Link>
           <Link 
-            to="/football" 
+            to="/admin/finance" 
             className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white"
           >
-            <ShieldCheck className="h-5 w-5 text-green-500" />
-            <span className="font-medium text-green-500">Ver Site</span>
+            <Settings className="h-5 w-5" />
+            <span className="font-medium">Financeiro</span>
           </Link>
-
           
           <div className="pt-4 pb-2 px-4 text-[10px] font-black uppercase text-slate-500 tracking-widest">Relatórios</div>
           <Link 
@@ -73,10 +88,39 @@ function AdminLayout() {
             <BarChart3 className="h-5 w-5" />
             <span className="font-medium">Exposição</span>
           </Link>
+          <Link 
+            to="/admin/logs" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white"
+          >
+            <Settings className="h-5 w-5" />
+            <span className="font-medium">Logs</span>
+          </Link>
+          <Link 
+            to="/admin/settings" 
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 hover:text-white transition-colors [&.active]:bg-green-600 [&.active]:text-white"
+          >
+            <Settings className="h-5 w-5" />
+            <span className="font-medium">Configurações</span>
+          </Link>
+
+          <Link 
+            to="/football" 
+            className="flex items-center gap-3 px-4 py-3 mt-4 rounded-lg border border-slate-800 hover:bg-slate-800 hover:text-white transition-colors"
+          >
+            <ShieldCheck className="h-5 w-5 text-green-500" />
+            <span className="font-medium text-green-500">Ver Site</span>
+          </Link>
         </nav>
 
         <div className="p-4 border-t border-slate-800">
-          <Button variant="ghost" className="w-full justify-start gap-3 text-slate-400 hover:text-white hover:bg-slate-800">
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start gap-3 text-slate-400 hover:text-white hover:bg-slate-800"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = '/football';
+            }}
+          >
             <LogOut className="h-5 w-5" />
             <span>Sair</span>
           </Button>
@@ -84,8 +128,10 @@ function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto">
-        <Outlet />
+      <main className="flex-1 overflow-y-auto p-8">
+        <div className="max-w-(--breakpoint-2xl) mx-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

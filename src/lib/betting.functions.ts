@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { getPricingConfig } from "./pricing.server";
 
 const betSelectionSchema = z.object({
   fixtureId: z.string().uuid(),
@@ -18,6 +19,24 @@ const placeBetSchema = z.object({
 export const placeBet = createServerFn({ method: "POST" })
   .validator((data: unknown) => placeBetSchema.parse(data))
   .handler(async ({ data }) => {
+    const config = await getPricingConfig();
+    
+    if (!config.betting_enabled) {
+      throw new Error("As apostas estão temporariamente desabilitadas.");
+    }
+    
+    if (data.stake < config.min_stake) {
+      throw new Error(`Aposta mínima é de R$ ${config.min_stake.toFixed(2)}`);
+    }
+
+    if (config.max_stake && data.stake > config.max_stake) {
+      throw new Error(`Aposta máxima é de R$ ${config.max_stake.toFixed(2)}`);
+    }
+
+    if (data.selections.length > config.max_ticket_selections) {
+      throw new Error(`Máximo de ${config.max_ticket_selections} seleções por bilhete.`);
+    }
+
     // 1. Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser();
     if (userError || !user) {

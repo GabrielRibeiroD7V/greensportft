@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, redirect } from '@tanstack/react-router'
 import { supabase } from '@/integrations/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -7,6 +7,12 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 
 export const Route = createFileRoute('/auth')({
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      throw redirect({ to: '/football' });
+    }
+  },
   head: () => ({
     meta: [
       { title: 'Entrar | GreenSport' },
@@ -38,9 +44,21 @@ function AuthPage() {
     setLoading(true)
     try {
       if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        navigate({ to: '/admin' })
+        
+        // Check role to decide where to go
+        const { data: roleData } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', data.user.id)
+          .single();
+          
+        if (roleData?.role === 'admin') {
+          navigate({ to: '/admin' })
+        } else {
+          navigate({ to: '/football' })
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email,

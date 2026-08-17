@@ -1,11 +1,11 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useSuspenseQuery, queryOptions, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Mail, Shield, Wallet, QrCode, Copy, RefreshCw, BarChart3, Clock, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, Suspense } from "react";
+import { useState } from "react";
 import { createDepositFn, getWalletData } from "@/lib/finance.functions";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,46 +13,55 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/account/")({
   pendingComponent: AccountPageSkeleton,
   loader: async ({ context }) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
-    
-    return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["user-account-data", user.id],
-      queryFn: async () => {
-        const { data: roleData } = await supabase
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw redirect({ to: '/auth', search: { redirect: '/account' } as any });
+      
+      const [{ data: roleData }, walletData, { data: stats }] = await Promise.all([
+        supabase
           .from('user_roles')
           .select('role')
           .eq('user_id', user.id)
-          .maybeSingle();
-
-        const walletData = await getWalletData();
-
-        const { data: stats } = await supabase
+          .maybeSingle(),
+        getWalletData(),
+        supabase
           .from('betting_tickets')
           .select('stake, status, created_at')
-          .eq('user_id', user.id);
-        
-        const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
-        const totalTickets = stats?.length || 0;
-        const sortedStats = [...(stats || [])].sort((a: any, b: any) => {
-          const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
-          const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
-          return timeB - timeA;
-        });
-        const lastActivity = sortedStats.length > 0 && sortedStats[0]?.created_at
-          ? new Date(sortedStats[0].created_at)
-          : null;
+          .eq('user_id', user.id)
+      ]);
 
-        return { 
-          user, 
-          profile: roleData || { role: 'user' }, 
-          walletData: walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
-          stats: { totalStaked, totalTickets, lastActivity } 
-        };
-      }
-    }));
+      const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
+      const totalTickets = stats?.length || 0;
+      
+      const sortedStats = [...(stats || [])].sort((a: any, b: any) => {
+        const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return timeB - timeA;
+      });
+      
+      const lastActivity = sortedStats.length > 0 && sortedStats[0]?.created_at
+        ? new Date(sortedStats[0].created_at)
+        : null;
+
+      return { 
+        user, 
+        profile: roleData || { role: 'user' }, 
+        walletData: walletData || { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
+        stats: { totalStaked, totalTickets, lastActivity } 
+      };
+    } catch (e) {
+      console.error("Account loader crash recovery:", e);
+      // If redirect happens in catch, re-throw it so TanStack handles it
+      if (e instanceof Error && e.name === 'TanStackRouterRedirect') throw e;
+      return { 
+        user: null, 
+        profile: { role: 'user' }, 
+        walletData: { wallet: { balance: 0 }, recentTransactions: [], activeDeposits: [] }, 
+        stats: { totalStaked: 0, totalTickets: 0, lastActivity: null } 
+      };
+    }
   },
-  component: () => <AccountPage />,
+  component: AccountPage,
 });
 
 function AccountPageSkeleton() {
@@ -80,7 +89,7 @@ function AccountPageSkeleton() {
 }
 
 function AccountPage() {
-  const { data } = useSuspenseQuery(Route.options.loader as any) as { data: any };
+  const data = Route.useLoaderData();
   const { user, profile, walletData, stats } = data as any;
   const [depositAmount, setDepositAmount] = useState("50");
   const queryClient = useQueryClient();

@@ -23,40 +23,39 @@ export const Route = createFileRoute("/_authenticated/my-bets/")({
     status: (search['status'] as string) || 'all',
   }),
   loader: async ({ context, search }: any) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      // Though _authenticated layout handles this, we be extra safe for loader race
-      return { tickets: [], status: search.status };
-    }
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
 
-    return context.queryClient.ensureQueryData(queryOptions({
-      queryKey: ["my-bets", user.id, search.status],
-      queryFn: async () => {
-        let query = supabase
-          .from("betting_tickets")
-          .select(`
-            *,
-            betting_ticket_items (
-              *
-            )
-          `)
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
+      const statusParam = (search.status || 'all').toUpperCase();
 
-        if (search.status && search.status !== 'all') {
-          query = query.eq('status', search.status.toUpperCase() as any);
-        }
+      let query = supabase
+        .from("betting_tickets")
+        .select(`
+          *,
+          betting_ticket_items (
+            *
+          )
+        `)
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
 
-        const { data, error } = await query;
-        if (error) {
-          console.error("Error fetching tickets:", error);
-          throw error;
-        }
-        return data || [];
+      if (statusParam !== 'ALL') {
+        query = query.eq('status', statusParam as any);
       }
-    }));
+
+      const { data, error } = await query;
+      if (error) {
+        console.error("Error fetching tickets:", error);
+        return [];
+      }
+      return data || [];
+    } catch (e) {
+      console.error("MyBets loader crash:", e);
+      return [];
+    }
   },
-  component: () => <MyBetsPage />,
+  component: MyBetsPage,
 });
 
 function MyBetsSkeleton() {
@@ -81,7 +80,7 @@ function MyBetsPage() {
     console.log("MyBetsPage mounted, status:", status);
   }, [status]);
 
-  const { data: tickets = [] } = useSuspenseQuery(Route.options.loader as any) as { data: any[] };
+  const tickets = Route.useLoaderData() || [];
 
   const filters = [
     { label: 'Todos', value: 'all' },

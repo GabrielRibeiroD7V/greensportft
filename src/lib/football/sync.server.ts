@@ -243,7 +243,7 @@ export async function syncMockData() {
         ];
         for (const o of options) {
           await supabaseAdmin.from("market_options").upsert({
-            market_id: market.id,
+            market_id: marketRecord.id,
             name: o.name,
             odd: o.odd
           }, { onConflict: 'market_id,name' });

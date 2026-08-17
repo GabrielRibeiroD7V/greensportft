@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { getFixtures, getCompetitions } from "@/lib/football.functions";
 import { Fixture, Market, MarketOption } from "@/lib/types";
-import { Trophy, Dribbble as SoccerBall, Search, Radio, Calendar, History, Wallet, Star } from "lucide-react";
+import { Trophy, Dribbble as SoccerBall, Search, Radio, Calendar, History, Wallet, Star, Ticket } from "lucide-react";
 import { useBetSlip } from "@/hooks/use-bet-slip";
 import { BetSlipSidebar } from "@/components/bet-slip/bet-slip-sidebar";
 import { BetSlipDrawer } from "@/components/bet-slip/bet-slip-drawer";

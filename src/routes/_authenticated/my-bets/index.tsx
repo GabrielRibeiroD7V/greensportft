@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -11,14 +11,15 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { Ticket } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/my-bets/")({
   validateSearch: (search: Record<string, unknown>) => ({
-    status: (search.status as string) || 'all',
+    status: (search['status'] as string) || 'all',
   }),
-  loader: async ({ context, search }) => {
+  loader: async ({ context, search }: any) => {
     const { data: { user } } = await supabase.auth.getUser();
     return context.queryClient.ensureQueryData(queryOptions({
       queryKey: ["my-bets", user?.id || 'anon', search.status],

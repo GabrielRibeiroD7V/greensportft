@@ -63,7 +63,7 @@ export function MobileDrawer({ userRole }: { userRole?: string | undefined }) {
 
           <section className="space-y-1">
             <h3 className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-slate-500">Minha Área</h3>
-            <Link to="/my-bets" className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">
+            <Link to="/my-bets" search={{ status: 'all' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">
               <History className="h-4 w-4" /> Minhas Apostas
             </Link>
             <Link to="/my-bets" search={{ status: 'pending' }} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-900 text-sm font-bold">

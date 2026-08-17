@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async () => {
     // 1. Get user role from DB
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw redirect({ to: '/auth' });
+    if (!user) throw redirect({ to: '/auth', search: { redirect: '/admin' } as any });
 
     const { data: roleData } = await supabase
       .from('user_roles')

@@ -207,8 +207,8 @@ function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2">
-                <Link to="/auth" className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-2">Entrar</Link>
-                <Link to="/auth">
+                <Link to="/auth" search={{ redirect: undefined }} className="text-[10px] font-black uppercase text-slate-300 hover:text-white px-2">Entrar</Link>
+                <Link to="/auth" search={{ redirect: undefined }}>
                     <Button size="sm" className="font-black uppercase tracking-widest text-[9px] md:text-[10px] h-8 md:h-9 bg-green-600 hover:bg-green-700">Criar conta</Button>
                 </Link>
             </div>

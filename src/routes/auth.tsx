@@ -9,12 +9,12 @@ import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 export const Route = createFileRoute('/auth')({
   validateSearch: (search: Record<string, unknown>) => ({
-    redirect: (search.redirect as string) || undefined,
+    redirect: (search['redirect'] as string) || undefined,
   }),
   beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
-      throw redirect({ to: search.redirect || '/football' });
+      throw redirect({ to: (search as any).redirect || '/football' });
     }
   },
   head: () => ({

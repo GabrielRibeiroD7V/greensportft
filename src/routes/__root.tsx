@@ -10,6 +10,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 
 import appCss from "../styles.css?url";
@@ -158,9 +159,12 @@ function Header() {
     <header className="h-16 border-b bg-slate-900 text-white sticky top-0 z-40 shrink-0">
       <div className="h-full max-w-[1600px] mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
-          <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-600 rounded flex items-center justify-center text-white font-bold">GS</div>
-            <span className="font-black text-xl tracking-tighter hidden sm:block">GreenSport</span>
+          <Link to="/football" search={{ tab: 'all', competition: undefined, q: undefined }} className="flex items-center">
+            <img 
+              src={logoAsset.url} 
+              alt="GreenSport" 
+              className="h-[45px] md:h-[55px] w-auto object-contain"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">

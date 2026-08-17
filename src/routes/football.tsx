@@ -13,6 +13,7 @@ import { useBetSlip } from "@/hooks/use-bet-slip";
 import { BetSlipSidebar } from "@/components/bet-slip/bet-slip-sidebar";
 import { BetSlipDrawer } from "@/components/bet-slip/bet-slip-drawer";
 import { BetSlipButton } from "@/components/bet-slip/bet-slip-button";
+import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 const fixturesQueryOptions = queryOptions({
   queryKey: ["fixtures"],
@@ -78,9 +79,12 @@ function FootballPage() {
     <div className="flex h-screen bg-[#0f172a] overflow-hidden">
       {/* Sidebar Esquerda (Profissional) */}
       <aside className="w-[240px] border-r border-slate-800 bg-slate-900 hidden md:flex flex-col flex-none">
-        <div className="p-4 border-b border-slate-800 flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-green-500" />
-          <span className="font-black text-[10px] uppercase tracking-widest text-slate-400">Navegação</span>
+        <div className="p-4 border-b border-slate-800 flex items-center justify-center">
+          <img 
+            src={logoAsset.url} 
+            alt="GreenSport" 
+            className="h-12 w-auto object-contain"
+          />
         </div>
 
         <ScrollArea className="flex-1">

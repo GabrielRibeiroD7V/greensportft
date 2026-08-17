@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import logoAsset from "@/assets/greensport-logo.png.asset.json";
 
 export const Route = createFileRoute('/auth')({
   beforeLoad: async () => {
@@ -98,8 +99,12 @@ function AuthPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm space-y-6 rounded-xl border border-border p-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">GreenSport</h1>
+        <div className="space-y-4 flex flex-col items-center text-center">
+          <img 
+            src={logoAsset.url} 
+            alt="GreenSport" 
+            className="h-16 w-auto object-contain"
+          />
           <p className="text-sm text-muted-foreground">
             {mode === 'signin' ? 'Entre na sua conta' : 'Crie sua conta'}
           </p>

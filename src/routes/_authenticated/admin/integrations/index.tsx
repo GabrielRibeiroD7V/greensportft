@@ -190,17 +190,43 @@ function AdminIntegrationsPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-none shadow-sm opacity-50 grayscale pointer-events-none">
-          <CardHeader className="bg-slate-100 pb-6">
-             <CardTitle className="text-lg font-black uppercase flex items-center gap-2 text-slate-500">
-              <Database className="h-5 w-5" /> Pagamentos (ASAAS)
+        <Card className="border-none shadow-sm overflow-hidden">
+          <CardHeader className="bg-slate-900 text-white pb-6">
+             <CardTitle className="text-lg font-black uppercase flex items-center gap-2">
+              <Database className="h-5 w-5 text-blue-500" /> Pagamentos (ASAAS)
             </CardTitle>
-            <CardDescription>Gateway de PIX e Liquidação Financeira.</CardDescription>
+            <CardDescription className="text-slate-400">Gateway de PIX e Liquidação Financeira.</CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="p-8 text-center border-2 border-dashed rounded-lg">
-                <AlertTriangle className="h-8 w-8 text-slate-300 mx-auto mb-2" />
-                <span className="text-[10px] font-black uppercase text-slate-400">Bloqueado — Fase 5B</span>
+          <CardContent className="pt-6 space-y-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-black uppercase">API Configurada</Label>
+                  <p className="text-[10px] text-slate-500">ASAAS_API_KEY via env.</p>
+                </div>
+                {typeof process !== 'undefined' && process.env['ASAAS_API_KEY'] ? (
+                    <ShieldCheck className="h-5 w-5 text-green-600" />
+                ) : (
+                    <ShieldAlert className="h-5 w-5 text-amber-500" />
+                )}
+              </div>
+
+               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
+                <div className="space-y-0.5">
+                  <Label className="text-sm font-black uppercase text-blue-700">Payment Mode</Label>
+                  <p className="text-xs text-slate-500">SIMULATION / SANDBOX / REAL</p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                    <Badge variant="outline" className="text-[10px] font-black uppercase">
+                        {settings?.payment_mode || 'SIMULATION'}
+                    </Badge>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-2 border-dashed rounded-lg bg-slate-50 text-center">
+                 <p className="text-[10px] font-black uppercase text-slate-400">Modo de produção bloqueado</p>
+                 <p className="text-[9px] text-slate-400">Requer validação manual via console.</p>
             </div>
           </CardContent>
         </Card>

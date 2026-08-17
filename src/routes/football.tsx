@@ -246,7 +246,7 @@ function FootballPage() {
       </main>
 
       {/* Sidebar Direita (Bilhete) */}
-      <aside className="w-80 border-l bg-white dark:bg-slate-900 hidden md:flex flex-col shadow-xl">
+      <aside className="w-80 border-l bg-white dark:bg-slate-900 flex flex-col shadow-xl">
         <div className="p-4 border-b flex items-center justify-between bg-slate-900 text-white">
           <div className="flex items-center gap-2">
             <Ticket className="h-5 w-5 text-green-500" />

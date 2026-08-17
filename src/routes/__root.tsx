@@ -140,22 +140,27 @@ function Header() {
   const { data: user } = useSuspenseQuery(queryOptions({
     queryKey: ['auth-user'],
     queryFn: async () => {
-      const { data } = await supabase.auth.getUser();
-      if (!data.user) return null;
-      
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id)
-        .single();
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session?.user) return null;
         
-      const { data: wallet } = await supabase
-        .from('wallets')
-        .select('balance')
-        .eq('user_id', data.user.id)
-        .single();
+        const userId = data.session.user.id;
         
-      return { ...data.user, role: roleData?.role, balance: Number(wallet?.balance || 0) };
+        // Use Promise.all for faster fetching
+        const [roleRes, walletRes] = await Promise.all([
+          supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle(),
+          supabase.from('wallets').select('balance').eq('user_id', userId).maybeSingle()
+        ]);
+          
+        return { 
+          ...data.session.user, 
+          role: roleRes.data?.role, 
+          balance: Number(walletRes.data?.balance || 0) 
+        };
+      } catch (err) {
+        console.error("Header auth query error:", err);
+        return null;
+      }
     }
   }));
 

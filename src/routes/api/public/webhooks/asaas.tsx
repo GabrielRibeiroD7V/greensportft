@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { createHmac, timingSafeEqual } from 'crypto'
 
 export const Route = createFileRoute('/api/public/webhooks/asaas')({
   server: {
@@ -10,11 +9,13 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         const payload = JSON.parse(bodyText);
         
         // 1. Signature Verification
-        // Note: Asaas can send a secret header if configured
-        const { data: settings } = await supabaseAdmin.from('app_settings' as any).select('asaas_webhook_secret').single();
+        const { data: settings } = await supabaseAdmin.from('app_settings' as any).select('*').single();
         const authToken = request.headers.get('asaas-access-token');
         
-        if (settings?.asaas_webhook_secret && authToken !== settings.asaas_webhook_secret) {
+        // Use as any for settings to avoid type issues with dynamic columns
+        const webhookSecret = (settings as any)?.asaas_webhook_secret;
+        
+        if (webhookSecret && authToken !== webhookSecret) {
            return new Response('Unauthorized', { status: 401 });
         }
 
@@ -50,7 +51,6 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
             const amount = payload.payment.value;
 
             // Atomic credit
-            // We'll need a new RPC for this to ensure atomicity
             const { error: rpcError } = await supabaseAdmin.rpc('process_confirmed_deposit', {
               p_external_reference: externalRef,
               p_provider_payment_id: payload.payment.id,
@@ -61,17 +61,17 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
             if (rpcError) throw rpcError;
           }
 
-          await supabaseAdmin.from('provider_webhook_events').update({
+          await supabaseAdmin.from('provider_webhook_events' as any).update({
             status: 'PROCESSED',
             processed_at: new Date().toISOString()
-          }).eq('id', eventRecord.id);
+          }).eq('id', (eventRecord as any).id);
 
           return new Response('OK', { status: 200 });
         } catch (e: any) {
-          await supabaseAdmin.from('provider_webhook_events').update({
+          await supabaseAdmin.from('provider_webhook_events' as any).update({
             status: 'FAILED',
             error: e.message
-          }).eq('id', eventRecord.id);
+          }).eq('id', (eventRecord as any).id);
           return new Response('Internal error', { status: 500 });
         }
       }

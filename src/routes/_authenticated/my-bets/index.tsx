@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_authenticated/my-bets')({
+export const Route = createFileRoute('/_authenticated/my-bets/')({
   component: MyBetsPage,
 })
 

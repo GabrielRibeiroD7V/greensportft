@@ -14,12 +14,18 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as FootballRouteImport } from './routes/football'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedAccountIndexRouteImport } from './routes/_authenticated/account/index'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminCompetitionsRouteImport } from './routes/_authenticated/admin/competitions'
 import { Route as AuthenticatedAdminExposureRouteImport } from './routes/_authenticated/admin/exposure'
 import { Route as AuthenticatedAdminMatchesRouteImport } from './routes/_authenticated/admin/matches'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin/tickets'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedMyBetsIndexRouteImport } from './routes/_authenticated/my-bets/index'
+import { Route as AuthenticatedWalletIndexRouteImport } from './routes/_authenticated/wallet/index'
+import { Route as AuthenticatedAdminFinanceIndexRouteImport } from './routes/_authenticated/admin/finance/index'
+import { Route as AuthenticatedAdminLogsIndexRouteImport } from './routes/_authenticated/admin/logs/index'
+import { Route as AuthenticatedAdminSettingsIndexRouteImport } from './routes/_authenticated/admin/settings/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +51,12 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAccountIndexRoute =
+  AuthenticatedAccountIndexRouteImport.update({
+    id: '/account/',
+    path: '/account/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -79,6 +91,36 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedMyBetsIndexRoute =
+  AuthenticatedMyBetsIndexRouteImport.update({
+    id: '/my-bets/',
+    path: '/my-bets/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedWalletIndexRoute =
+  AuthenticatedWalletIndexRouteImport.update({
+    id: '/wallet/',
+    path: '/wallet/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminFinanceIndexRoute =
+  AuthenticatedAdminFinanceIndexRouteImport.update({
+    id: '/finance/',
+    path: '/finance/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminLogsIndexRoute =
+  AuthenticatedAdminLogsIndexRouteImport.update({
+    id: '/logs/',
+    path: '/logs/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsIndexRoute =
+  AuthenticatedAdminSettingsIndexRouteImport.update({
+    id: '/settings/',
+    path: '/settings/',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -90,7 +132,13 @@ export interface FileRoutesByFullPath {
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/account/': typeof AuthenticatedAccountIndexRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/my-bets/': typeof AuthenticatedMyBetsIndexRoute
+  '/wallet/': typeof AuthenticatedWalletIndexRoute
+  '/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
+  '/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
+  '/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,7 +149,13 @@ export interface FileRoutesByTo {
   '/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/account': typeof AuthenticatedAccountIndexRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/my-bets': typeof AuthenticatedMyBetsIndexRoute
+  '/wallet': typeof AuthenticatedWalletIndexRoute
+  '/admin/finance': typeof AuthenticatedAdminFinanceIndexRoute
+  '/admin/logs': typeof AuthenticatedAdminLogsIndexRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,7 +169,13 @@ export interface FileRoutesById {
   '/_authenticated/admin/matches': typeof AuthenticatedAdminMatchesRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/account/': typeof AuthenticatedAccountIndexRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/my-bets/': typeof AuthenticatedMyBetsIndexRoute
+  '/_authenticated/wallet/': typeof AuthenticatedWalletIndexRoute
+  '/_authenticated/admin/finance/': typeof AuthenticatedAdminFinanceIndexRoute
+  '/_authenticated/admin/logs/': typeof AuthenticatedAdminLogsIndexRoute
+  '/_authenticated/admin/settings/': typeof AuthenticatedAdminSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,7 +189,13 @@ export interface FileRouteTypes {
     | '/admin/matches'
     | '/admin/tickets'
     | '/admin/users'
+    | '/account/'
     | '/admin/'
+    | '/my-bets/'
+    | '/wallet/'
+    | '/admin/finance/'
+    | '/admin/logs/'
+    | '/admin/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -140,7 +206,13 @@ export interface FileRouteTypes {
     | '/admin/matches'
     | '/admin/tickets'
     | '/admin/users'
+    | '/account'
     | '/admin'
+    | '/my-bets'
+    | '/wallet'
+    | '/admin/finance'
+    | '/admin/logs'
+    | '/admin/settings'
   id:
     | '__root__'
     | '/'
@@ -153,7 +225,13 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/matches'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/admin/users'
+    | '/_authenticated/account/'
     | '/_authenticated/admin/'
+    | '/_authenticated/my-bets/'
+    | '/_authenticated/wallet/'
+    | '/_authenticated/admin/finance/'
+    | '/_authenticated/admin/logs/'
+    | '/_authenticated/admin/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -200,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/account/': {
+      id: '/_authenticated/account/'
+      path: '/account'
+      fullPath: '/account/'
+      preLoaderRoute: typeof AuthenticatedAccountIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -242,6 +327,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/my-bets/': {
+      id: '/_authenticated/my-bets/'
+      path: '/my-bets'
+      fullPath: '/my-bets/'
+      preLoaderRoute: typeof AuthenticatedMyBetsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/wallet/': {
+      id: '/_authenticated/wallet/'
+      path: '/wallet'
+      fullPath: '/wallet/'
+      preLoaderRoute: typeof AuthenticatedWalletIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/finance/': {
+      id: '/_authenticated/admin/finance/'
+      path: '/finance'
+      fullPath: '/admin/finance/'
+      preLoaderRoute: typeof AuthenticatedAdminFinanceIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/logs/': {
+      id: '/_authenticated/admin/logs/'
+      path: '/logs'
+      fullPath: '/admin/logs/'
+      preLoaderRoute: typeof AuthenticatedAdminLogsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/settings/': {
+      id: '/_authenticated/admin/settings/'
+      path: '/settings'
+      fullPath: '/admin/settings/'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
@@ -252,6 +372,9 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminTicketsRoute: typeof AuthenticatedAdminTicketsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminFinanceIndexRoute: typeof AuthenticatedAdminFinanceIndexRoute
+  AuthenticatedAdminLogsIndexRoute: typeof AuthenticatedAdminLogsIndexRoute
+  AuthenticatedAdminSettingsIndexRoute: typeof AuthenticatedAdminSettingsIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
@@ -262,6 +385,9 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminTicketsRoute: AuthenticatedAdminTicketsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+    AuthenticatedAdminFinanceIndexRoute: AuthenticatedAdminFinanceIndexRoute,
+    AuthenticatedAdminLogsIndexRoute: AuthenticatedAdminLogsIndexRoute,
+    AuthenticatedAdminSettingsIndexRoute: AuthenticatedAdminSettingsIndexRoute,
   }
 
 const AuthenticatedAdminRouteRouteWithChildren =
@@ -271,10 +397,16 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedAccountIndexRoute: typeof AuthenticatedAccountIndexRoute
+  AuthenticatedMyBetsIndexRoute: typeof AuthenticatedMyBetsIndexRoute
+  AuthenticatedWalletIndexRoute: typeof AuthenticatedWalletIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedAccountIndexRoute: AuthenticatedAccountIndexRoute,
+  AuthenticatedMyBetsIndexRoute: AuthenticatedMyBetsIndexRoute,
+  AuthenticatedWalletIndexRoute: AuthenticatedWalletIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

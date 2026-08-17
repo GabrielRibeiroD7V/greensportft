@@ -1,32 +1,19 @@
 import { createServerFn } from "@tanstack/react-start";
 import { syncCompetitions, syncFixtures } from "./sync.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { syncMockData } from "./sync.server";
+
 
 export const runFullSync = createServerFn({ method: "POST" })
   .handler(async () => {
-    // 1. Sync Competitions
-    const compResult = await syncCompetitions();
-    
-    // 2. Sync Fixtures for each competition (current year)
-    const { data: competitions } = await supabaseAdmin
-      .from("competitions")
-      .select("id")
-      .eq("is_active", true);
-
-    const currentYear = new Date().getFullYear();
-    let totalFixtures = 0;
-
-    if (competitions) {
-      for (const comp of competitions) {
-        const fixResult = await syncFixtures(comp.id, currentYear);
-        totalFixtures += fixResult.created;
-      }
+    try {
+      // For Phase 2, we use mock data sync instead of real API
+      return await syncMockData();
+    } catch (e) {
+      // Fallback if environment is not set up for real sync yet
+      console.error("Sync error:", e);
+      throw e;
     }
-
-    return {
-      competitions: compResult,
-      fixturesSynced: totalFixtures
-    };
   });
 
 export const getInternalSyncLogs = createServerFn({ method: "GET" })

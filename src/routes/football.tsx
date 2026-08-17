@@ -42,14 +42,16 @@ function FootballPage() {
     queryFn: () => getCompetitions(),
   }));
   const [selectedCompetition, setSelectedCompetition] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Tudo");
   const [selections, setSelections] = useState<Selection[]>([]);
   const [stake, setStake] = useState<number>(10);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const placeBetFn = useServerFn(placeBet);
 
-  const filteredFixtures = selectedCompetition 
-    ? fixtures.filter(f => f.competition_name === selectedCompetition)
-    : fixtures;
+  const filteredFixtures = fixtures.filter(f => {
+    const matchComp = !selectedCompetition || f.competition_name === selectedCompetition;
+    return matchComp;
+  });
 
   const handlePlaceBet = async () => {
     if (selections.length === 0) return;
@@ -82,10 +84,16 @@ function FootballPage() {
       if (exists) {
         return prev.filter((s) => s.optionId !== option.id);
       }
-      // Remove other selections from the same market for this fixture
-      const filtered = prev.filter((s) => s.fixtureId !== fixture.id || s.marketName !== market.name);
+      
+      // Rule 13: Conflict detection (basic: one market per fixture)
+      const sameFixtureSelections = prev.filter(s => s.fixtureId === fixture.id);
+      if (sameFixtureSelections.length > 0) {
+        toast.warning("Você já possui uma seleção para este jogo.");
+        return prev;
+      }
+
       return [
-        ...filtered,
+        ...prev,
         {
           fixtureId: fixture.id,
           fixtureName: `${fixture.home_team_name} x ${fixture.away_team_name}`,
@@ -99,8 +107,12 @@ function FootballPage() {
     });
   };
 
-  const totalOdd = selections.reduce((acc, s) => acc * s.odd, 1);
+  const totalOdd = selections.length > 0 ? selections.reduce((acc, s) => acc * s.odd, 1) : 0;
   const potentialReturn = totalOdd * stake;
+  const potentialProfit = potentialReturn - stake;
+
+  const categories = ["Tudo", "Ao Vivo", "Hoje", "Amanhã", "Próximos"];
+
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden">
@@ -142,13 +154,28 @@ function FootballPage() {
 
       {/* Área Central */}
       <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        <header className="flex items-center justify-between">
+        <header className="space-y-4">
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <SoccerBall className="text-green-600" /> Próximas Partidas
+            <SoccerBall className="text-green-600" /> Futebol
           </h1>
+          
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={selectedCategory === cat ? "default" : "outline"}
+                size="sm"
+                className="rounded-full px-6 font-bold uppercase text-[10px] tracking-widest"
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
         </header>
 
         <div className="grid gap-4">
+
           {filteredFixtures.map((fixture) => (
             <Card key={fixture.id} className="overflow-hidden border-slate-200">
               <CardHeader className="bg-slate-50/50 p-3 flex flex-row items-center justify-between space-y-0">
@@ -219,7 +246,7 @@ function FootballPage() {
       </main>
 
       {/* Sidebar Direita (Bilhete) */}
-      <aside className="w-80 border-l bg-white dark:bg-slate-900 hidden lg:flex flex-col shadow-xl">
+      <aside className="w-80 border-l bg-white dark:bg-slate-900 flex flex-col shadow-xl">
         <div className="p-4 border-b flex items-center justify-between bg-slate-900 text-white">
           <div className="flex items-center gap-2">
             <Ticket className="h-5 w-5 text-green-500" />
@@ -280,10 +307,17 @@ function FootballPage() {
 
             <Separator />
 
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-bold text-slate-500 uppercase">Retorno</span>
-              <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-slate-500 uppercase">Lucro</span>
+                <span className="text-sm font-bold text-slate-700">R$ {potentialProfit.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-slate-500 uppercase">Retorno</span>
+                <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
+              </div>
             </div>
+
 
             <Button 
               onClick={handlePlaceBet}

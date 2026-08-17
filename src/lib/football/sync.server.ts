@@ -150,3 +150,109 @@ export async function syncFixtures(competitionId: string, season: number) {
 
   return { received: extFixtures.length, created };
 }
+
+export async function syncMockData() {
+  // 1. Create Competitions
+  const competitions = [
+    { name: "Brasileirão Série A", country: "Brazil", country_code: "BR", type: "league" },
+    { name: "Premier League", country: "England", country_code: "GB", type: "league" },
+    { name: "Champions League", country: "Europe", country_code: "EU", type: "cup" }
+  ];
+
+  const compIds: Record<string, string> = {};
+  for (const c of competitions) {
+    const { data } = await supabaseAdmin.from("competitions").upsert({
+      name: c.name,
+      country: c.country,
+      country_code: c.country_code,
+      type: c.type,
+      is_active: true
+    }, { onConflict: 'name' }).select();
+
+    if (data && data[0]) compIds[c.name] = data[0].id;
+  }
+
+  // 2. Create Teams
+  const teams = [
+    { name: "Palmeiras", country: "Brazil" },
+    { name: "Flamengo", country: "Brazil" },
+    { name: "Arsenal", country: "England" },
+    { name: "Man City", country: "England" },
+    { name: "Real Madrid", country: "Spain" },
+    { name: "Bayern Munich", country: "Germany" }
+  ];
+
+  const teamIds: Record<string, string> = {};
+  for (const t of teams) {
+    const { data } = await supabaseAdmin.from("teams").upsert({
+      name: t.name,
+      country: t.country
+    }, { onConflict: 'name' }).select();
+    if (data && data[0]) teamIds[t.name] = data[0].id;
+
+  }
+
+  // 3. Create Fixtures (Live, Today, Tomorrow)
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0);
+  const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 16, 0);
+
+  const fixtures = [
+    { compName: "Brasileirão Série A", home: "Palmeiras", away: "Flamengo", time: now.toISOString(), status: "LIVE", homeScore: 1, awayScore: 1 },
+    { compName: "Premier League", home: "Arsenal", away: "Man City", time: today.toISOString(), status: "NS" },
+    { compName: "Champions League", home: "Real Madrid", away: "Bayern Munich", time: tomorrow.toISOString(), status: "NS" },
+    { compName: "Brasileirão Série A", home: "Palmeiras", away: "Bayern Munich", time: new Date(now.getTime() + 1000 * 60 * 60 * 48).toISOString(), status: "NS" }
+  ];
+
+
+  let fixturesSyncedCount = 0;
+  for (const f of fixtures) {
+    const competition_id = compIds[f.compName];
+    const home_team_id = teamIds[f.home];
+    const away_team_id = teamIds[f.away];
+
+    if (!competition_id || !home_team_id || !away_team_id) continue;
+
+    const { data: fixture } = await supabaseAdmin.from("fixtures").upsert({
+      competition_id,
+      home_team_id,
+      away_team_id,
+      start_time: f.time,
+      status: f.status,
+      home_score: f.homeScore ?? null,
+      away_score: f.awayScore ?? null
+    }, { onConflict: 'competition_id,home_team_id,away_team_id,start_time' }).select();
+    
+    if (fixture && fixture[0]) {
+      const fixtureRecord = fixture[0];
+
+      fixturesSyncedCount++;
+      // Add Markets for each fixture
+      const { data: market } = await supabaseAdmin.from("markets").upsert({
+        fixture_id: fixtureRecord.id,
+        name: "Resultado Final",
+        category: "Result"
+      }, { onConflict: 'fixture_id,name' }).select();
+
+      
+      if (market && market[0]) {
+        const marketRecord = market[0];
+
+        const options = [
+          { name: "Home", odd: 2.10 },
+          { name: "Empate", odd: 3.25 },
+          { name: "Away", odd: 3.50 }
+        ];
+        for (const o of options) {
+          await supabaseAdmin.from("market_options").upsert({
+            market_id: marketRecord.id,
+            name: o.name,
+            odd: o.odd
+          }, { onConflict: 'market_id,name' });
+        }
+      }
+    }
+  }
+
+  return { competitions: { received: competitions.length, created: competitions.length }, fixturesSynced: fixturesSyncedCount };
+}

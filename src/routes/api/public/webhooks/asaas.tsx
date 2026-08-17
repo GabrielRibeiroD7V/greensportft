@@ -11,7 +11,7 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         
         // 1. Signature Verification
         // Note: Asaas can send a secret header if configured
-        const { data: settings } = await supabaseAdmin.from('app_settings').select('asaas_webhook_secret').single();
+        const { data: settings } = await supabaseAdmin.from('app_settings' as any).select('asaas_webhook_secret').single();
         const authToken = request.headers.get('asaas-access-token');
         
         if (settings?.asaas_webhook_secret && authToken !== settings.asaas_webhook_secret) {
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         // 2. Idempotency Check
         const eventId = payload.event + '_' + payload.payment.id;
         const { data: existing } = await supabaseAdmin
-          .from('provider_webhook_events')
+          .from('provider_webhook_events' as any)
           .select('id')
           .eq('provider', 'asaas')
           .eq('external_event_id', eventId)
@@ -32,13 +32,17 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         }
 
         // 3. Log Event
-        const { data: eventRecord } = await supabaseAdmin.from('provider_webhook_events').insert({
+        const { data: eventRecord, error: insertError } = await supabaseAdmin.from('provider_webhook_events' as any).insert({
           provider: 'asaas',
           external_event_id: eventId,
           event_type: payload.event,
           payload: payload,
           status: 'PROCESSING'
         }).select().single();
+
+        if (insertError || !eventRecord) {
+          return new Response('Database error', { status: 500 });
+        }
 
         try {
           if (payload.event === 'PAYMENT_RECEIVED' || payload.event === 'PAYMENT_CONFIRMED') {

@@ -5,7 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 export const getFixtures = createServerFn({ method: "GET" })
   .handler(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from("fixtures")
       .select(`
         id,

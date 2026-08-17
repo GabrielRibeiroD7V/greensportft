@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/account/")({
         const totalStaked = stats?.reduce((acc: number, curr: any) => acc + Number(curr.stake || 0), 0) || 0;
         const totalTickets = stats?.length || 0;
         const lastActivity = stats && stats.length > 0 
-          ? new Date(stats.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].created_at)
+          ? new Date(stats.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())[0].created_at || 0)
           : null;
 
         return { 

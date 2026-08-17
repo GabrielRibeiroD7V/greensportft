@@ -145,19 +145,44 @@ export const rejectWithdrawalFn = createServerFn({ method: "POST" })
   });
 
 export const getRiskExposure = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
+  // Exposure by Fixture
+  const { data: fixtureExposure } = await supabase
     .from("betting_tickets")
-    .select("potential_return, stake, status")
+    .select(`
+      potential_return,
+      stake,
+      betting_ticket_items (
+        fixture_id,
+        fixtures (
+          home:teams!home_team_id (name),
+          away:teams!away_team_id (name)
+        )
+      )
+    `)
     .eq("status", "PENDING");
 
-  if (error) throw error;
-
-  const totalPotentialPayout = data.reduce((acc, t) => acc + Number(t.potential_return), 0);
-  const totalStakes = data.reduce((acc, t) => acc + Number(t.stake), 0);
+  const exposureMap: Record<string, any> = {};
+  fixtureExposure?.forEach((ticket: any) => {
+    ticket.betting_ticket_items?.forEach((item: any) => {
+      const fid = item.fixture_id;
+      if (!exposureMap[fid]) {
+        exposureMap[fid] = {
+          name: `${item.fixtures.home.name} vs ${item.fixtures.away.name}`,
+          stake: 0,
+          potential: 0,
+          count: 0
+        };
+      }
+      exposureMap[fid].stake += Number(ticket.stake);
+      exposureMap[fid].potential += Number(ticket.potential_return);
+      exposureMap[fid].count++;
+    });
+  });
 
   return {
-    totalPotentialPayout,
-    totalStakes,
-    pendingTicketsCount: data.length
+    totalPotentialPayout: fixtureExposure?.reduce((acc, t) => acc + Number(t.potential_return), 0) || 0,
+    totalStakes: fixtureExposure?.reduce((acc, t) => acc + Number(t.stake), 0) || 0,
+    pendingTicketsCount: fixtureExposure?.length || 0,
+    byFixture: Object.values(exposureMap).sort((a, b) => b.potential - a.potential)
   };
 });

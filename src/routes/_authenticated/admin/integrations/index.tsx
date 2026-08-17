@@ -201,7 +201,7 @@ function AdminIntegrationsPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
                 <div className="space-y-0.5">
-                  <Label className="text-xs font-black uppercase">API Configurada</Label>
+                  <Label className="text-xs font-black uppercase">Chave de API (ASAAS)</Label>
                   <p className="text-[10px] text-slate-500">ASAAS_API_KEY via env.</p>
                 </div>
                 {typeof process !== 'undefined' && process.env['ASAAS_API_KEY'] ? (
@@ -211,7 +211,19 @@ function AdminIntegrationsPage() {
                 )}
               </div>
 
-               <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border">
+                <div className="space-y-0.5">
+                  <Label className="text-xs font-black uppercase">Webhook Token</Label>
+                  <p className="text-[10px] text-slate-500">ASAAS_WEBHOOK_AUTH_TOKEN via env.</p>
+                </div>
+                {typeof process !== 'undefined' && process.env['ASAAS_WEBHOOK_AUTH_TOKEN'] ? (
+                    <ShieldCheck className="h-5 w-5 text-green-600" />
+                ) : (
+                    <ShieldAlert className="h-5 w-5 text-amber-500" />
+                )}
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
                 <div className="space-y-0.5">
                   <Label className="text-sm font-black uppercase text-blue-700">Payment Mode</Label>
                   <p className="text-xs text-slate-500">SIMULATION / SANDBOX / REAL</p>

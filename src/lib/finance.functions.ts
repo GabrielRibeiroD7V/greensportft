@@ -60,7 +60,7 @@ export const createDepositFn = createServerFn({ method: "POST" })
     const minDeposit = Number(settings?.min_deposit || 10);
     const maxDeposit = Number(settings?.max_deposit || 10000);
     const depositsEnabled = settings?.deposits_enabled !== false;
-    const asaasKey = (settings as any)?.asaas_api_key;
+    const asaasKey = process.env['ASAAS_API_KEY'];
 
     if (!depositsEnabled) throw new Error("Deposits are currently disabled");
     if (data.amount < minDeposit) throw new Error(`Minimum deposit is R$ ${minDeposit}`);
@@ -91,7 +91,7 @@ export const createDepositFn = createServerFn({ method: "POST" })
       return { deposit };
     } else {
       // Real Asaas Integration
-      const asaasMode = mode === 'PRODUCTION' ? 'PRODUCTION' : 'SANDBOX';
+      const asaasMode = mode as 'SIMULATION' | 'SANDBOX' | 'PRODUCTION';
       const asaas = new AsaasPaymentProvider(asaasKey, asaasMode);
       
       const asaasResult = await asaas.createDeposit({

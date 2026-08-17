@@ -9,14 +9,16 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
         const payload = JSON.parse(bodyText);
         
         // 1. Signature Verification
-        const { data: settings } = await supabaseAdmin.from('app_settings' as any).select('*').single();
+        const webhookSecret = process.env['ASAAS_WEBHOOK_AUTH_TOKEN'];
         const authToken = request.headers.get('asaas-access-token');
         
-        // Use as any for settings to avoid type issues with dynamic columns
-        const webhookSecret = (settings as any)?.asaas_webhook_secret;
-        
         if (webhookSecret && authToken !== webhookSecret) {
+           console.error('[Asaas Webhook] Unauthorized attempt - Invalid token');
            return new Response('Unauthorized', { status: 401 });
+        }
+        
+        if (!webhookSecret) {
+           console.warn('[Asaas Webhook] Token verification skipped - ASAAS_WEBHOOK_AUTH_TOKEN not set');
         }
 
         // 2. Idempotency Check
@@ -47,6 +49,10 @@ export const Route = createFileRoute('/api/public/webhooks/asaas')({
 
         try {
           if (payload.event === 'PAYMENT_RECEIVED' || payload.event === 'PAYMENT_CONFIRMED') {
+            // Validate basic payload requirements
+            if (!payload.payment || !payload.payment.id || !payload.payment.externalReference) {
+              throw new Error('INVALID_PAYLOAD_STRUCTURE');
+            }
             const externalRef = payload.payment.externalReference;
             const amount = payload.payment.value;
 

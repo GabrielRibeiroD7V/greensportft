@@ -5,7 +5,7 @@ export class AsaasPaymentProvider implements PaymentProvider {
   private baseUrl: string;
   private apiKey: string;
 
-  constructor(apiKey: string, environment: 'SANDBOX' | 'PRODUCTION') {
+  constructor(apiKey: string, environment: 'SIMULATION' | 'SANDBOX' | 'PRODUCTION') {
     this.apiKey = apiKey;
     this.baseUrl = environment === 'PRODUCTION' 
       ? "https://www.asaas.com/api/v3" 

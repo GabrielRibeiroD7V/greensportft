@@ -233,7 +233,9 @@ export async function syncMockData() {
       }, { onConflict: 'fixture_id,name' }).select();
 
       
-      if (market) {
+      if (market && market[0]) {
+        const marketRecord = market[0];
+
         const options = [
           { name: "Home", odd: 2.10 },
           { name: "Empate", odd: 3.25 },

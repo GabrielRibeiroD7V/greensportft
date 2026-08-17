@@ -154,13 +154,28 @@ function FootballPage() {
 
       {/* Área Central */}
       <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-        <header className="flex items-center justify-between">
+        <header className="space-y-4">
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <SoccerBall className="text-green-600" /> Próximas Partidas
+            <SoccerBall className="text-green-600" /> Futebol
           </h1>
+          
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {categories.map(cat => (
+              <Button
+                key={cat}
+                variant={selectedCategory === cat ? "default" : "outline"}
+                size="sm"
+                className="rounded-full px-6 font-bold uppercase text-[10px] tracking-widest"
+                onClick={() => setSelectedCategory(cat)}
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
         </header>
 
         <div className="grid gap-4">
+
           {filteredFixtures.map((fixture) => (
             <Card key={fixture.id} className="overflow-hidden border-slate-200">
               <CardHeader className="bg-slate-50/50 p-3 flex flex-row items-center justify-between space-y-0">
@@ -292,10 +307,17 @@ function FootballPage() {
 
             <Separator />
 
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-bold text-slate-500 uppercase">Retorno</span>
-              <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-slate-500 uppercase">Lucro</span>
+                <span className="text-sm font-bold text-slate-700">R$ {potentialProfit.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-bold text-slate-500 uppercase">Retorno</span>
+                <span className="text-xl font-black text-green-600">R$ {potentialReturn.toFixed(2)}</span>
+              </div>
             </div>
+
 
             <Button 
               onClick={handlePlaceBet}

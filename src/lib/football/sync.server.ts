@@ -200,8 +200,10 @@ export async function syncMockData() {
   const fixtures = [
     { compName: "Brasileirão Série A", home: "Palmeiras", away: "Flamengo", time: now.toISOString(), status: "LIVE", homeScore: 1, awayScore: 1 },
     { compName: "Premier League", home: "Arsenal", away: "Man City", time: today.toISOString(), status: "NS" },
-    { compName: "Champions League", home: "Real Madrid", away: "Bayern Munich", time: tomorrow.toISOString(), status: "NS" }
+    { compName: "Champions League", home: "Real Madrid", away: "Bayern Munich", time: tomorrow.toISOString(), status: "NS" },
+    { compName: "Brasileirão Série A", home: "Palmeiras", away: "Bayern Munich", time: new Date(now.getTime() + 1000 * 60 * 60 * 48).toISOString(), status: "NS" }
   ];
+
 
   let fixturesSyncedCount = 0;
   for (const f of fixtures) {

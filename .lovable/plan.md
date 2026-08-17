@@ -1,56 +1,41 @@
-# Plan: GreenSport Phase 5C - Secure Asaas Payment Integration
+# Upgrade UI/UX Pública - GreenSport
 
-Implementation of the financial infrastructure for real Pix payments via Asaas, maintaining a simulation mode for development.
+Upgrade completo de layout e navegação para transformar a plataforma em um sportsbook profissional.
 
-## User Review Required
+## Alterações
 
-> [!IMPORTANT]
-> This phase establishes the architecture for real financial transactions. Real payments will remain locked until valid Asaas credentials (API Key/Webhook Secret) are provided in the environment variables.
+### 1. Layout Base e Navegação
+- Refatorar `src/routes/__root.tsx` para incluir um Header profissional com busca e navegação densa.
+- Implementar Layout de 3 colunas em `src/routes/football.tsx`: Sidebar de Ligas (esquerda), Feed de Jogos (centro), Bilhete (direita).
+- Sidebar dinâmica carregando competições reais do banco.
+- Filtros de estado (tab=live, today, upcoming) baseados em URL para persistência.
 
-- **Asaas Credentials**: Requires `ASAAS_API_KEY` and `ASAAS_WEBHOOK_SECRET` for real/sandbox operations.
-- **Webhook Endpoint**: `/api/public/webhooks/asaas` will be created to receive payment confirmations.
+### 2. Componentes de Futebol
+- Refatorar cards de partidas para maior densidade.
+- Agrupar partidas por competição no feed.
+- Implementar seção de "Jogos em Destaque" e "Ligas Populares".
+- Criar a rota real `/football/match/$fixtureId` para detalhes da partida.
 
-## Proposed Changes
+### 3. Bet Slip (Bilhete)
+- Integrar o Bilhete como uma coluna persistente no desktop largo.
+- Refinar visual do Bilhete para parecer profissional (Header escuro, totais destacados).
+- Garantir comportamento mobile via Drawer/Sheet.
 
-### Database & Schema
-- **Tables Expansion**:
-    - Update `deposits`: add `provider`, `provider_payment_id`, `provider_status`, `external_reference`, `idempotency_key`, `is_simulated`, `expires_at`, `paid_at`, `pix_qr_code`, `pix_copy_paste`.
-    - Update `withdrawals`: add `provider`, `provider_withdrawal_id`, `provider_status`, `is_simulated`, `pix_key`, `pix_key_type`.
-    - Create `provider_webhook_events`: log all incoming webhooks with status tracking.
-- **Settings**: Add `payment_mode` (`SIMULATION`, `SANDBOX`, `PRODUCTION`), `min_deposit`, `max_deposit`, `deposits_enabled`, `withdrawals_enabled` to `app_settings`.
-- **RBAC**: Strictly lock manual updates to `deposits` and `withdrawals` for non-admins.
+### 4. Busca e Filtros
+- Implementar busca funcional no Header sobre times e competições.
+- Validar todos os links e navegação de retorno.
 
-### Backend Infrastructure
-- **Payment Provider Abstraction**:
-    - `src/lib/payments/provider.interface.ts`: Generic interface for payment operations.
-    - `src/lib/payments/asaas.provider.ts`: Concrete implementation using Asaas API.
-- **Server Functions**:
-    - `createDeposit`: Handles both simulation and real Pix generation.
-    - `getDepositStatus`: For client-side polling/updates.
-    - `testPaymentConnection`: Admin tool to verify API keys.
-- **Webhook Handler**:
-    - `src/routes/api/public/webhooks/asaas.ts`: Public endpoint to process Asaas events with signature verification and idempotency.
+## Detalhes Técnicos
+- Utilizar `useSearch` e `navigate` do TanStack Router para filtros via URL.
+- Manter RLS e RPCs financeiros intactos.
+- Cores: Navy (#0f172a), Green (#16a34a), Slate-50/100 para fundos.
+- Responsividade: Sidebar vira drawer no mobile, Bilhete vira Drawer.
 
-### Admin Panel
-- **Integrations**: Expand `/admin/integrations` with a "Payments" card showing Asaas status and configuration.
-- **Finance**: Update `/admin/finance` to show detailed deposit/withdrawal logs with provider IDs and data modes.
+## Plano de Ação
 
-### User Experience
-- **Wallet**: Enhanced deposit flow with Pix QR Code display and real-time status updates (polling + webhook).
-- **History**: Clear separation between simulated and real transaction history.
-
-## Technical Details
-- **Idempotency**: Use `external_reference` (e.g., `GS-DEP-UUID`) to prevent double-charging.
-- **Atomic Transactions**: Wallet credits only occur inside a database transaction after webhook validation.
-- **Security**: Asaas API key is strictly server-side; webhooks must pass signature verification.
-
-## Verification Plan
-### Automated Tests
-- [ ] TypeScript: `bunx tsgo --noEmit`
-- [ ] SSR: `bun run build`
-
-### Manual Verification
-1. **Simulation**: Verify that Pix deposits still work in `SIMULATION` mode without an API key.
-2. **Admin**: Toggle between modes and verify that `REAL` is blocked without credentials.
-3. **Webhook Mock**: Manually trigger a mock webhook event to verify atomic wallet credit.
-4. **Security**: Attempt to credit a wallet as a non-admin user (should fail).
+1. **Header Profissional**: Atualizar `src/routes/__root.tsx`.
+2. **Sidebar & Layout**: Atualizar `src/routes/football.tsx`.
+3. **Feed de Jogos**: Atualizar componentes de listagem.
+4. **Detalhe da Partida**: Finalizar `src/routes/football/match.$fixtureId.tsx`.
+5. **Busca & Filtros**: Implementar lógica de filtragem global.
+6. **Polimento Visual**: Ajustes de margens, tipografia e cores Navy.

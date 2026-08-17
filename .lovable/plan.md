@@ -1,47 +1,57 @@
-# GREENSPORT — REDESIGN SPORTSBOOK
+# Sportsbook UI/UX Overhaul Plan
 
-Este plano visa transformar a GreenSport em uma plataforma de apostas esportivas de nível profissional, com foco em densidade de informações, navegação fluida em dispositivos móveis e uma interface desktop robusta em 3 colunas.
+Transform the GreenSport public interface into a professional football-only sportsbook with high information density, navy-themed styling, and professional layouts while preserving existing functional navigation and logic.
 
-## Estrutura e Navegação
+## Technical Details
+- **Theme Updates**: Enforce `bg-slate-900` (Navy) for structural components (Header, Sidebar, Bet Slip headers) and high-density white cards for content.
+- **Components**: 
+    - Create `src/components/football/match-list-grouped.tsx` for league-grouped fixture display.
+    - Update `MatchCardCompact` for maximum density (1/X/2 odds in a single row).
+    - Update `BetSlipSidebar` to include "empty" states and summary sections as specified.
+- **Layout**: Refine `src/routes/football.tsx` for 3-column desktop (230px | flex:1 | 330px) and layer-based mobile view.
+- **Navigation**: Sync all links with TanStack Router typed search params (`tab`, `competition`, `q`).
 
-### Mobile First
-- **Header Compacto:** Logo, menu hambúrguer, saldo/conta (se logado) ou login/cadastro (se deslogado).
-- **Bottom Navigation:** Acesso rápido a Futebol, Ao Vivo, Bilhete (centralizado e destacado), Minhas Apostas e Carteira.
-- **Menu Lateral (Drawer):** Categorias (Futebol, Ao Vivo, Hoje, etc.), Minha Área e Principais Ligas.
-- **Atalhos Horizontais:** Filtros rápidos para competições e estados de jogo (Ao Vivo, Hoje, Favoritos).
+## Proposed Changes
 
-### Desktop
-- **Layout 3 Colunas:** Sidebar esquerda (240px), Feed Central (flex:1), Bet Slip direito (320-360px).
-- **Sidebar Profissional:** Navegação completa, ligas favoritas e links institucionais.
-- **Header Moderno:** Busca integrada, navegação principal e controles de conta.
+### 1. Global Layout & Header
+- **src/routes/__root.tsx**: 
+    - Update `Header` to be more compact (14px/16px height).
+    - Implement professional search bar with "Buscar time, campeonato ou partida".
+    - Add user balance and quick links (Minhas Apostas, Carteira) to the desktop header.
+- **src/components/layout/bottom-nav.tsx**: Add active state highlighting based on current URL params.
 
-## Componentes de UI
+### 2. Sidebar Redesign (Desktop & Mobile Drawer)
+- **src/routes/football.tsx** & **src/components/layout/mobile-drawer.tsx**:
+    - Implement structured sections: EXPLORAR, MINHA ÁREA, PRINCIPAIS LIGAS, CONTA.
+    - Add match count badges to league names where available.
+    - Remove Admin link for non-admin users.
 
-### Feed de Jogos (Cards)
-- **Densidade Elevada:** Cards compactos no mobile permitindo ver 2-4 jogos simultaneamente.
-- **Destaques (High-Traffic):** Carrossel horizontal de jogos importantes com odds 1/X/2 visíveis.
-- **Grouping:** Jogos agrupados por liga com títulos claros.
-- **Odds Contextuais:** Botões 1/X/2 diretos na listagem, com estados visuais para Selecionado, Suspenso e Stale.
+### 3. Football Feed Density
+- **src/routes/football.tsx**:
+    - Add "Futebol" context header with total match count.
+    - Implement "Atalhos Horizontais" (Ao Vivo, Hoje, Top Leagues) with scrollable mobile view.
+    - Group list by Competition with logo and country info.
+- **src/components/football/match-card-highlight.tsx**: 
+    - Desktop: Up to 3 cards side-by-side.
+    - Mobile: Carousel with partial visibility of next card.
 
-### Bet Slip (Bilhete)
-- **Mobile:** Abre em um Sheet (Drawer inferior) ocupando 60-80% da tela.
-- **Resumo Financeiro:** Cálculo em tempo real de Odd Total, Stake, Lucro e Retorno.
-- **Segurança:** Validação de cotações e temporal antes de `placeBet`.
+### 4. Match & Market Presentation
+- **src/components/football/match-card-compact.tsx**:
+    - Reduce vertical padding and font sizes for high density.
+    - Standardize 1/X/2 odd buttons with GreenSport "Selected" state.
+    - Add "LIVE" badge with pulse and elapsed time (if available).
+- **src/routes/football/match.$fixtureId.tsx**:
+    - Refine scoreboard visual.
+    - Categorize markets (Gols, Escanteios, etc.) using tabs.
+    - Display markets in compact rows (e.g., Over/Under pairs).
 
-## Identidade Visual
-- **Paleta:** Navy/Preto Azulado (estrutura), Branco (cards), Verde (ações e status), Cinza (metadados).
-- **Branding:** Integração da logo oficial shield-style em todos os pontos de contato.
+### 5. Bet Slip Enhancements
+- **src/components/bet-slip/bet-slip-sidebar.tsx**:
+    - Add compact "Selecione uma cotação" empty state.
+    - Implement summary section with Stake, Payout, and "APOSTAR AGORA" CTA.
+- **src/components/bet-slip/bet-slip-drawer.tsx**:
+    - Ensure Sheet/Drawer preserves state and has a clear close mechanism.
 
-## Detalhes Técnicos e SEO
-- **Páginas Adicionais:** Criação de `/support` e `/rules` para conformidade operacional.
-- **Deep Links:** Garantia de que todas as rotas funcionam via URL direta (refresh-safe).
-- **SEO & Head:** Metadados exclusivos por rota e OpenGraph completo.
-- **Performance:** Uso de lazy loading e Suspense para carregamento otimizado de fixtures.
-
-## Etapas de Implementação
-
-1. **Infraestrutura UI:** Criação de novos componentes atômicos (BottomNav, MobileHeader, LeagueGroup).
-2. **Refatoração da Raiz:** Ajuste do layout global em `src/routes/__root.tsx`.
-3. **Página de Futebol:** Reescrita completa de `src/routes/football.tsx` para o novo layout de 3 colunas/compacto.
-4. **Bet Slip:** Migração para o modelo de Sheet/Sidebar reativo.
-5. **Auditoria e Build:** Verificação de tipos, SSR e integridade de dados.
+### 6. Validation & Stability
+- Run `bun run build` to verify no regressions in TypeScript or SSR.
+- Audit all navigation deep-links to ensure `tab` and `competition` params persist correctly.
